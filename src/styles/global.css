@@ -854,6 +854,28 @@ a:visited {
   margin-bottom: 0;
 }
 
+.markdown-body code,
+.content90s code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.9em;
+}
+
+.markdown-body pre,
+.content90s pre {
+  overflow: auto;
+  padding: 8px;
+  border: 1px solid #808080;
+  background: #f5f5f5;
+}
+
+.markdown-body pre code,
+.content90s pre code {
+  display: block;
+  font-size: 12px;
+  line-height: 1.25;
+  white-space: pre;
+}
+
 .about-body h1 {
   font-size: 20px;
   line-height: 1;

@@ -39,6 +39,19 @@ function setInitialBrowserFrame() {
   browser.style.height = `${Math.max(minHeight, availableHeight)}px`;
 }
 
+function setInitialNotesFrame() {
+  const notes = document.getElementById("notes");
+  if (!notes || !desktopEl) return;
+
+  const left = isCompactViewport() ? 8 : parseInt(notes.style.left || "28", 10);
+  const bottomMargin = isCompactViewport() ? 8 : 12;
+  const height = notes.offsetHeight || parseInt(notes.style.height || "280", 10);
+  const top = Math.max(0, desktopEl.clientHeight - height - bottomMargin);
+
+  notes.style.left = `${left}px`;
+  notes.style.top = `${top}px`;
+}
+
 function isPrimaryPointer(event) {
   return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
 }
@@ -356,12 +369,22 @@ windows.forEach((win) => {
   });
 
   win.querySelectorAll(".win-btn").forEach((btn) => {
-    btn.addEventListener("click", (event) => {
+    function handleWindowButton(event) {
       event.stopPropagation();
+      event.preventDefault();
       const action = btn.dataset.action;
       if (action === "minimize") minimizeWindow(win);
       if (action === "maximize") maximizeWindow(win);
       if (action === "close") closeWindow(win);
+    }
+
+    btn.addEventListener("click", (event) => {
+      if (event.detail !== 0) return;
+      handleWindowButton(event);
+    });
+    btn.addEventListener("pointerup", (event) => {
+      if (!isPrimaryPointer(event)) return;
+      handleWindowButton(event);
     });
   });
 });
@@ -410,6 +433,7 @@ window.addEventListener("resize", () => windows.forEach(clampWindow));
 
 syncMaxButtons();
 setInitialBrowserFrame();
+setInitialNotesFrame();
 renderTaskbar();
 updateClock();
 setInterval(updateClock, 30000);
