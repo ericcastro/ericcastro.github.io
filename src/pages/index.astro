@@ -1,0 +1,325 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="EricOS 95">
+  <div class="desktop">
+    <div class="desktop-icons">
+      <div class="desktop-icon" data-icon="browser" tabindex="0">
+        <div class="icon icon-ie"></div>
+        <div class="icon-label">Internet Explorer</div>
+      </div>
+      <div class="desktop-icon" data-icon="notes" tabindex="0">
+        <div class="icon icon-notepad"></div>
+        <div class="icon-label">Bio.txt</div>
+      </div>
+      <div class="desktop-icon" data-icon="projects" tabindex="0">
+        <div class="icon icon-folder"></div>
+        <div class="icon-label">Projects</div>
+      </div>
+      <div class="desktop-icon" data-icon="cmd" tabindex="0">
+        <div class="icon icon-cmd"></div>
+        <div class="icon-label">Command Prompt</div>
+      </div>
+    </div>
+
+    <section
+      class="window active"
+      id="browser"
+      data-window
+      data-title="Microsoft Internet Explorer"
+      style="left: 180px; top: 38px; width: 760px; height: 500px; z-index: 35;"
+    >
+      <div class="title-bar" data-drag-handle>
+        <div class="title-left">
+          <div class="title-icon ie"></div>
+          <div class="title-text">Microsoft Internet Explorer - http://www.ericos95.net/</div>
+        </div>
+        <div class="title-buttons">
+          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+          <button class="win-btn close" data-action="close" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Favorites</span><span>Help</span></div>
+      <div class="window-content">
+        <div class="ie-shell">
+          <div class="ie-toolbar">
+            <div class="ie-toolbar-left">
+              <button class="nav-btn" type="button"><span class="glyph">◄</span><span class="label">Back</span></button>
+              <button class="nav-btn" type="button"><span class="glyph">►</span><span class="label">Forward</span></button>
+              <button class="nav-btn" type="button"><span class="glyph">✕</span><span class="label">Stop</span></button>
+              <button class="nav-btn" type="button"><span class="glyph">↻</span><span class="label">Refresh</span></button>
+              <button class="nav-btn" type="button"><span class="glyph">⌂</span><span class="label">Home</span></button>
+            </div>
+            <div class="address-row">
+              <div class="address-label">Address</div>
+              <div class="address-box">http://www.ericos95.net/</div>
+            </div>
+            <button class="nav-btn" type="button"><span class="glyph">★</span><span class="label">Links</span></button>
+          </div>
+
+          <div class="ie-page sunken">
+            <div class="retro-banner">
+              <h1>EricOS 95 Online</h1>
+              <p>Welcome to my homepage on the information superhighway.</p>
+            </div>
+
+            <div class="marquee-box">
+              <marquee behavior="scroll" scrollamount="4">
+                ★ best viewed with Microsoft Internet Explorer 3.0 ★ under construction since 1998 ★ no java applets were harmed in the making of this page ★
+              </marquee>
+            </div>
+
+            <div class="ie-layout">
+              <aside class="sidebar90s">
+                <h3>Site Menu</h3>
+                <ul>
+                  <li><a href="#" data-open-window="notes">About Me</a></li>
+                  <li><a href="#" data-open-window="projects">Projects</a></li>
+                  <li><a href="#" data-open-window="cmd">System Info</a></li>
+                  <li><a href="#top">Top of Page</a></li>
+                </ul>
+
+                <h3>Cool Links</h3>
+                <ul>
+                  <li><a href="#">Guestbook</a></li>
+                  <li><a href="#">Webrings</a></li>
+                  <li><a href="#">Downloads</a></li>
+                </ul>
+
+                <img
+                  alt="under construction"
+                  src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='40'><rect width='120' height='40' fill='yellow'/><rect x='0' y='0' width='120' height='40' fill='none' stroke='black' stroke-width='2'/><text x='60' y='24' font-family='Arial' font-size='12' text-anchor='middle' fill='black'>UNDER CONSTRUCTION</text></svg>"
+                  style="display:block;margin:10px auto 0;image-rendering:pixelated;"
+                />
+              </aside>
+
+              <main class="content90s" id="top">
+                <div class="post90s">
+                  <h2>Latest Update: New Desktop Experience</h2>
+                  <div class="post-meta">Posted on March 1998 by Webmaster Eric</div>
+                  <p>
+                    This website is now fully contained inside a fake Internet Explorer 3 window, because ordinary layouts are for the weak. Instead of navigating away, the important sections open as separate Windows 95 widgets floating on the desktop.
+                  </p>
+                  <div class="button-row">
+                    <button class="ie-link-btn" type="button" data-open-window="notes">Open About</button>
+                    <button class="ie-link-btn" type="button" data-open-window="projects">Open Paint Portfolio</button>
+                    <button class="ie-link-btn" type="button" data-open-window="cmd">Open DOS Stats</button>
+                  </div>
+                  <p>
+                    This means the browser is the main content container, but it still behaves like one more program on the desktop. Very important innovation.
+                  </p>
+                </div>
+
+                <div class="post90s">
+                  <h2>Blog Post: Why Personal Sites Should Be Weird Again</h2>
+                  <div class="post-meta">Posted on February 1998 in the category <a href="#">Hot Takes</a></div>
+                  <p>
+                    The modern web got too smooth, too clean, and too allergic to personality. In the 90s your homepage could have stars, bevels, MIDI ambitions, and five clashing ideas fighting for screen space. That chaos was part of the charm.
+                  </p>
+                  <p>
+                    I still like interfaces that feel tactile and alive. I build software, electronics, music-related experiments, and random visual toys, and I prefer a site that feels like a place rather than a card with three muted gradients.
+                  </p>
+                </div>
+
+                <div class="linkbox90s">
+                  <h3>Featured Links</h3>
+                  <ul>
+                    <li><a href="#" data-open-window="notes">Read Bio.txt in Notepad</a></li>
+                    <li><a href="#" data-open-window="projects">Open project board in Paint</a></li>
+                    <li><a href="#" data-open-window="cmd">Run system diagnostics</a></li>
+                  </ul>
+                </div>
+
+                <div class="guestbook">
+                  <strong>Sign My Guestbook!</strong>
+                  <p>Tell me your modem speed, your favorite operating system, and whether animated GIFs should make a comeback.</p>
+                  <div class="counter90s" aria-label="visitor counter">
+                    <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
+                  </div>
+                </div>
+              </main>
+            </div>
+          </div>
+        </div>
+        <div class="status-bar">
+          <div>Done</div>
+          <div>Internet zone</div>
+        </div>
+      </div>
+      <div class="resize-handle n" data-resize="n"></div>
+      <div class="resize-handle e" data-resize="e"></div>
+      <div class="resize-handle s" data-resize="s"></div>
+      <div class="resize-handle w" data-resize="w"></div>
+      <div class="resize-handle nw" data-resize="nw"></div>
+      <div class="resize-handle ne" data-resize="ne"></div>
+      <div class="resize-handle sw" data-resize="sw"></div>
+      <div class="resize-handle se" data-resize="se"></div>
+    </section>
+
+    <section
+      class="window hidden"
+      id="notes"
+      data-window
+      data-title="Bio.txt - Notepad"
+      style="left: 84px; top: 120px; width: 396px; height: 280px; z-index: 18;"
+    >
+      <div class="title-bar" data-drag-handle>
+        <div class="title-left">
+          <div class="title-icon note"></div>
+          <div class="title-text">Bio.txt - Notepad</div>
+        </div>
+        <div class="title-buttons">
+          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+          <button class="win-btn close" data-action="close" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="menu-bar"><span>File</span><span>Edit</span><span>Search</span><span>Help</span></div>
+      <div class="window-content">
+        <div class="about-body sunken">
+          <div class="hero-row">
+            <div class="avatar95 sunken"></div>
+            <div>
+              <h1>Eric Castro</h1>
+              <p class="tagline">Full-stack developer • maker • builder of fun things</p>
+              <p>Actual human behind the browser window.</p>
+            </div>
+          </div>
+          <div class="info-grid">
+            <strong>Location</strong><span>Paris, France</span>
+            <strong>Occupation</strong><span>Developer / creative technologist</span>
+            <strong>Likes</strong><span>retro tech, robotics, music, weird side projects</span>
+            <strong>Status</strong><span>Probably optimizing something unnecessary</span>
+          </div>
+          <div class="divider95"></div>
+          <h3>About</h3>
+          <p>I build software, electronics projects, interfaces, and occasional chaotic ideas that somehow become real. This site treats content like applications instead of pages.</p>
+        </div>
+        <div class="status-bar">
+          <div>Ln 1, Col 1</div>
+          <div>100%</div>
+        </div>
+      </div>
+      <div class="resize-handle n" data-resize="n"></div>
+      <div class="resize-handle e" data-resize="e"></div>
+      <div class="resize-handle s" data-resize="s"></div>
+      <div class="resize-handle w" data-resize="w"></div>
+      <div class="resize-handle nw" data-resize="nw"></div>
+      <div class="resize-handle ne" data-resize="ne"></div>
+      <div class="resize-handle sw" data-resize="sw"></div>
+      <div class="resize-handle se" data-resize="se"></div>
+    </section>
+
+    <section
+      class="window hidden"
+      id="projects"
+      data-window
+      data-title="Projects - Paint"
+      style="left: 530px; top: 120px; width: 430px; height: 340px; z-index: 20;"
+    >
+      <div class="title-bar" data-drag-handle>
+        <div class="title-left">
+          <div class="title-icon paint"></div>
+          <div class="title-text">Projects - Paint</div>
+        </div>
+        <div class="title-buttons">
+          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+          <button class="win-btn close" data-action="close" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Image</span><span>Help</span></div>
+      <div class="window-content">
+        <div class="projects-layout">
+          <div class="toolbox sunken">
+            <div class="tool"></div><div class="tool"></div><div class="tool"></div>
+            <div class="tool"></div><div class="tool"></div><div class="tool"></div>
+          </div>
+          <div class="paint-side">
+            <div class="canvas-wrap sunken">
+              <div class="canvas">
+                <div class="pixel-card" style="left: 14px; top: 18px;"><strong>Project 01</strong>Personal website concepts, UI experiments, nostalgic design systems.</div>
+                <div class="pixel-card blue" style="left: 198px; top: 48px;"><strong>Project 02</strong>Electronics, embedded builds, LEDs, sensors, and custom gadgets.</div>
+                <div class="pixel-card green" style="left: 70px; top: 158px;"><strong>Project 03</strong>Music, visuals, side quests, and tools that maybe nobody asked for.</div>
+                <div class="pixel-card pink" style="left: 250px; top: 190px; width: 130px;"><strong>Bonus</strong>Making it fun on purpose.</div>
+              </div>
+            </div>
+            <div class="palette sunken">
+              <div class="swatch" style="background:#000000"></div><div class="swatch" style="background:#7f7f7f"></div><div class="swatch" style="background:#880015"></div><div class="swatch" style="background:#ed1c24"></div><div class="swatch" style="background:#ff7f27"></div><div class="swatch" style="background:#fff200"></div><div class="swatch" style="background:#22b14c"></div><div class="swatch" style="background:#00a2e8"></div><div class="swatch" style="background:#3f48cc"></div><div class="swatch" style="background:#a349a4"></div><div class="swatch" style="background:#ffffff"></div>
+            </div>
+          </div>
+        </div>
+        <div class="status-bar"><div>For Help, click Help Topics on the Help Menu.</div></div>
+      </div>
+      <div class="resize-handle n" data-resize="n"></div>
+      <div class="resize-handle e" data-resize="e"></div>
+      <div class="resize-handle s" data-resize="s"></div>
+      <div class="resize-handle w" data-resize="w"></div>
+      <div class="resize-handle nw" data-resize="nw"></div>
+      <div class="resize-handle ne" data-resize="ne"></div>
+      <div class="resize-handle sw" data-resize="sw"></div>
+      <div class="resize-handle se" data-resize="se"></div>
+    </section>
+
+    <section
+      class="window hidden"
+      id="cmd"
+      data-window
+      data-title="C:\\WINDOWS\\SYSTEM32\\CMD.EXE"
+      style="left: 260px; top: 200px; width: 360px; height: 250px; z-index: 15;"
+    >
+      <div class="title-bar" data-drag-handle>
+        <div class="title-left">
+          <div class="title-icon cmd"></div>
+          <div class="title-text">C:\\WINDOWS\\SYSTEM32\\CMD.EXE</div>
+        </div>
+        <div class="title-buttons">
+          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+          <button class="win-btn close" data-action="close" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="window-content">
+        <div class="cmd-shell sunken">Microsoft(R) Windows 95
+(C)Copyright Microsoft Corp 1981-1995.
+
+<span class="prompt">C:\\&gt;</span> net user webmaster
+Name                Eric Castro
+Role                Builder of things
+Location            Paris, France
+Status              ONLINE
+
+<span class="prompt">C:\\&gt;</span> dir widgets
+BIO      TXT
+PROJECTS BMP
+SITE     HTM
+
+<span class="prompt">C:\\&gt;</span> _</div>
+      </div>
+      <div class="resize-handle n" data-resize="n"></div>
+      <div class="resize-handle e" data-resize="e"></div>
+      <div class="resize-handle s" data-resize="s"></div>
+      <div class="resize-handle w" data-resize="w"></div>
+      <div class="resize-handle nw" data-resize="nw"></div>
+      <div class="resize-handle ne" data-resize="ne"></div>
+      <div class="resize-handle sw" data-resize="sw"></div>
+      <div class="resize-handle se" data-resize="se"></div>
+    </section>
+  </div>
+
+  <div class="taskbar">
+    <button class="start-btn" type="button">
+      <span class="start-logo"></span>
+      <span>Start</span>
+    </button>
+    <button class="task-btn" id="quickIE" title="Internet Explorer" style="flex:0 0 auto;max-width:none;min-width:40px;justify-content:center;">
+      <span style="font-family:'Times New Roman',serif;color:#0a46c4;font-weight:bold;">e</span>
+    </button>
+    <div class="taskbar-tasks" id="taskbarTasks"></div>
+    <div class="tray-box" id="clock">9:41 PM</div>
+  </div>
+
+  <script is:inline src="/scripts/desktop.js"></script>
+</BaseLayout>
