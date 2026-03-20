@@ -6,14 +6,41 @@ const openTriggers = Array.from(document.querySelectorAll("[data-open-window]"))
 const quickIE = document.getElementById("quickIE");
 let topZ = 40;
 
-function setInitialBrowserHeight() {
+function isCompactViewport() {
+  return window.innerWidth <= 768;
+}
+
+function setInitialBrowserFrame() {
   const browser = document.getElementById("browser");
   if (!browser || !desktopEl) return;
+
+  if (isCompactViewport()) {
+    const horizontalMargin = 8;
+    const bottomMargin = 8;
+    const left = horizontalMargin;
+    const top = 8;
+    const width = Math.max(280, desktopEl.clientWidth - horizontalMargin * 2);
+    const height = Math.max(
+      parseInt(getComputedStyle(browser).minHeight, 10) || 140,
+      desktopEl.clientHeight - top - bottomMargin
+    );
+
+    browser.style.left = `${left}px`;
+    browser.style.top = `${top}px`;
+    browser.style.width = `${width}px`;
+    browser.style.height = `${height}px`;
+    return;
+  }
+
   const margin = 38;
   const top = parseInt(browser.style.top || "0", 10);
-  const availableHeight = desktopEl.clientHeight - top - margin;
   const minHeight = parseInt(getComputedStyle(browser).minHeight, 10) || 140;
+  const availableHeight = desktopEl.clientHeight - top - margin;
   browser.style.height = `${Math.max(minHeight, availableHeight)}px`;
+}
+
+function isPrimaryPointer(event) {
+  return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
 }
 
 const state = Object.fromEntries(
@@ -185,7 +212,8 @@ function renderTaskbar() {
 windows.forEach((win) => {
   const dragHandle = win.querySelector("[data-drag-handle]");
 
-  win.addEventListener("mousedown", () => {
+  win.addEventListener("pointerdown", (event) => {
+    if (!isPrimaryPointer(event)) return;
     if (!state[win.id].closed && !state[win.id].minimized) {
       activateWindow(win);
     }
@@ -193,10 +221,13 @@ windows.forEach((win) => {
 
   if (dragHandle) {
     dragHandle.addEventListener("dblclick", () => maximizeWindow(win));
-    dragHandle.addEventListener("mousedown", (event) => {
+    dragHandle.addEventListener("pointerdown", (event) => {
+      if (!isPrimaryPointer(event)) return;
       if (event.target.closest(".title-buttons")) return;
       if (state[win.id].maximized || !desktopEl) return;
+      event.preventDefault();
       activateWindow(win);
+      dragHandle.setPointerCapture?.(event.pointerId);
 
       const rect = win.getBoundingClientRect();
       const desktopRect = desktopEl.getBoundingClientRect();
@@ -204,6 +235,7 @@ windows.forEach((win) => {
       const offsetY = event.clientY - rect.top;
 
       function onMove(e) {
+        if (e.pointerId !== event.pointerId) return;
         const maxLeft = Math.max(0, desktopEl.clientWidth - win.offsetWidth);
         const maxTop = Math.max(0, desktopEl.clientHeight - win.offsetHeight);
         const left = Math.min(
@@ -218,21 +250,28 @@ windows.forEach((win) => {
         win.style.top = `${top}px`;
       }
 
-      function onUp() {
-        document.removeEventListener("mousemove", onMove);
-        document.removeEventListener("mouseup", onUp);
+      function onUp(e) {
+        if (e.pointerId !== event.pointerId) return;
+        dragHandle.releasePointerCapture?.(event.pointerId);
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener("pointercancel", onUp);
       }
 
-      document.addEventListener("mousemove", onMove);
-      document.addEventListener("mouseup", onUp);
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      document.addEventListener("pointercancel", onUp);
     });
   }
 
   win.querySelectorAll("[data-resize]").forEach((handleEl) => {
-    handleEl.addEventListener("mousedown", (event) => {
+    handleEl.addEventListener("pointerdown", (event) => {
+      if (!isPrimaryPointer(event)) return;
       event.stopPropagation();
       if (state[win.id].maximized || !desktopEl) return;
+      event.preventDefault();
       activateWindow(win);
+      handleEl.setPointerCapture?.(event.pointerId);
 
       const dir = handleEl.dataset.resize ?? "";
       const startX = event.clientX;
@@ -243,6 +282,7 @@ windows.forEach((win) => {
       const startHeight = win.offsetHeight;
 
       function onMove(e) {
+        if (e.pointerId !== event.pointerId) return;
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
         let newLeft = startLeft;
@@ -301,13 +341,17 @@ windows.forEach((win) => {
         win.style.height = `${clamped.height}px`;
       }
 
-      function onUp() {
-        document.removeEventListener("mousemove", onMove);
-        document.removeEventListener("mouseup", onUp);
+      function onUp(e) {
+        if (e.pointerId !== event.pointerId) return;
+        handleEl.releasePointerCapture?.(event.pointerId);
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener("pointercancel", onUp);
       }
 
-      document.addEventListener("mousemove", onMove);
-      document.addEventListener("mouseup", onUp);
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+      document.addEventListener("pointercancel", onUp);
     });
   });
 
@@ -365,7 +409,7 @@ function updateClock() {
 window.addEventListener("resize", () => windows.forEach(clampWindow));
 
 syncMaxButtons();
-setInitialBrowserHeight();
+setInitialBrowserFrame();
 renderTaskbar();
 updateClock();
 setInterval(updateClock, 30000);
