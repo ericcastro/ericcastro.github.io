@@ -3,7 +3,6 @@ const desktopEl = document.querySelector(".desktop");
 const icons = Array.from(document.querySelectorAll(".desktop-icon"));
 const taskbarTasks = document.getElementById("taskbarTasks");
 const openTriggers = Array.from(document.querySelectorAll("[data-open-window]"));
-const quickIE = document.getElementById("quickIE");
 let topZ = 40;
 
 function isCompactViewport() {
@@ -194,11 +193,8 @@ function syncMaxButtons() {
 
 function renderTaskbar() {
   if (!taskbarTasks) return;
-  const ordered = [...windows].sort(
-    (a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0)
-  );
   taskbarTasks.innerHTML = "";
-  ordered.forEach((win) => {
+  windows.forEach((win) => {
     if (state[win.id].closed) return;
     const btn = document.createElement("button");
     btn.type = "button";
@@ -206,7 +202,18 @@ function renderTaskbar() {
     if (win.classList.contains("active") && !state[win.id].minimized) {
       btn.classList.add("active");
     }
-    btn.textContent = win.dataset.title ?? win.id;
+    const icon = win.querySelector(".title-icon")?.cloneNode(true);
+    if (icon instanceof HTMLElement) {
+      icon.classList.add("task-icon");
+      icon.setAttribute("aria-hidden", "true");
+      btn.appendChild(icon);
+    }
+
+    const label = document.createElement("span");
+    label.className = "task-label";
+    label.textContent = win.dataset.title ?? win.id;
+    btn.appendChild(label);
+
     btn.addEventListener("click", () => {
       if (state[win.id].minimized) {
         restoreWindow(win);
@@ -408,10 +415,6 @@ openTriggers.forEach((trigger) => {
   });
 });
 
-if (quickIE) {
-  quickIE.addEventListener("click", () => openWindowById("browser"));
-}
-
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".desktop-icon")) {
     icons.forEach((icon) => icon.classList.remove("selected"));
@@ -434,6 +437,6 @@ window.addEventListener("resize", () => windows.forEach(clampWindow));
 syncMaxButtons();
 setInitialBrowserFrame();
 setInitialNotesFrame();
-renderTaskbar();
+activateWindow(document.getElementById("notes") ?? document.getElementById("browser"));
 updateClock();
 setInterval(updateClock, 30000);

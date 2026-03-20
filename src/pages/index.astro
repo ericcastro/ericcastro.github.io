@@ -23,6 +23,10 @@ const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
 <BaseLayout title="EricOS 95">
   <div class="desktop">
     <div class="desktop-icons">
+      <div class="desktop-icon" id="myComputerIcon" tabindex="0">
+        <div class="icon icon-computer"></div>
+        <div class="icon-label">My Computer</div>
+      </div>
       <div class="desktop-icon" data-icon="browser" tabindex="0">
         <div class="icon icon-ie"></div>
         <div class="icon-label">Internet Exploder</div>
@@ -64,22 +68,25 @@ const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
         <div class="ie-shell">
           <div class="ie-toolbar">
             <div class="ie-toolbar-left">
-              <button class="nav-btn" type="button"><span class="glyph">◄</span><span class="label">Back</span></button>
-              <button class="nav-btn" type="button"><span class="glyph">►</span><span class="label">Forward</span></button>
-              <button class="nav-btn" type="button"><span class="glyph">✕</span><span class="label">Stop</span></button>
-              <button class="nav-btn" type="button"><span class="glyph">↻</span><span class="label">Refresh</span></button>
-              <button class="nav-btn" type="button"><span class="glyph">⌂</span><span class="label">Home</span></button>
+              <button class="nav-btn" type="button"><span class="glyph back" aria-hidden="true"></span><span class="label">Back</span></button>
+              <button class="nav-btn" type="button"><span class="glyph forward" aria-hidden="true"></span><span class="label">Forward</span></button>
+              <button class="nav-btn" type="button"><span class="glyph stop" aria-hidden="true"></span><span class="label">Stop</span></button>
+              <button class="nav-btn" type="button"><span class="glyph refresh" aria-hidden="true"></span><span class="label">Refresh</span></button>
+              <button class="nav-btn" type="button"><span class="glyph home" aria-hidden="true"></span><span class="label">Home</span></button>
             </div>
             <div class="address-row">
               <div class="address-label">Address</div>
               <div class="address-box">https://eric.cast.ro</div>
             </div>
-            <button class="nav-btn" type="button"><span class="glyph">★</span><span class="label">Links</span></button>
+            <div class="ie-badge sunken" aria-hidden="true">
+              <div class="ie-badge-icon"></div>
+            </div>
           </div>
 
-          <div class="ie-page sunken">
+          <div class="win-scroll-shell win-scroll-shell-flex">
+            <div class="ie-page sunken win-scroll">
             <div class="retro-banner">
-              <h1>EricOS 95 Online</h1>
+              <h1>Eric's Stuff</h1>
               <p>Welcome to my personal space in the World Wide Web!</p>
             </div>
 
@@ -118,6 +125,7 @@ const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
                   height="27"
                   style="display:block;max-width:100%;height:auto;margin:10px auto 0;image-rendering:pixelated;"
                 />
+                <div class="sidebar-powered">powered by EricOS 95</div>
               </aside>
 
               <main class="content90s" id="top">
@@ -151,6 +159,10 @@ const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
                 </div>
               </main>
             </div>
+            <div class="footer90s">
+              Copyright © 2026 Eric Castro. All rights reserved.
+            </div>
+          </div>
           </div>
         </div>
         <div class="status-bar">
@@ -188,25 +200,28 @@ const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
       </div>
       <div class="menu-bar"><span>File</span><span>Edit</span><span>Search</span><span>Help</span></div>
       <div class="window-content">
-        <div class="about-body sunken">
-          <div class="hero-row">
-            <div class="avatar95 sunken"></div>
-            <div>
-              <h1>{aboutEntry.data.name}</h1>
-              <p class="tagline">{aboutEntry.data.tagline}</p>
-              <p>{aboutEntry.data.intro}</p>
+        <div class="win-scroll-shell win-scroll-shell-about">
+          <div class="about-body sunken win-scroll">
+            <div class="hero-row">
+              <div class="avatar95 sunken"></div>
+              <div>
+                <h1>{aboutEntry.data.name}</h1>
+                <p class="tagline">{aboutEntry.data.tagline}</p>
+                <p>{aboutEntry.data.intro}</p>
+              </div>
             </div>
-          </div>
-          <div class="info-grid">
-            <strong>Location</strong><span>{aboutEntry.data.location}</span>
-            <strong>Occupation</strong><span>{aboutEntry.data.occupation}</span>
-            <strong>Likes</strong><span>{aboutEntry.data.likes}</span>
-            <strong>Status</strong><span>{aboutEntry.data.status}</span>
-          </div>
-          <div class="divider95"></div>
-          <h3>{aboutEntry.data.heading}</h3>
-          <div class="markdown-body">
-            <AboutContent />
+
+            <div class="info-grid">
+              <strong>Location</strong><span>{aboutEntry.data.location}</span>
+              <strong>Occupation</strong><span>{aboutEntry.data.occupation}</span>
+              <strong>Likes</strong><span>{aboutEntry.data.likes}</span>
+              <strong>Status</strong><span>{aboutEntry.data.status}</span>
+            </div>
+            <div class="divider95"></div>
+            <h3>{aboutEntry.data.heading}</h3>
+            <div class="markdown-body">
+              <AboutContent />
+            </div>
           </div>
         </div>
         <div class="status-bar">
@@ -301,7 +316,8 @@ const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
         </div>
       </div>
       <div class="window-content">
-        <div class="cmd-shell sunken">Microsof(R) Windows 95
+        <div class="win-scroll-shell win-scroll-shell-fill">
+          <div class="cmd-shell sunken win-scroll">Microsof(R) Windows 95
 (C)Copyright Microsof Corp 1981-1995.
 
 <span class="prompt">C:\\&gt;</span> net user webmaster
@@ -316,6 +332,7 @@ PROJECTS BMP
 SITE     HTM
 
 <span class="prompt">C:\\&gt;</span> _</div>
+        </div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>
       <div class="resize-handle e" data-resize="e"></div>
@@ -326,6 +343,83 @@ SITE     HTM
       <div class="resize-handle sw" data-resize="sw"></div>
       <div class="resize-handle se" data-resize="se"></div>
     </section>
+
+    <section
+      class="window cookie-window is-hidden"
+      id="cookieWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="Cookie notice"
+      style="width: 320px; min-height: 0; z-index: 48;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon note"></div>
+          <div class="title-text">Cookie Notice</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol info" aria-hidden="true"></div>
+          <p>This website uses cookies for extremely serious settings management and general European compliance theater.</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="ie-link-btn" id="cookieAccept" type="button">Accept All Cookies</button>
+          <button class="ie-link-btn" id="cookieDecline" type="button">Decline</button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="window cookie-window is-hidden"
+      id="myComputerWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="My Computer"
+      style="width: 360px; min-height: 0; z-index: 47;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon computer"></div>
+          <div class="title-text">My Computer</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol warning" aria-hidden="true"></div>
+          <p>I find it a bit weird that you want to access my computer. You can request access, but I don't guarantee I will give it to you anytime soon.</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="ie-link-btn" id="computerRequest" type="button">Request access</button>
+          <button class="ie-link-btn" id="computerCancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="window cookie-window is-hidden"
+      id="requestResultWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="EricOS 95"
+      style="width: 250px; min-height: 0; z-index: 49;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon computer"></div>
+          <div class="title-text">EricOS 95</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol info" aria-hidden="true"></div>
+          <p>Task failed succesfully</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="ie-link-btn" id="requestResultOk" type="button">OK</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="taskbar">
@@ -333,13 +427,11 @@ SITE     HTM
       <span class="start-logo"></span>
       <span>Start</span>
     </button>
-    <button class="task-btn" id="quickIE" title="Internet Exploder" style="flex:0 0 auto;max-width:none;min-width:40px;justify-content:center;">
-      <span style="font-family:'Times New Roman',serif;color:#0a46c4;font-weight:bold;">e</span>
-    </button>
     <div class="taskbar-tasks" id="taskbarTasks"></div>
     <div class="tray-box" id="clock">9:41 PM</div>
   </div>
 
   <script is:inline src="/scripts/desktop.js"></script>
   <script is:inline src="/scripts/site-features.js"></script>
+  <script is:inline src="/scripts/win-scroll.js"></script>
 </BaseLayout>
