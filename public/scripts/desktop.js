@@ -6,6 +6,16 @@ const openTriggers = Array.from(document.querySelectorAll("[data-open-window]"))
 const quickIE = document.getElementById("quickIE");
 let topZ = 40;
 
+function setInitialBrowserHeight() {
+  const browser = document.getElementById("browser");
+  if (!browser || !desktopEl) return;
+  const margin = 38;
+  const top = parseInt(browser.style.top || "0", 10);
+  const availableHeight = desktopEl.clientHeight - top - margin;
+  const minHeight = parseInt(getComputedStyle(browser).minHeight, 10) || 140;
+  browser.style.height = `${Math.max(minHeight, availableHeight)}px`;
+}
+
 const state = Object.fromEntries(
   windows.map((win) => [
     win.id,
@@ -355,6 +365,7 @@ function updateClock() {
 window.addEventListener("resize", () => windows.forEach(clampWindow));
 
 syncMaxButtons();
+setInitialBrowserHeight();
 renderTaskbar();
 updateClock();
 setInterval(updateClock, 30000);

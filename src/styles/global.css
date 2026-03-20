@@ -619,6 +619,10 @@ a:visited {
   height: 22px;
   min-width: 52px;
   padding: 0 8px;
+  font-family: Tahoma, var(--font-ui);
+  font-size: 11px;
+  line-height: 1;
+  color: #000;
 }
 
 .address-row {
@@ -657,6 +661,11 @@ a:visited {
   background: #fff;
   font-family: "Times New Roman", serif;
   font-size: 16px;
+  user-select: text;
+}
+
+.ie-page,
+.ie-page * {
   user-select: text;
 }
 
@@ -754,7 +763,10 @@ a:visited {
 .guestbook {
   margin-top: 12px;
   padding: 10px;
-  border: 2px dashed #800080;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #800080;
+  border-bottom: 2px solid #800080;
   background: #fff7ff;
   font-size: 14px;
 }
@@ -825,6 +837,10 @@ a:visited {
 .about-body h3,
 .about-body p {
   margin: 0 0 8px;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
 }
 
 .about-body h1 {

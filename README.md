@@ -13,10 +13,24 @@ This project uses [Astro](https://astro.build/). It is a good fit here because:
 ## Project structure
 
 - `src/pages/index.astro`: main page markup
+- `src/content/about/bio.md`: about/profile content
+- `src/content/posts/*.md`: homepage posts
+- `src/content/projects/*.md`: project cards in the Paint window
+- `src/content.config.ts`: content collection schemas
 - `src/styles/global.css`: extracted global styles
 - `public/scripts/desktop.js`: desktop window behavior
 - `public/CNAME`: custom domain for GitHub Pages
 - `.github/workflows/deploy.yml`: GitHub Pages deployment workflow
+
+## Editing content
+
+Update content through Markdown files instead of editing the page template:
+
+- edit `src/content/about/bio.md` for the Bio.txt window
+- add or edit files in `src/content/posts/` for homepage posts
+- add or edit files in `src/content/projects/` for project cards
+
+The page layout still lives in `src/pages/index.astro`, but normal content updates should happen in Markdown.
 
 ## Local development
 
