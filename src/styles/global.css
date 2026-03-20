@@ -50,6 +50,25 @@ body {
   position: relative;
 }
 
+body.theme-dark {
+  --desktop: #0a3a4a;
+  --surface: #7b7b7b;
+  --light: #d8d8d8;
+  --light-soft: #bfbfbf;
+  --shadow: #4d4d4d;
+  --dark: #050505;
+  --title-active-start: #1d1d5d;
+  --title-active-end: #0f67a3;
+  --title-inactive-start: #4f4f4f;
+  --title-inactive-end: #787878;
+  --selection: #193f83;
+  --paper: #101010;
+  --cmd-bg: #000000;
+  --cmd-fg: #b9c7b9;
+  --link: #84a8ff;
+  --visited: #c88cff;
+}
+
 button,
 input,
 textarea,
@@ -721,6 +740,43 @@ a:visited {
   min-width: 0;
 }
 
+body.theme-dark .sidebar90s,
+body.theme-dark .post90s,
+body.theme-dark .linkbox90s,
+body.theme-dark .guestbook {
+  background: #1a1a1a;
+  color: #ececec;
+}
+
+body.theme-dark .ie-page,
+body.theme-dark .sunken {
+  background: #121212;
+  color: #ececec;
+}
+
+body.theme-dark .retro-banner {
+  background: linear-gradient(180deg, #3d3621, #161616);
+  border-color: #6c83d6;
+}
+
+body.theme-dark .retro-banner h1,
+body.theme-dark .post90s h2,
+body.theme-dark .linkbox90s h3 {
+  color: #8db0ff;
+}
+
+body.theme-dark .marquee-box {
+  background: #363616;
+  color: #f2efc6;
+}
+
+body.theme-dark .address-box,
+body.theme-dark .about-body,
+body.theme-dark .canvas {
+  background: #121212;
+  color: #ececec;
+}
+
 .sidebar90s h3,
 .content90s h2,
 .content90s h3,
@@ -769,6 +825,56 @@ a:visited {
   flex-wrap: wrap;
   gap: 6px;
   margin: 8px 0 12px;
+}
+
+.post-hidden {
+  display: none;
+}
+
+.infinite-status {
+  margin: 8px 0 14px;
+  padding: 5px 8px;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #808080;
+  border-bottom: 1px solid #808080;
+  background: #efefef;
+  font-family: Tahoma, var(--font-ui);
+  font-size: 11px;
+  text-align: center;
+}
+
+.infinite-status.is-hidden {
+  display: none;
+}
+
+.post-sentinel {
+  height: 1px;
+}
+
+.dark-toggle {
+  width: 100%;
+  min-height: 24px;
+  padding: 3px 8px;
+  margin-top: 2px;
+  background: var(--surface);
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
+  font-family: Tahoma, var(--font-ui);
+  font-size: 11px;
+  text-align: left;
+}
+
+.dark-toggle::before {
+  content: "[] ";
+  font-family: "Courier New", Courier, monospace;
+}
+
+body.theme-dark .dark-toggle::before {
+  content: "[x] ";
 }
 
 .guestbook {

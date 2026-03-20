@@ -1,11 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection, render } from "astro:content";
+import PostCard from "../components/PostCard.astro";
+import { getSortedPosts, POSTS_PER_PAGE } from "../lib/posts";
 
 const [aboutEntry] = await getCollection("about");
-const postEntries = (await getCollection("posts")).sort((a, b) =>
-  b.slug.localeCompare(a.slug)
-);
+const postEntries = await getSortedPosts();
 const projectEntries = (await getCollection("projects")).sort(
   (a, b) => a.data.order - b.data.order
 );
@@ -16,12 +16,8 @@ if (!aboutEntry) {
 
 const aboutRendered = await render(aboutEntry);
 const AboutContent = aboutRendered.Content;
-const renderedPosts = await Promise.all(
-  postEntries.map(async (entry) => ({
-    entry,
-    rendered: await render(entry)
-  }))
-);
+const initialPosts = postEntries.slice(0, POSTS_PER_PAGE);
+const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
 ---
 
 <BaseLayout title="EricOS 95">
@@ -110,6 +106,11 @@ const renderedPosts = await Promise.all(
                   <li><a href="#">Downloads</a></li>
                 </ul>
 
+                <h3>Modern Stuff</h3>
+                <button class="dark-toggle" id="darkModeToggle" type="button" aria-pressed="false">
+                  Dark Mode
+                </button>
+
                 <img
                   alt="under construction"
                   src="/images/construction.gif"
@@ -120,34 +121,17 @@ const renderedPosts = await Promise.all(
               </aside>
 
               <main class="content90s" id="top">
-                {
-                  renderedPosts.map(({ entry, rendered }) => {
-                    const Content = rendered.Content;
-                    return (
-                      <div class="post90s">
-                        <h2>{entry.data.title}</h2>
-                        <div class="post-meta">
-                          Posted on {entry.data.date}
-                          {entry.data.author ? ` by ${entry.data.author}` : ""}
-                          {entry.data.category ? (
-                            <>
-                              {" "}
-                              in the category <a href="#">{entry.data.category}</a>
-                            </>
-                          ) : null}
-                        </div>
-                        <Content />
-                        {entry.data.featured ? (
-                          <div class="button-row">
-                            <button class="ie-link-btn" type="button" data-open-window="notes">Open About</button>
-                            <button class="ie-link-btn" type="button" data-open-window="projects">Open Paint Portfolio</button>
-                            <button class="ie-link-btn" type="button" data-open-window="cmd">Open DOS Stats</button>
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })
-                }
+                <div
+                  id="postsFeed"
+                  data-next-page="2"
+                  data-total-pages={totalPostPages}
+                >
+                  {initialPosts.map((entry) => <PostCard entry={entry} />)}
+                </div>
+                <div class="infinite-status" id="postFeedStatus" aria-live="polite">
+                  {totalPostPages > 1 ? "Scroll down for older posts." : "All posts loaded."}
+                </div>
+                <div class="post-sentinel" id="postFeedSentinel" aria-hidden="true"></div>
 
                 <div class="linkbox90s">
                   <h3>Featured Links</h3>
@@ -357,4 +341,5 @@ SITE     HTM
   </div>
 
   <script is:inline src="/scripts/desktop.js"></script>
+  <script is:inline src="/scripts/site-features.js"></script>
 </BaseLayout>
