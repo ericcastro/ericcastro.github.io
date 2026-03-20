@@ -3,9 +3,22 @@ import "../styles/global.css";
 
 interface Props {
   title: string;
+  description?: string;
+  canonicalPath?: string;
+  type?: string;
+  schema?: Record<string, unknown> | null;
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = "Eric Castro's personal website: software, cybersecurity, electronics projects, music, and other weird side projects.",
+  canonicalPath,
+  type = "website",
+  schema = null
+} = Astro.props;
+
+const canonicalUrl = new URL(canonicalPath ?? Astro.url.pathname, Astro.site);
+const schemaJson = schema ? JSON.stringify(schema) : null;
 ---
 
 <!doctype html>
@@ -14,6 +27,22 @@ const { title } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Eric Castro" />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href={canonicalUrl.href} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="Eric Castro" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl.href} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
   </head>
   <body>
     <slot />

@@ -18,9 +18,36 @@ const aboutRendered = await render(aboutEntry);
 const AboutContent = aboutRendered.Content;
 const initialPosts = postEntries.slice(0, POSTS_PER_PAGE);
 const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
+const pageTitle = "Eric Castro - Personal Website";
+const pageDescription =
+  "Eric Castro's personal website: full-stack development, cybersecurity, electronics projects, music, and other weird side projects.";
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Eric Castro",
+  url: "https://eric.cast.ro",
+  jobTitle: "Full-stack developer and creative technologist",
+  knowsAbout: [
+    "Full-stack development",
+    "Cybersecurity",
+    "Electronics",
+    "3D printing",
+    "Music",
+    "Interface design"
+  ],
+  description: pageDescription,
+  homeLocation: {
+    "@type": "Place",
+    name: aboutEntry.data.location
+  }
+};
 ---
 
-<BaseLayout title="EricOS 95">
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  schema={personSchema}
+>
   <div class="desktop">
     <div class="desktop-icons">
       <div class="desktop-icon" id="myComputerIcon" tabindex="0">
