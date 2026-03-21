@@ -1085,6 +1085,36 @@ body.theme-dark .win-scroll-slot-fill {
   border: 1px solid #000;
   background: #ffffcc;
   font-size: 14px;
+  overflow: hidden;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee-scroll 20s linear infinite;
+}
+
+.marquee-track span {
+  display: inline-block;
+  padding-right: 3rem;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
 }
 
 .ie-layout {
