@@ -3,6 +3,11 @@ const desktopEl = document.querySelector(".desktop");
 const icons = Array.from(document.querySelectorAll(".desktop-icon"));
 const taskbarTasks = document.getElementById("taskbarTasks");
 const openTriggers = Array.from(document.querySelectorAll("[data-open-window]"));
+const startButton = document.getElementById("startButton");
+const startMenu = document.getElementById("startMenu");
+const startSubmenuToggles = Array.from(
+  document.querySelectorAll("[data-start-submenu-toggle]")
+);
 let topZ = 40;
 
 function isCompactViewport() {
@@ -133,6 +138,24 @@ function openWindowById(id) {
   const win = document.getElementById(id);
   if (!win) return;
   restoreWindow(win);
+}
+
+function setStartMenuOpen(isOpen) {
+  if (!startButton || !startMenu) return;
+  startButton.classList.toggle("menu-open", isOpen);
+  startButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  startMenu.classList.toggle("hidden", !isOpen);
+  if (!isOpen) {
+    startMenu
+      .querySelectorAll(".start-menu-item-wrap.open")
+      .forEach((item) => item.classList.remove("open"));
+    startMenu
+      .querySelectorAll(".start-menu-item-wrap.open-up")
+      .forEach((item) => item.classList.remove("open-up"));
+    startMenu
+      .querySelectorAll("[data-start-submenu-toggle][aria-expanded='true']")
+      .forEach((toggle) => toggle.setAttribute("aria-expanded", "false"));
+  }
 }
 
 function minimizeWindow(win) {
@@ -419,6 +442,92 @@ document.addEventListener("click", (event) => {
   if (!event.target.closest(".desktop-icon")) {
     icons.forEach((icon) => icon.classList.remove("selected"));
   }
+
+  if (
+    startButton &&
+    startMenu &&
+    !event.target.closest("#startButton") &&
+    !event.target.closest("#startMenu")
+  ) {
+    setStartMenuOpen(false);
+  }
+});
+
+startButton?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  setStartMenuOpen(startMenu?.classList.contains("hidden") ?? true);
+});
+
+startMenu?.querySelectorAll("[data-start-open]").forEach((item) => {
+  item.addEventListener("click", (event) => {
+    const id = event.currentTarget.dataset.startOpen;
+    if (!id) return;
+    setStartMenuOpen(false);
+    openWindowById(id);
+  });
+});
+
+startMenu?.querySelectorAll(".start-menu-item").forEach((item) => {
+  item.addEventListener("click", () => {
+    if (item.hasAttribute("data-start-submenu-toggle")) return;
+    setStartMenuOpen(false);
+  });
+});
+
+startSubmenuToggles.forEach((toggle) => {
+  const submenuName = toggle.getAttribute("data-start-submenu-toggle");
+  const wrapper = toggle.closest(".start-menu-item-wrap");
+  const submenu = wrapper?.querySelector(".start-submenu");
+  if (!submenuName || !wrapper || !startMenu) return;
+
+  function openCurrentSubmenu() {
+    startMenu.querySelectorAll(".start-menu-item-wrap.open").forEach((item) => {
+      if (item !== wrapper) item.classList.remove("open");
+    });
+    startMenu.querySelectorAll(".start-menu-item-wrap.open-up").forEach((item) => {
+      if (item !== wrapper) item.classList.remove("open-up");
+    });
+    startMenu
+      .querySelectorAll("[data-start-submenu-toggle]")
+      .forEach((button) => button.setAttribute("aria-expanded", button === toggle ? "true" : "false"));
+    wrapper.classList.add("open");
+    if (submenu && desktopEl) {
+      wrapper.classList.remove("open-up");
+      const submenuRect = submenu.getBoundingClientRect();
+      const desktopRect = desktopEl.getBoundingClientRect();
+      const overflowBottom = submenuRect.bottom - desktopRect.bottom;
+      if (overflowBottom > 0) {
+        wrapper.classList.add("open-up");
+      }
+    }
+  }
+
+  toggle.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const willOpen = !wrapper.classList.contains("open");
+    if (!willOpen) {
+      wrapper.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+      return;
+    }
+    openCurrentSubmenu();
+  });
+
+  wrapper.addEventListener("mouseenter", () => {
+    if (startMenu.classList.contains("hidden")) return;
+    openCurrentSubmenu();
+  });
+
+  toggle.addEventListener("focus", () => {
+    if (startMenu.classList.contains("hidden")) return;
+    openCurrentSubmenu();
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    setStartMenuOpen(false);
+  }
 });
 
 function updateClock() {
@@ -437,6 +546,16 @@ window.addEventListener("resize", () => windows.forEach(clampWindow));
 syncMaxButtons();
 setInitialBrowserFrame();
 setInitialNotesFrame();
-activateWindow(document.getElementById("notes") ?? document.getElementById("browser"));
+const browserWindow = document.getElementById("browser");
+const notesWindow = document.getElementById("notes");
+
+if (isCompactViewport() && browserWindow && notesWindow) {
+  notesWindow.style.zIndex = "35";
+  browserWindow.style.zIndex = "42";
+  topZ = 42;
+  activateWindow(browserWindow);
+} else {
+  activateWindow(notesWindow ?? browserWindow);
+}
 updateClock();
 setInterval(updateClock, 30000);

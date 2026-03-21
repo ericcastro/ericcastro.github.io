@@ -12,9 +12,21 @@ const computerRequest = document.getElementById("computerRequest");
 const computerCancel = document.getElementById("computerCancel");
 const requestResultWidget = document.getElementById("requestResultWidget");
 const requestResultOk = document.getElementById("requestResultOk");
+const guestbookLink = document.getElementById("guestbookLink");
+const guestbookWidget = document.getElementById("guestbookWidget");
+const guestbookOk = document.getElementById("guestbookOk");
+const shutdownMenuItem = document.getElementById("shutdownMenuItem");
+const shutdownWidget = document.getElementById("shutdownWidget");
+const shutdownOk = document.getElementById("shutdownOk");
 const consentCookieName = "ericos95_cookie_consent";
 const desktopRoot = document.querySelector(".desktop");
-const dialogs = [cookieWidget, myComputerWidget, requestResultWidget].filter(Boolean);
+const dialogs = [
+  cookieWidget,
+  myComputerWidget,
+  requestResultWidget,
+  guestbookWidget,
+  shutdownWidget
+].filter(Boolean);
 let dialogZ = 60;
 
 function centerDialog(dialog) {
@@ -45,8 +57,7 @@ function hideDialog(dialog) {
 function applyTheme(theme) {
   document.body.classList.toggle("theme-dark", theme === "dark");
   if (darkToggle) {
-    darkToggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-    darkToggle.textContent = theme === "dark" ? "Dark Mode: On" : "Dark Mode";
+    darkToggle.setAttribute("aria-checked", theme === "dark" ? "true" : "false");
   }
 }
 
@@ -122,6 +133,31 @@ function initializeMyComputerWidget() {
 
   requestResultOk?.addEventListener("click", () => {
     hideDialog(requestResultWidget);
+  });
+}
+
+function initializeGuestbookWidget() {
+  if (!guestbookLink || !guestbookWidget || !guestbookOk) return;
+
+  guestbookLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    showDialog(guestbookWidget);
+  });
+
+  guestbookOk.addEventListener("click", () => {
+    hideDialog(guestbookWidget);
+  });
+}
+
+function initializeShutdownWidget() {
+  if (!shutdownMenuItem || !shutdownWidget || !shutdownOk) return;
+
+  shutdownMenuItem.addEventListener("click", () => {
+    showDialog(shutdownWidget);
+  });
+
+  shutdownOk.addEventListener("click", () => {
+    hideDialog(shutdownWidget);
   });
 }
 
@@ -210,6 +246,8 @@ function initializeInfiniteScroll() {
 initializeTheme();
 initializeCookieWidget();
 initializeMyComputerWidget();
+initializeGuestbookWidget();
+initializeShutdownWidget();
 initializeInfiniteScroll();
 
 window.addEventListener("resize", () => {

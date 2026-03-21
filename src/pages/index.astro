@@ -124,36 +124,63 @@ const personSchema = {
             </div>
 
             <div class="ie-layout">
-              <aside class="sidebar90s">
-                <h3>Site Menu</h3>
-                <ul>
-                  <li><a href="#" data-open-window="notes">About Me</a></li>
-                  <li><a href="#" data-open-window="projects">Projects</a></li>
-                  <li><a href="#" data-open-window="cmd">System Info</a></li>
-                  <li><a href="#top">Top of Page</a></li>
-                </ul>
+              <div class="sidebar-column">
+                <aside class="sidebar90s">
+                  <h3>Site Menu</h3>
+                  <ul>
+                    <li><a href="#" data-open-window="notes">About Me</a></li>
+                    <li><a href="#" data-open-window="projects">Projects</a></li>
+                    <li><a href="#" data-open-window="cmd">System Info</a></li>
+                    <li><a href="#top">Top of Page</a></li>
+                  </ul>
 
-                <h3>Cool Links</h3>
-                <ul>
-                  <li><a href="#">Guestbook</a></li>
-                  <li><a href="#">Webrings</a></li>
-                  <li><a href="#">Downloads</a></li>
-                </ul>
+                  <h3>Cool Links</h3>
+                  <ul>
+                    <li><a href="https://www.linkedin.com/in/eric-castro-92b2975b/" target="_blank" rel="noreferrer">LinkedIn</a></li>
+                    <li><a href="https://github.com/ericcastro/" target="_blank" rel="noreferrer">Github</a></li>
+                    <li><a href="https://x.com/_eric_castro" target="_blank" rel="noreferrer">X</a></li>
+                    <li><a href="https://mastodon.social/@ericcastro" target="_blank" rel="noreferrer">Mastodon</a></li>
+                    <li><a href="mailto:hello@eric.ar" target="_blank" rel="noreferrer">E-mail</a></li>
+                    <li><a href="#" id="guestbookLink">Guestbook</a></li>
+                  </ul>
 
-                <h3>Modern Stuff</h3>
-                <button class="dark-toggle" id="darkModeToggle" type="button" aria-pressed="false">
-                  Dark Mode
-                </button>
+                  <button
+                    class="dark-toggle"
+                    id="darkModeToggle"
+                    type="button"
+                    role="checkbox"
+                    aria-checked="false"
+                  >
+                    <span class="dark-toggle-box" aria-hidden="true"></span>
+                    <span class="dark-toggle-label">Dark Mode</span>
+                  </button>
 
-                <img
-                  alt="under construction"
-                  src="/images/construction.gif"
-                  width="202"
-                  height="27"
-                  style="display:block;max-width:100%;height:auto;margin:10px auto 0;image-rendering:pixelated;"
-                />
-                <div class="sidebar-powered">powered by EricOS 95</div>
-              </aside>
+                  <img
+                    class="construction-gif"
+                    alt="under construction"
+                    src="/images/construction.gif"
+                    width="202"
+                    height="27"
+                    style="display:block;max-width:100%;height:auto;image-rendering:pixelated;"
+                  />
+                  <div class="sidebar-powered">powered by EricOS 95</div>
+                </aside>
+
+                <div class="sidebar-badges">
+                  <img
+                    src="/images/banner-best-viewed-with-any-browser-1996.gif"
+                    alt="Best viewed with any browser"
+                  />
+                  <img
+                    src="/images/banner-campaign-against-frames-1996.gif"
+                    alt="Campaign against frames"
+                  />
+                  <img
+                    src="/images/banner-made-with-notepad.gif"
+                    alt="Made with Notepad"
+                  />
+                </div>
+              </div>
 
               <main class="content90s" id="top">
                 <div
@@ -230,7 +257,9 @@ const personSchema = {
         <div class="win-scroll-shell win-scroll-shell-about">
           <div class="about-body sunken win-scroll">
             <div class="hero-row">
-              <div class="avatar95 sunken"></div>
+              <div class="avatar95 sunken">
+                <img src="/images/eric.gif" alt="Eric Castro" />
+              </div>
               <div>
                 <h1>{aboutEntry.data.name}</h1>
                 <p class="tagline">{aboutEntry.data.tagline}</p>
@@ -328,13 +357,13 @@ const personSchema = {
       class="window hidden"
       id="cmd"
       data-window
-      data-title="C:\\WINDOWS\\SYSTEM32\\CMD.EXE"
-      style="left: 260px; top: 200px; width: 360px; height: 250px; z-index: 15;"
+      data-title="C:\WINDOWS\SYSTEM32\CMD.EXE"
+      style="left: 240px; top: 180px; width: 420px; height: 320px; z-index: 15;"
     >
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon cmd"></div>
-          <div class="title-text">C:\\WINDOWS\\SYSTEM32\\CMD.EXE</div>
+          <div class="title-text">C:\WINDOWS\SYSTEM32\CMD.EXE</div>
         </div>
         <div class="title-buttons">
           <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
@@ -342,23 +371,23 @@ const personSchema = {
           <button class="win-btn close" data-action="close" aria-label="Close"></button>
         </div>
       </div>
-      <div class="window-content">
+      <div class="window-content cmd-window-content">
         <div class="win-scroll-shell win-scroll-shell-fill">
           <div class="cmd-shell sunken win-scroll">Microsof(R) Windows 95
 (C)Copyright Microsof Corp 1981-1995.
 
-<span class="prompt">C:\\&gt;</span> net user webmaster
+<span class="prompt">C:\&gt;</span> net user webmaster
 Name                Eric Castro
 Role                Builder of things
 Location            Paris, France
 Status              ONLINE
 
-<span class="prompt">C:\\&gt;</span> dir widgets
+<span class="prompt">C:\&gt;</span> dir widgets
 BIO      TXT
 PROJECTS BMP
 SITE     HTM
 
-<span class="prompt">C:\\&gt;</span> _</div>
+<span class="prompt">C:\&gt;</span> <span class="cmd-cursor">_</span></div>
         </div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>
@@ -408,7 +437,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon computer"></div>
-          <div class="title-text">My Computer</div>
+          <div class="title-text">EricOS 95</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -447,13 +476,183 @@ SITE     HTM
         </div>
       </div>
     </section>
+
+    <section
+      class="window cookie-window is-hidden"
+      id="guestbookWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="Guestbook"
+      style="width: 240px; min-height: 0; z-index: 49;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon note"></div>
+          <div class="title-text">EricOS 95</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol info" aria-hidden="true"></div>
+          <p>Under construction. Sorry.</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="ie-link-btn" id="guestbookOk" type="button">OK</button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="window cookie-window is-hidden"
+      id="shutdownWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="EricOS 95"
+      style="width: 260px; min-height: 0; z-index: 49;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon note"></div>
+          <div class="title-text">EricOS 95</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol info" aria-hidden="true"></div>
+          <p>It is now safe to turn off your browser.</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="ie-link-btn" id="shutdownOk" type="button">OK</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="taskbar">
-    <button class="start-btn" type="button">
+    <button class="start-btn" id="startButton" type="button" aria-expanded="false">
       <span class="start-logo"></span>
       <span>Start</span>
     </button>
+    <div class="start-menu hidden" id="startMenu">
+      <div class="start-menu-side">
+        <span class="start-menu-brand">EricOS 95</span>
+      </div>
+      <div class="start-menu-main">
+        <div class="start-menu-item-wrap has-submenu">
+          <button
+            class="start-menu-item start-menu-submenu-toggle"
+            type="button"
+            data-start-submenu-toggle="cool-links"
+            aria-expanded="false"
+          >
+            <span class="title-icon ie start-menu-icon"></span>
+            <span>Cool Links</span>
+            <span class="submenu-arrow" aria-hidden="true"></span>
+          </button>
+          <div class="start-submenu" data-start-submenu="cool-links">
+            <a
+              class="start-menu-item"
+              href="https://www.linkedin.com/in/eric-castro-92b2975b/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="title-icon ie start-menu-icon"></span>
+              <span>LinkedIn</span>
+            </a>
+            <a
+              class="start-menu-item"
+              href="https://github.com/ericcastro/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="title-icon ie start-menu-icon"></span>
+              <span>GitHub</span>
+            </a>
+            <a
+              class="start-menu-item"
+              href="https://x.com/_eric_castro"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="title-icon ie start-menu-icon"></span>
+              <span>X</span>
+            </a>
+            <a
+              class="start-menu-item"
+              href="https://mastodon.social/@ericcastro"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="title-icon ie start-menu-icon"></span>
+              <span>Mastodon</span>
+            </a>
+            <a
+              class="start-menu-item"
+              href="mailto:hello@eric.ar"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="title-icon note start-menu-icon"></span>
+              <span>E-mail</span>
+            </a>
+          </div>
+        </div>
+        <div class="start-menu-separator"></div>
+        <div class="start-menu-item-wrap has-submenu">
+          <button
+            class="start-menu-item start-menu-submenu-toggle"
+            type="button"
+            data-start-submenu-toggle="programs"
+            aria-expanded="false"
+          >
+            <span class="title-icon ie start-menu-icon"></span>
+            <span>Programs</span>
+            <span class="submenu-arrow" aria-hidden="true"></span>
+          </button>
+          <div class="start-submenu" data-start-submenu="programs">
+            <button class="start-menu-item" type="button" data-start-open="browser">
+              <span class="title-icon ie start-menu-icon"></span>
+              <span>Internet Exploder</span>
+            </button>
+            <button class="start-menu-item" type="button" data-start-open="cmd">
+              <span class="title-icon cmd start-menu-icon"></span>
+              <span>Command Prompt</span>
+            </button>
+          </div>
+        </div>
+        <div class="start-menu-item-wrap has-submenu">
+          <button
+            class="start-menu-item start-menu-submenu-toggle"
+            type="button"
+            data-start-submenu-toggle="projects"
+            aria-expanded="false"
+          >
+            <span class="title-icon paint start-menu-icon"></span>
+            <span>Projects</span>
+            <span class="submenu-arrow" aria-hidden="true"></span>
+          </button>
+          <div class="start-submenu" data-start-submenu="projects">
+            {
+              projectEntries.map((project) => (
+                <button class="start-menu-item" type="button" data-start-open="projects">
+                  <span class="title-icon paint start-menu-icon"></span>
+                  <span>{project.data.title}</span>
+                </button>
+              ))
+            }
+          </div>
+        </div>
+        <div class="start-menu-separator"></div>
+        <button class="start-menu-item" type="button" data-start-open="notes">
+          <span class="title-icon note start-menu-icon"></span>
+          <span>About Me</span>
+        </button>
+        <button class="start-menu-item" id="shutdownMenuItem" type="button">
+          <span class="title-icon computer start-menu-icon"></span>
+          <span>Shut Down...</span>
+        </button>
+      </div>
+    </div>
     <div class="taskbar-tasks" id="taskbarTasks"></div>
     <div class="tray-box" id="clock">9:41 PM</div>
   </div>
