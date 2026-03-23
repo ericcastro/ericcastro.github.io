@@ -79,10 +79,10 @@ const personSchema = {
       data-title="Microsof Internet Exploder"
       style="left: 280px; top: 38px; width: 760px; height: 500px; z-index: 35;"
     >
-      <div class="title-bar" data-drag-handle>
+        <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon ie"></div>
-          <div class="title-text">Microsof Internet Exploder - https://eric.cast.ro</div>
+          <div class="title-text" id="browserWindowTitle">Microsof Internet Exploder - https://eric.cast.ro</div>
         </div>
         <div class="title-buttons">
           <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
@@ -95,15 +95,15 @@ const personSchema = {
         <div class="ie-shell">
           <div class="ie-toolbar">
             <div class="ie-toolbar-left">
-              <button class="nav-btn" type="button"><span class="glyph back" aria-hidden="true"></span><span class="label">Back</span></button>
-              <button class="nav-btn" type="button"><span class="glyph forward" aria-hidden="true"></span><span class="label">Forward</span></button>
-              <button class="nav-btn" type="button"><span class="glyph stop" aria-hidden="true"></span><span class="label">Stop</span></button>
-              <button class="nav-btn" type="button"><span class="glyph refresh" aria-hidden="true"></span><span class="label">Refresh</span></button>
-              <button class="nav-btn" type="button"><span class="glyph home" aria-hidden="true"></span><span class="label">Home</span></button>
+              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-back" src="/images/button-back.png" alt="" width="16" height="14" /></span><span class="label">Back</span></button>
+              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-forward" src="/images/button-forward.png" alt="" width="16" height="14" /></span><span class="label">Forward</span></button>
+              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-stop" src="/images/button-stop.png" alt="" width="19" height="19" /></span><span class="label">Stop</span></button>
+              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-refresh" src="/images/button-refresh.png" alt="" width="17" height="19" /></span><span class="label">Refresh</span></button>
+              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-home" src="/images/button-home.png" alt="" width="19" height="20" /></span><span class="label">Home</span></button>
             </div>
             <div class="address-row">
               <div class="address-label">Address</div>
-              <div class="address-box">https://eric.cast.ro</div>
+              <div class="address-box" id="browserAddress">https://eric.cast.ro</div>
             </div>
             <div class="ie-badge sunken" aria-hidden="true">
               <div class="ie-badge-icon"></div>
@@ -133,6 +133,7 @@ const personSchema = {
                 <aside class="sidebar90s">
                   <h3>Site Menu</h3>
                   <ul>
+                    <li><a href="/" data-browser-home>Homepage</a></li>
                     <li><a href="#" data-open-window="notes">About Me</a></li>
                     <li><a href="#" data-open-window="projects">Projects</a></li>
                     <li><a href="#" data-open-window="cmd">System Info</a></li>
@@ -143,7 +144,6 @@ const personSchema = {
                   <ul>
                     <li><a href="https://www.linkedin.com/in/eric-castro-92b2975b/" target="_blank" rel="noreferrer">LinkedIn</a></li>
                     <li><a href="https://github.com/ericcastro/" target="_blank" rel="noreferrer">Github</a></li>
-                    <li><a href="https://x.com/_eric_castro" target="_blank" rel="noreferrer">X</a></li>
                     <li><a href="https://mastodon.social/@ericcastro" target="_blank" rel="noreferrer">Mastodon</a></li>
                     <li><a href="mailto:hello@eric.ar" target="_blank" rel="noreferrer">E-mail</a></li>
                     <li><a href="#" id="guestbookLink">Guestbook</a></li>
@@ -188,32 +188,46 @@ const personSchema = {
               </div>
 
               <main class="content90s" id="top">
-                <div
-                  id="postsFeed"
-                  data-next-page="2"
-                  data-total-pages={totalPostPages}
-                >
-                  {initialPosts.map((entry) => <PostCard entry={entry} />)}
-                </div>
-                <div class="infinite-status" id="postFeedStatus" aria-live="polite">
-                  {totalPostPages > 1 ? "Scroll down for older posts." : "All posts loaded."}
-                </div>
-                <div class="post-sentinel" id="postFeedSentinel" aria-hidden="true"></div>
+                <template id="browserHomeTemplate">
+                  <div
+                    id="postsFeed"
+                    data-next-page="2"
+                    data-total-pages={totalPostPages}
+                  >
+                    {initialPosts.map((entry) => <PostCard entry={entry} />)}
+                  </div>
+                  <div class="infinite-status" id="postFeedStatus" aria-live="polite">
+                    {totalPostPages > 1 ? "Scroll down for older posts." : "All posts loaded."}
+                  </div>
+                  <div class="post-sentinel" id="postFeedSentinel" aria-hidden="true"></div>
 
-                <div class="linkbox90s">
-                  <h3>Featured Links</h3>
-                  <ul>
-                    <li><a href="#" data-open-window="notes">Read Bio.txt in Notepad</a></li>
-                    <li><a href="#" data-open-window="projects">Open project board in Paint</a></li>
-                    <li><a href="#" data-open-window="cmd">Run system diagnostics</a></li>
-                  </ul>
-                </div>
+                  <div class="guestbook">
+                    <strong>Sign My Guestbook!</strong>
+                    <p>Tell me your modem speed, your favorite operating system, and whether animated GIFs should make a comeback.</p>
+                    <div class="counter90s" aria-label="visitor counter">
+                      <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
+                    </div>
+                  </div>
+                </template>
+                <div id="browserContent">
+                  <div
+                    id="postsFeed"
+                    data-next-page="2"
+                    data-total-pages={totalPostPages}
+                  >
+                    {initialPosts.map((entry) => <PostCard entry={entry} />)}
+                  </div>
+                  <div class="infinite-status" id="postFeedStatus" aria-live="polite">
+                    {totalPostPages > 1 ? "Scroll down for older posts." : "All posts loaded."}
+                  </div>
+                  <div class="post-sentinel" id="postFeedSentinel" aria-hidden="true"></div>
 
-                <div class="guestbook">
-                  <strong>Sign My Guestbook!</strong>
-                  <p>Tell me your modem speed, your favorite operating system, and whether animated GIFs should make a comeback.</p>
-                  <div class="counter90s" aria-label="visitor counter">
-                    <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
+                  <div class="guestbook">
+                    <strong>Sign My Guestbook!</strong>
+                    <p>Tell me your modem speed, your favorite operating system, and whether animated GIFs should make a comeback.</p>
+                    <div class="counter90s" aria-label="visitor counter">
+                      <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
+                    </div>
                   </div>
                 </div>
               </main>
@@ -305,7 +319,7 @@ const personSchema = {
       id="projects"
       data-window
       data-title="Projects - Paint"
-      style="left: 530px; top: 120px; width: 430px; height: 340px; z-index: 20;"
+      style="left: 480px; top: 96px; width: 560px; height: 430px; z-index: 20;"
     >
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
@@ -327,15 +341,17 @@ const personSchema = {
           </div>
           <div class="paint-side">
             <div class="canvas-wrap sunken">
-              <div class="canvas">
+              <div class="canvas" id="projects-board">
                 {
                   projectEntries.map((project) => (
                     <div
                       class:list={["pixel-card", project.data.color !== "yellow" && project.data.color]}
                       style={`left: ${project.data.x}px; top: ${project.data.y}px;${project.data.width ? ` width: ${project.data.width}px;` : ""}`}
                     >
-                      <strong>{project.data.title}</strong>
-                      {project.data.summary}
+                      <a href={`/projects/${project.slug}/`} class="pixel-card-link">
+                        <strong>{project.data.title} ({project.data.period})</strong>
+                        {project.data.summary}
+                      </a>
                     </div>
                   ))
                 }
@@ -474,7 +490,7 @@ SITE     HTM
       <div class="window-content cookie-body">
         <div class="alert-row">
           <div class="alert-symbol info" aria-hidden="true"></div>
-          <p>Task failed succesfully</p>
+          <p>Task failed successfully.</p>
         </div>
         <div class="cookie-actions">
           <button class="ie-link-btn" id="requestResultOk" type="button">OK</button>
@@ -572,15 +588,6 @@ SITE     HTM
             >
               <span class="title-icon ie start-menu-icon"></span>
               <span>GitHub</span>
-            </a>
-            <a
-              class="start-menu-item"
-              href="https://x.com/_eric_castro"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span class="title-icon ie start-menu-icon"></span>
-              <span>X</span>
             </a>
             <a
               class="start-menu-item"

@@ -56,8 +56,50 @@ function setInitialNotesFrame() {
   notes.style.top = `${top}px`;
 }
 
+function setInitialProjectsFrame() {
+  const projects = document.getElementById("projects");
+  if (!projects || !desktopEl) return;
+
+  if (isCompactViewport()) {
+    const horizontalMargin = 8;
+    const left = horizontalMargin;
+    const top = 44;
+    const width = Math.max(
+      parseInt(getComputedStyle(projects).minWidth, 10) || 280,
+      desktopEl.clientWidth - horizontalMargin * 2
+    );
+    const height = Math.max(
+      parseInt(getComputedStyle(projects).minHeight, 10) || 140,
+      desktopEl.clientHeight - top - 8
+    );
+
+    projects.style.left = `${left}px`;
+    projects.style.top = `${top}px`;
+    projects.style.width = `${width}px`;
+    projects.style.height = `${height}px`;
+    return;
+  }
+
+  const minWidth = parseInt(getComputedStyle(projects).minWidth, 10) || 430;
+  const minHeight = parseInt(getComputedStyle(projects).minHeight, 10) || 340;
+  projects.style.width = `${Math.max(minWidth, 560)}px`;
+  projects.style.height = `${Math.max(minHeight, 430)}px`;
+}
+
 function isPrimaryPointer(event) {
   return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
+}
+
+function bindTapActivation(element, handler) {
+  if (!element) return;
+  element.addEventListener("click", (event) => {
+    if (event.detail !== 0) return;
+    handler(event);
+  });
+  element.addEventListener("pointerup", (event) => {
+    if (!isPrimaryPointer(event)) return;
+    handler(event);
+  });
 }
 
 const state = Object.fromEntries(
@@ -139,6 +181,8 @@ function openWindowById(id) {
   if (!win) return;
   restoreWindow(win);
 }
+
+window.openWindowById = openWindowById;
 
 function setStartMenuOpen(isOpen) {
   if (!startButton || !startMenu) return;
@@ -237,7 +281,7 @@ function renderTaskbar() {
     label.textContent = win.dataset.title ?? win.id;
     btn.appendChild(label);
 
-    btn.addEventListener("click", () => {
+    bindTapActivation(btn, () => {
       if (state[win.id].minimized) {
         restoreWindow(win);
       } else if (win.classList.contains("active")) {
@@ -432,13 +476,13 @@ icons.forEach((icon) => {
 });
 
 openTriggers.forEach((trigger) => {
-  trigger.addEventListener("click", (event) => {
+  bindTapActivation(trigger, (event) => {
     event.preventDefault();
     openWindowById(trigger.dataset.openWindow);
   });
 });
 
-document.addEventListener("click", (event) => {
+document.addEventListener("pointerdown", (event) => {
   if (!event.target.closest(".desktop-icon")) {
     icons.forEach((icon) => icon.classList.remove("selected"));
   }
@@ -453,13 +497,13 @@ document.addEventListener("click", (event) => {
   }
 });
 
-startButton?.addEventListener("click", (event) => {
+bindTapActivation(startButton, (event) => {
   event.stopPropagation();
   setStartMenuOpen(startMenu?.classList.contains("hidden") ?? true);
 });
 
 startMenu?.querySelectorAll("[data-start-open]").forEach((item) => {
-  item.addEventListener("click", (event) => {
+  bindTapActivation(item, (event) => {
     const id = event.currentTarget.dataset.startOpen;
     if (!id) return;
     setStartMenuOpen(false);
@@ -468,7 +512,7 @@ startMenu?.querySelectorAll("[data-start-open]").forEach((item) => {
 });
 
 startMenu?.querySelectorAll(".start-menu-item").forEach((item) => {
-  item.addEventListener("click", () => {
+  bindTapActivation(item, () => {
     if (item.hasAttribute("data-start-submenu-toggle")) return;
     setStartMenuOpen(false);
   });
@@ -487,14 +531,22 @@ startSubmenuToggles.forEach((toggle) => {
     startMenu.querySelectorAll(".start-menu-item-wrap.open-up").forEach((item) => {
       if (item !== wrapper) item.classList.remove("open-up");
     });
+    startMenu.querySelectorAll(".start-menu-item-wrap.open-left").forEach((item) => {
+      if (item !== wrapper) item.classList.remove("open-left");
+    });
     startMenu
       .querySelectorAll("[data-start-submenu-toggle]")
       .forEach((button) => button.setAttribute("aria-expanded", button === toggle ? "true" : "false"));
     wrapper.classList.add("open");
     if (submenu && desktopEl) {
       wrapper.classList.remove("open-up");
-      const submenuRect = submenu.getBoundingClientRect();
+      wrapper.classList.remove("open-left");
+      let submenuRect = submenu.getBoundingClientRect();
       const desktopRect = desktopEl.getBoundingClientRect();
+      if (submenuRect.right > desktopRect.right) {
+        wrapper.classList.add("open-left");
+        submenuRect = submenu.getBoundingClientRect();
+      }
       const overflowBottom = submenuRect.bottom - desktopRect.bottom;
       if (overflowBottom > 0) {
         wrapper.classList.add("open-up");
@@ -502,11 +554,13 @@ startSubmenuToggles.forEach((toggle) => {
     }
   }
 
-  toggle.addEventListener("click", (event) => {
+  bindTapActivation(toggle, (event) => {
     event.stopPropagation();
     const willOpen = !wrapper.classList.contains("open");
     if (!willOpen) {
       wrapper.classList.remove("open");
+      wrapper.classList.remove("open-up");
+      wrapper.classList.remove("open-left");
       toggle.setAttribute("aria-expanded", "false");
       return;
     }
@@ -546,6 +600,7 @@ window.addEventListener("resize", () => windows.forEach(clampWindow));
 syncMaxButtons();
 setInitialBrowserFrame();
 setInitialNotesFrame();
+setInitialProjectsFrame();
 const browserWindow = document.getElementById("browser");
 const notesWindow = document.getElementById("notes");
 

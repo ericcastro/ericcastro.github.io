@@ -29,7 +29,17 @@ const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
+    period: z.string(),
+    intro: z.string(),
     summary: z.string(),
+    links: z
+      .array(
+        z.object({
+          label: z.string(),
+          url: z.string().url()
+        })
+      )
+      .default([]),
     color: z.enum(["yellow", "blue", "green", "pink"]).default("yellow"),
     x: z.number(),
     y: z.number(),

@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project }
+  }));
+}
+
+const { project } = Astro.props;
+const redirectPath = `/?project=${project.slug}`;
+---
+
+<BaseLayout
+  title={`${project.data.title} | Eric Castro`}
+  description={project.data.intro}
+  canonicalPath={`/projects/${project.slug}/`}
+  type="article"
+>
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <div class="project-redirect-page">
+    <p>Loading project inside EricOS 95...</p>
+    <p><a href={redirectPath}>Continue</a></p>
+  </div>
+  <script is:inline define:vars={{ redirectPath }}>
+    window.location.replace(redirectPath);
+  </script>
+</BaseLayout>

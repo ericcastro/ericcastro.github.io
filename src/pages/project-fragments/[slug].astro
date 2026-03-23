@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import ProjectDetail from "../../components/ProjectDetail.astro";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project }
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<div
+  data-browser-fragment="project"
+  data-browser-url={`/projects/${project.slug}/`}
+  data-browser-title={`${project.data.title} | Eric Castro`}
+>
+  <ProjectDetail project={project} />
+</div>

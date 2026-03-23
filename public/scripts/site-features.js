@@ -18,6 +18,10 @@ const guestbookOk = document.getElementById("guestbookOk");
 const shutdownMenuItem = document.getElementById("shutdownMenuItem");
 const shutdownWidget = document.getElementById("shutdownWidget");
 const shutdownOk = document.getElementById("shutdownOk");
+const browserContent = document.getElementById("browserContent");
+const browserAddress = document.getElementById("browserAddress");
+const browserWindowTitle = document.getElementById("browserWindowTitle");
+const browserHomeTemplate = document.getElementById("browserHomeTemplate");
 const consentCookieName = "ericos95_cookie_consent";
 const desktopRoot = document.querySelector(".desktop");
 const dialogs = [
@@ -28,6 +32,26 @@ const dialogs = [
   shutdownWidget
 ].filter(Boolean);
 let dialogZ = 60;
+const homeBrowserAddress = "https://eric.cast.ro";
+const homeBrowserTitle = "Microsof Internet Exploder - https://eric.cast.ro";
+const homeDocumentTitle = document.title;
+const homeBrowserContent = browserHomeTemplate?.innerHTML ?? browserContent?.innerHTML ?? "";
+
+function isPrimaryPointer(event) {
+  return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
+}
+
+function bindTapActivation(element, handler) {
+  if (!element) return;
+  element.addEventListener("click", (event) => {
+    if (event.detail !== 0) return;
+    handler(event);
+  });
+  element.addEventListener("pointerup", (event) => {
+    if (!isPrimaryPointer(event)) return;
+    handler(event);
+  });
+}
 
 function centerDialog(dialog) {
   if (!dialog || !desktopRoot) return;
@@ -66,7 +90,7 @@ function initializeTheme() {
   applyTheme(savedTheme);
 
   if (!darkToggle) return;
-  darkToggle.addEventListener("click", () => {
+  bindTapActivation(darkToggle, () => {
     const nextTheme = document.body.classList.contains("theme-dark") ? "light" : "dark";
     localStorage.setItem(themeStorageKey, nextTheme);
     applyTheme(nextTheme);
@@ -103,8 +127,8 @@ function initializeCookieWidget() {
     hideDialog(cookieWidget);
   }
 
-  cookieAccept.addEventListener("click", acceptConsent);
-  cookieDecline.addEventListener("click", declineConsent);
+  bindTapActivation(cookieAccept, acceptConsent);
+  bindTapActivation(cookieDecline, declineConsent);
 }
 
 function initializeMyComputerWidget() {
@@ -125,13 +149,13 @@ function initializeMyComputerWidget() {
     openWidget(event);
   });
 
-  computerRequest.addEventListener("click", () => {
+  bindTapActivation(computerRequest, () => {
     closeWidget();
     showDialog(requestResultWidget);
   });
-  computerCancel.addEventListener("click", closeWidget);
+  bindTapActivation(computerCancel, closeWidget);
 
-  requestResultOk?.addEventListener("click", () => {
+  bindTapActivation(requestResultOk, () => {
     hideDialog(requestResultWidget);
   });
 }
@@ -139,12 +163,12 @@ function initializeMyComputerWidget() {
 function initializeGuestbookWidget() {
   if (!guestbookLink || !guestbookWidget || !guestbookOk) return;
 
-  guestbookLink.addEventListener("click", (event) => {
+  bindTapActivation(guestbookLink, (event) => {
     event.preventDefault();
     showDialog(guestbookWidget);
   });
 
-  guestbookOk.addEventListener("click", () => {
+  bindTapActivation(guestbookOk, () => {
     hideDialog(guestbookWidget);
   });
 }
@@ -152,16 +176,19 @@ function initializeGuestbookWidget() {
 function initializeShutdownWidget() {
   if (!shutdownMenuItem || !shutdownWidget || !shutdownOk) return;
 
-  shutdownMenuItem.addEventListener("click", () => {
+  bindTapActivation(shutdownMenuItem, () => {
     showDialog(shutdownWidget);
   });
 
-  shutdownOk.addEventListener("click", () => {
+  bindTapActivation(shutdownOk, () => {
     hideDialog(shutdownWidget);
   });
 }
 
 function initializeInfiniteScroll() {
+  const postsFeed = document.getElementById("postsFeed");
+  const postFeedStatus = document.getElementById("postFeedStatus");
+  const postFeedSentinel = document.getElementById("postFeedSentinel");
   if (!postsFeed || !postFeedStatus || !postFeedSentinel) {
     return;
   }
@@ -243,12 +270,106 @@ function initializeInfiniteScroll() {
   observer.observe(postFeedSentinel);
 }
 
+async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {}) {
+  if (!browserContent || !browserAddress || !browserWindowTitle) return;
+  window.openWindowById?.("browser");
+
+  const response = await fetch(`/project-fragments/${slug}/`);
+  if (!response.ok) {
+    throw new Error(`Failed to load project fragment for ${slug}`);
+  }
+
+  const html = await response.text();
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const fragment = doc.querySelector("[data-browser-fragment='project']");
+  if (!fragment) {
+    throw new Error(`Missing browser fragment for ${slug}`);
+  }
+
+  browserContent.innerHTML = fragment.innerHTML;
+  const nextUrl = fragment.getAttribute("data-browser-url") ?? `/projects/${slug}/`;
+  const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
+  browserAddress.textContent = `https://eric.cast.ro${nextUrl}`;
+  browserWindowTitle.textContent = `Microsof Internet Exploder - https://eric.cast.ro${nextUrl}`;
+  document.title = nextTitle;
+
+  if (replace) {
+    window.history.replaceState({ view: "project", slug }, "", nextUrl);
+  } else if (push) {
+    window.history.pushState({ view: "project", slug }, "", nextUrl);
+  }
+
+  document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function restoreHomeBrowser({ push = true, replace = false } = {}) {
+  if (!browserContent || !browserAddress || !browserWindowTitle) return;
+  browserContent.innerHTML = homeBrowserContent;
+  browserAddress.textContent = homeBrowserAddress;
+  browserWindowTitle.textContent = homeBrowserTitle;
+  document.title = homeDocumentTitle;
+  if (replace) {
+    window.history.replaceState({ view: "home" }, "", "/");
+  } else if (push) {
+    window.history.pushState({ view: "home" }, "", "/");
+  }
+  initializeInfiniteScroll();
+}
+
+function initializeProjectNavigation() {
+  if (!browserContent) return;
+
+  document.addEventListener("click", (event) => {
+    const homeLink = event.target.closest("[data-browser-home]");
+    if (homeLink instanceof HTMLAnchorElement) {
+      event.preventDefault();
+      restoreHomeBrowser();
+      return;
+    }
+
+    const link = event.target.closest("a[href^='/projects/']");
+    if (!(link instanceof HTMLAnchorElement)) return;
+    event.preventDefault();
+    const slug = link.getAttribute("href")?.split("/").filter(Boolean).pop();
+    if (!slug) return;
+    loadProjectIntoBrowser(slug).catch((error) => console.error(error));
+  });
+
+  window.addEventListener("popstate", () => {
+    const path = window.location.pathname;
+    if (path === "/") {
+      restoreHomeBrowser({ push: false });
+      return;
+    }
+
+    const match = path.match(/^\/projects\/([^/]+)\/?$/);
+    if (!match) return;
+    loadProjectIntoBrowser(match[1], { push: false }).catch((error) => console.error(error));
+  });
+
+  const initialQueryProject = new URLSearchParams(window.location.search).get("project");
+  if (initialQueryProject) {
+    loadProjectIntoBrowser(initialQueryProject, { push: false, replace: true }).catch((error) =>
+      console.error(error)
+    );
+    return;
+  }
+
+  const directProjectMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/);
+  if (directProjectMatch) {
+    loadProjectIntoBrowser(directProjectMatch[1], { push: false, replace: true }).catch((error) =>
+      console.error(error)
+    );
+  }
+}
+
 initializeTheme();
 initializeCookieWidget();
 initializeMyComputerWidget();
 initializeGuestbookWidget();
 initializeShutdownWidget();
 initializeInfiniteScroll();
+initializeProjectNavigation();
 
 window.addEventListener("resize", () => {
   dialogs.forEach((dialog) => {
