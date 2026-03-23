@@ -137,7 +137,6 @@ const personSchema = {
                     <li><a href="#" data-open-window="notes">About Me</a></li>
                     <li><a href="#" data-open-window="projects">Projects</a></li>
                     <li><a href="#" data-open-window="cmd">System Info</a></li>
-                    <li><a href="#top">Top of Page</a></li>
                   </ul>
 
                   <h3>Cool Links</h3>
@@ -282,7 +281,7 @@ const personSchema = {
               <div>
                 <h1>{aboutEntry.data.name}</h1>
                 <p class="tagline">{aboutEntry.data.tagline}</p>
-                <p>{aboutEntry.data.intro}</p>
+                <p class="about-intro">{aboutEntry.data.intro}</p>
               </div>
             </div>
 
@@ -292,9 +291,14 @@ const personSchema = {
               <strong>Likes</strong><span>{aboutEntry.data.likes}</span>
               <strong>Status</strong><span>{aboutEntry.data.status}</span>
             </div>
-            <div class="divider95"></div>
+            <div class="divider95" aria-hidden="true">--------------------</div>
             <h3>{aboutEntry.data.heading}</h3>
-            <div class="markdown-body">
+            <div
+              class="markdown-body editable-note"
+              contenteditable="true"
+              spellcheck="false"
+              aria-label="Editable About Me text"
+            >
               <AboutContent />
             </div>
           </div>
@@ -319,7 +323,7 @@ const personSchema = {
       id="projects"
       data-window
       data-title="Projects - Paint"
-      style="left: 480px; top: 96px; width: 560px; height: 430px; z-index: 20;"
+      style="left: 440px; top: 96px; width: 540px; height: 474px; z-index: 20;"
     >
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
@@ -349,8 +353,9 @@ const personSchema = {
                       style={`left: ${project.data.x}px; top: ${project.data.y}px;${project.data.width ? ` width: ${project.data.width}px;` : ""}`}
                     >
                       <a href={`/projects/${project.slug}/`} class="pixel-card-link">
-                        <strong>{project.data.title} ({project.data.period})</strong>
+                        <strong>{project.data.title}</strong>
                         {project.data.summary}
+                        <span class="pixel-card-period">{project.data.period}</span>
                       </a>
                     </div>
                   ))
@@ -358,7 +363,7 @@ const personSchema = {
               </div>
             </div>
             <div class="palette sunken">
-              <div class="swatch" style="background:#000000"></div><div class="swatch" style="background:#7f7f7f"></div><div class="swatch" style="background:#880015"></div><div class="swatch" style="background:#ed1c24"></div><div class="swatch" style="background:#ff7f27"></div><div class="swatch" style="background:#fff200"></div><div class="swatch" style="background:#22b14c"></div><div class="swatch" style="background:#00a2e8"></div><div class="swatch" style="background:#3f48cc"></div><div class="swatch" style="background:#a349a4"></div><div class="swatch" style="background:#ffffff"></div>
+              <div class="swatch" style="background:black"></div><div class="swatch" style="background:gray"></div><div class="swatch" style="background:maroon"></div><div class="swatch" style="background:red"></div><div class="swatch" style="background:orange"></div><div class="swatch" style="background:yellow"></div><div class="swatch" style="background:lime"></div><div class="swatch" style="background:cyan"></div><div class="swatch" style="background:blue"></div><div class="swatch" style="background:fuchsia"></div><div class="swatch" style="background:white"></div>
             </div>
           </div>
         </div>

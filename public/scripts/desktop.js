@@ -82,8 +82,8 @@ function setInitialProjectsFrame() {
 
   const minWidth = parseInt(getComputedStyle(projects).minWidth, 10) || 430;
   const minHeight = parseInt(getComputedStyle(projects).minHeight, 10) || 340;
-  projects.style.width = `${Math.max(minWidth, 560)}px`;
-  projects.style.height = `${Math.max(minHeight, 430)}px`;
+  projects.style.width = `${Math.max(minWidth, 540)}px`;
+  projects.style.height = `${Math.max(minHeight, 474)}px`;
 }
 
 function isPrimaryPointer(event) {

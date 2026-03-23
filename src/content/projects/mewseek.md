@@ -11,9 +11,9 @@ links:
   - label: Landing page (Internet Archive)
     url: https://web.archive.org/web/20180506161308/http://www.mewseek.net/
 color: pink
-x: 188
-y: 134
-width: 152
+x: 189
+y: 138
+width: 150
 order: 4
 ---
 Formerly known as *iSlsk*, MewSeek was a music streaming and MP3 download app for jailbroken iPhones and iPads.

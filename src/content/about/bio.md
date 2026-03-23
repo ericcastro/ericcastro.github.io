@@ -1,7 +1,7 @@
 ---
 name: Eric Castro
 tagline: developer • maker • musician
-intro: stuck between retro nostalgia and whatever nonsense happened this week
+intro: a 90s kid stuck between retro nostalgia and whatever awesome nonsense happened this week
 location: Paris, France
 occupation: Software Engineer • AppSec • DevSecOps
 likes: retro tech, cybersecurity, 3d printing, playing piano, learning languages, electronics

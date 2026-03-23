@@ -319,20 +319,42 @@ function restoreHomeBrowser({ push = true, replace = false } = {}) {
 function initializeProjectNavigation() {
   if (!browserContent) return;
 
-  document.addEventListener("click", (event) => {
-    const homeLink = event.target.closest("[data-browser-home]");
+  let lastHandledProjectNav = "";
+
+  function handleProjectNavigation(event) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const homeLink = target.closest("[data-browser-home]");
     if (homeLink instanceof HTMLAnchorElement) {
       event.preventDefault();
       restoreHomeBrowser();
       return;
     }
 
-    const link = event.target.closest("a[href^='/projects/']");
+    const link = target.closest("a[href^='/projects/']");
     if (!(link instanceof HTMLAnchorElement)) return;
-    event.preventDefault();
+
     const slug = link.getAttribute("href")?.split("/").filter(Boolean).pop();
     if (!slug) return;
+
+    const signature = `${event.type}:${slug}`;
+    if (lastHandledProjectNav === signature) return;
+    lastHandledProjectNav = signature;
+    window.setTimeout(() => {
+      if (lastHandledProjectNav === signature) {
+        lastHandledProjectNav = "";
+      }
+    }, 0);
+
+    event.preventDefault();
     loadProjectIntoBrowser(slug).catch((error) => console.error(error));
+  }
+
+  document.addEventListener("click", handleProjectNavigation);
+  document.addEventListener("pointerup", (event) => {
+    if (!isPrimaryPointer(event)) return;
+    handleProjectNavigation(event);
   });
 
   window.addEventListener("popstate", () => {

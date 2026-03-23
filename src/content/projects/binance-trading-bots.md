@@ -5,9 +5,9 @@ intro: Low-latency crypto monitoring bots built to catch sudden micro-movements.
 summary: Low-latency experiments in crypto spike detection and rapid trading.
 links: []
 color: green
-x: 12
-y: 134
-width: 150
+x: 11
+y: 132
+width: 158
 order: 3
 ---
 This was a period of heavy experimentation around trading APIs, latency, and the tiny windows where automated reactions can still matter.

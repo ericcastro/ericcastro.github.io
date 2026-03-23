@@ -5,9 +5,9 @@ intro: AI tarot reading with real cards, computer vision, and custom voice inter
 summary: AI tarot reading with real cards and voice-driven answers.
 links: []
 color: yellow
-x: 12
-y: 16
-width: 150
+x: 15
+y: 19
+width: 154
 order: 1
 ---
 Tairot.io is an AI-assisted tarot card reading project built around actual tarot cards placed on a table and interpreted through computer vision.

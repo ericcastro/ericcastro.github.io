@@ -5,9 +5,9 @@ intro: Generative sheet music practice with MIDI input and instant feedback.
 summary: Random sheet music generation with live MIDI timing feedback.
 links: []
 color: blue
-x: 188
-y: 16
-width: 152
+x: 184
+y: 17
+width: 158
 order: 2
 ---
 This project was built to make sight-reading practice less repetitive and less vulnerable to muscle-memory cheating.

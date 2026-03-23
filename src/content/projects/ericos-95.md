@@ -4,10 +4,10 @@ period: "2026-Present"
 intro: This website itself, built as a static personal site disguised as a tiny Windows 95 desktop.
 summary: A static personal website disguised as a tiny Windows 95 desktop.
 links: []
-color: pink
-x: 102
-y: 246
-width: 152
+color: blue
+x: 18
+y: 244
+width: 146
 order: 5
 ---
 EricOS 95 is the project you are currently looking at: a personal website that treats content like little desktop applications instead of plain web pages.
