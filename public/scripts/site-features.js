@@ -26,6 +26,9 @@ const browserContent = document.getElementById("browserContent");
 const browserAddress = document.getElementById("browserAddress");
 const browserWindowTitle = document.getElementById("browserWindowTitle");
 const browserHomeTemplate = document.getElementById("browserHomeTemplate");
+const cmdShell = document.getElementById("cmdShell");
+const cmdEntry = document.getElementById("cmdEntry");
+const cmdOutput = document.getElementById("cmdOutput");
 const consentCookieName = "ericos95_cookie_consent";
 const desktopRoot = document.querySelector(".desktop");
 const dialogs = [
@@ -208,6 +211,56 @@ function initializeShutdownWidget() {
 
   bindTapActivation(shutdownOk, () => {
     hideDialog(shutdownWidget);
+  });
+}
+
+function placeCaretAtEnd(element) {
+  if (!element) return;
+  const selection = window.getSelection();
+  if (!selection) return;
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function appendCmdResponse(command) {
+  if (!cmdOutput || !cmdEntry || !cmdShell) return;
+  const trimmedCommand = command.replace(/\s+/g, " ").trim();
+  if (!trimmedCommand) return;
+
+  const block = document.createElement("div");
+  block.className = "cmd-response";
+  block.innerHTML =
+    `<span class="prompt">C:\\&gt;</span> ${trimmedCommand}\nTask failed successfully.\n`;
+  cmdOutput.appendChild(block);
+  cmdEntry.textContent = "";
+  cmdShell.scrollTop = cmdShell.scrollHeight;
+  placeCaretAtEnd(cmdEntry);
+}
+
+function initializeCmdWidget() {
+  if (!cmdShell || !cmdEntry || !cmdOutput) return;
+
+  function focusEntry() {
+    cmdEntry.focus();
+    placeCaretAtEnd(cmdEntry);
+  }
+
+  cmdShell.addEventListener("pointerdown", (event) => {
+    if (event.target instanceof HTMLElement && event.target.closest(".cmd-entry")) return;
+    window.setTimeout(focusEntry, 0);
+  });
+
+  cmdEntry.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    appendCmdResponse(cmdEntry.textContent || "");
+  });
+
+  requestAnimationFrame(() => {
+    cmdShell.scrollTop = cmdShell.scrollHeight;
   });
 }
 
@@ -430,6 +483,7 @@ initializeMyComputerWidget();
 initializeGuestbookWidget();
 initializeEmailWidget();
 initializeShutdownWidget();
+initializeCmdWidget();
 initializePostExternalLinks(document);
 initializeInfiniteScroll();
 initializeProjectNavigation();

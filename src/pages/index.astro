@@ -402,7 +402,7 @@ const personSchema = {
       </div>
       <div class="window-content cmd-window-content">
         <div class="win-scroll-shell win-scroll-shell-fill">
-          <div class="cmd-shell sunken win-scroll">Microsoff(R) Windows 95
+          <div class="cmd-shell sunken win-scroll" id="cmdShell">Microsoff(R) EricOS 95
 (C)Copyright Microsoff Corp 1981-1995.
 
 <span class="prompt">C:\&gt;</span> net user webmaster
@@ -416,7 +416,8 @@ BIO      TXT
 PROJECTS BMP
 SITE     HTM
 
-<span class="prompt">C:\&gt;</span> <span class="cmd-cursor">_</span></div>
+<div class="cmd-output" id="cmdOutput"></div>
+<div class="cmd-input-line"><span class="prompt">C:\&gt;</span> <span class="cmd-entry" id="cmdEntry" contenteditable="true" spellcheck="false" aria-label="Command input"></span><span class="cmd-cursor">_</span></div></div>
         </div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>

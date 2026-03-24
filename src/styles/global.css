@@ -5,6 +5,12 @@
 }
 
 @font-face {
+  font-family: "More Perfect DOS VGA";
+  src: url("/fonts/MorePerfectDOSVGA.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
   font-family: "MS Sans Serif";
   src: url("/fonts/ms-sans-serif.ttf/ms-sans-serif.ttf") format("truetype");
   font-display: swap;
@@ -1865,11 +1871,16 @@ body.theme-dark .cookie-window .window-content {
   overflow: auto;
   background: var(--cmd-bg);
   color: var(--cmd-fg);
-  font-family: var(--font-mono);
+  font-family: "More Perfect DOS VGA", var(--font-mono);
   font-size: 14px;
   line-height: 1.35;
   white-space: pre-wrap;
   user-select: text;
+}
+
+.cmd-output,
+.cmd-input-line {
+  white-space: pre-wrap;
 }
 
 .cmd-shell .prompt {
@@ -1878,6 +1889,14 @@ body.theme-dark .cookie-window .window-content {
 
 .cmd-shell .accent {
   color: #ffff00;
+}
+
+.cmd-entry {
+  display: inline;
+  min-width: 1ch;
+  outline: none;
+  user-select: text;
+  caret-color: transparent;
 }
 
 .cmd-cursor {
