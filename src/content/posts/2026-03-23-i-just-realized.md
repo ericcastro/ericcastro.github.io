@@ -4,13 +4,13 @@ date: 23 March 2026
 author: Webmaster Eric
 featured: true
 ---
-By choosing a Windows 95 aesthetic for this site - fake Internet Explorer window, clunky UI, nostalgic 90s web design - I accidentally made it timeless.
+By choosing a Windows 95 aesthetic for this site - fake Internet Explorer window, clunky UI, nostalgic 90s web design - I accidentally made it timeless. Hear me out.
 
-Anyone landing here instantly understands this is deliberate. Although [some actual 90s websites still exist](https://www.makeuseof.com/popular-90s-websites-running/), abandoned or maybe frozen in time by accident, in my case it’s not outdated, it’s anchored. It removes the expectation that the site should evolve with current design trends, frameworks, or whatever the industry decides how web design language should aim for nowadays.
+Anyone landing here instantly understands this is deliberate. Although [some actual 90s websites still exist](https://www.makeuseof.com/popular-90s-websites-running/), abandoned or maybe frozen in time by accident, in my case it’s not outdated, it’s anchored. It removes the expectation that the site should evolve with current design trends, frameworks, or whatever the industry decides what web design language should aim for nowadays.
 
-I’ve seen the web evolve since the 90s. Fonts, layouts, GIFs, Java applets, Flash, gradients, flat design - it was so chaotic and beautiful, but they all expire. And then as a web developer you either keep up or start looking neglected.
+I’ve seen the web evolve since the 90s. Fonts, frames layouts, GIFs, Java applets, Flash, gradients, flat design - it was so chaotic and beautiful, but they all expire. And then as a web developer you either keep up or start looking neglected. Call me a boomer, but I absolutely despise the Liquid Glass™ design language I certainly hope Apple will fail to impose everywhere as they did with previous design trends they decided primarily upon.
 
-Here, I’ve unintentionally opted out, hoping most people won’t question it.
+Here, I’ve unintentionally opted out of all of it, hoping most people won’t question it.
 
 The moment you frame something as retro, you freeze it in a way that stays legible over time. It becomes a reference rather than a failed attempt at staying relevant. No redesign pressure, no need to chase whatever comes next.
 

@@ -43,6 +43,11 @@ const schemaJson = schema ? JSON.stringify(schema) : null;
     <meta name="twitter:description" content={description} />
 
     {schemaJson && <script type="application/ld+json" set:html={schemaJson} />}
+    <script
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "9ef0ef28c1d548a5aed18c5c232ee8cd"}'
+    ></script>
   </head>
   <body>
     <slot />

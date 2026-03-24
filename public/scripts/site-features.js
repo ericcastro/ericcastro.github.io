@@ -38,7 +38,7 @@ const dialogs = [
 ].filter(Boolean);
 let dialogZ = 60;
 const homeBrowserAddress = "https://eric.cast.ro";
-const homeBrowserTitle = "Microsoff Internet Exploder - https://eric.cast.ro";
+const homeBrowserTitle = "https://eric.cast.ro - Microsoff Internet Exploder";
 const homeDocumentTitle = document.title;
 const homeBrowserContent = browserHomeTemplate?.innerHTML ?? browserContent?.innerHTML ?? "";
 
@@ -317,7 +317,7 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
   const nextUrl = fragment.getAttribute("data-browser-url") ?? `/projects/${slug}/`;
   const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
   browserAddress.textContent = `https://eric.cast.ro${nextUrl}`;
-  browserWindowTitle.textContent = `Microsoff Internet Exploder - https://eric.cast.ro${nextUrl}`;
+  browserWindowTitle.textContent = `https://eric.cast.ro${nextUrl} - Microsoff Internet Exploder`;
   document.title = nextTitle;
 
   if (replace) {

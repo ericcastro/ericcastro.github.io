@@ -144,6 +144,8 @@ function initializeWinScroll(element) {
   element.addEventListener("scroll", updateScrollbar, { passive: true });
   window.addEventListener("resize", updateScrollbar);
   updateScrollbar();
+  requestAnimationFrame(updateScrollbar);
+  window.addEventListener("load", updateScrollbar, { once: true });
 }
 
 document.querySelectorAll(".win-scroll").forEach(initializeWinScroll);
