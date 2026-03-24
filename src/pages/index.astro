@@ -76,13 +76,13 @@ const personSchema = {
       class="window active"
       id="browser"
       data-window
-      data-title="Microsof Internet Exploder"
+      data-title="Microsoff Internet Exploder"
       style="left: 280px; top: 38px; width: 760px; height: 500px; z-index: 35;"
     >
         <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon ie"></div>
-          <div class="title-text" id="browserWindowTitle">Microsof Internet Exploder - https://eric.cast.ro</div>
+          <div class="title-text" id="browserWindowTitle">Microsoff Internet Exploder - https://eric.cast.ro</div>
         </div>
         <div class="title-buttons">
           <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
@@ -113,17 +113,20 @@ const personSchema = {
           <div class="win-scroll-shell win-scroll-shell-flex">
             <div class="ie-page sunken win-scroll">
             <div class="retro-banner">
-              <h1>Eric's Stuff</h1>
-              <p>Welcome to my personal space in the World Wide Web!</p>
+              <img class="retro-banner-photo" src="/images/eric.gif" alt="Eric Castro" />
+              <div class="retro-banner-copy">
+                <h1>Eric's Stuff</h1>
+                <p>Welcome to my personal space in the World Wide Web!</p>
+              </div>
             </div>
 
             <div class="marquee-box">
               <div class="marquee-track" aria-label="Scrolling announcement">
                 <span>
-                  ★ best viewed with Microsof Internet Exploder 3.0 ★ under construction since 1998 ★ this website uses JavaScript and cookies ★
+                  ★ best viewed with Microsoff Internet Exploder 3.0 ★ under construction since 1998 ★ this website uses JavaScript and cookies ★
                 </span>
                 <span aria-hidden="true">
-                  ★ best viewed with Microsof Internet Exploder 3.0 ★ under construction since 1998 ★ this website uses JavaScript and cookies ★
+                  ★ best viewed with Microsoff Internet Exploder 3.0 ★ under construction since 1998 ★ this website uses JavaScript and cookies ★
                 </span>
               </div>
             </div>
@@ -131,6 +134,19 @@ const personSchema = {
             <div class="ie-layout">
               <div class="sidebar-column">
                 <aside class="sidebar90s">
+                  <button
+                    class="dark-toggle"
+                    id="darkModeToggle"
+                    type="button"
+                    role="checkbox"
+                    aria-checked="false"
+                  >
+                    <span class="dark-toggle-box" aria-hidden="true"></span>
+                    <span class="dark-toggle-label">Dark Mode</span>
+                  </button>
+
+                  <div class="sidebar-divider" aria-hidden="true"></div>
+
                   <h3>Site Menu</h3>
                   <ul>
                     <li><a href="/" data-browser-home>Homepage</a></li>
@@ -143,22 +159,15 @@ const personSchema = {
                   <ul>
                     <li><a href="https://www.linkedin.com/in/eric-castro-92b2975b/" target="_blank" rel="noreferrer">LinkedIn</a></li>
                     <li><a href="https://github.com/ericcastro/" target="_blank" rel="noreferrer">Github</a></li>
+                    <li><a href="https://www.last.fm/user/eric_castro" target="_blank" rel="noreferrer">Last.fm</a></li>
                     <li><a href="https://mastodon.social/@ericcastro" target="_blank" rel="noreferrer">Mastodon</a></li>
-                    <li><a href="mailto:hello@eric.ar" target="_blank" rel="noreferrer">E-mail</a></li>
+                    <li><a href="#" id="emailLink">E-mail</a></li>
                     <li><a href="#" id="guestbookLink">Guestbook</a></li>
                   </ul>
 
-                  <button
-                    class="dark-toggle"
-                    id="darkModeToggle"
-                    type="button"
-                    role="checkbox"
-                    aria-checked="false"
-                  >
-                    <span class="dark-toggle-box" aria-hidden="true"></span>
-                    <span class="dark-toggle-label">Dark Mode</span>
-                  </button>
+                </aside>
 
+                <div class="sidebar-construction">
                   <img
                     class="construction-gif"
                     alt="under construction"
@@ -167,8 +176,7 @@ const personSchema = {
                     height="27"
                     style="display:block;max-width:100%;height:auto;image-rendering:pixelated;"
                   />
-                  <div class="sidebar-powered">powered by EricOS 95</div>
-                </aside>
+                </div>
 
                 <div class="sidebar-badges">
                   <img
@@ -183,6 +191,10 @@ const personSchema = {
                     src="/images/banner-made-with-notepad.gif"
                     alt="Made with Notepad"
                   />
+                </div>
+
+                <div class="sidebar-powered">
+                  powered by <a href="/projects/ericos-95/">Eric OS 95</a>
                 </div>
               </div>
 
@@ -274,31 +286,22 @@ const personSchema = {
       <div class="window-content">
         <div class="win-scroll-shell win-scroll-shell-about">
           <div class="about-body sunken win-scroll">
-            <div class="hero-row">
-              <div class="avatar95 sunken">
-                <img src="/images/eric.gif" alt="Eric Castro" />
-              </div>
-              <div>
-                <h1>{aboutEntry.data.name}</h1>
-                <p class="tagline">{aboutEntry.data.tagline}</p>
-                <p class="about-intro">{aboutEntry.data.intro}</p>
-              </div>
-            </div>
-
-            <div class="info-grid">
-              <strong>Location</strong><span>{aboutEntry.data.location}</span>
-              <strong>Occupation</strong><span>{aboutEntry.data.occupation}</span>
-              <strong>Likes</strong><span>{aboutEntry.data.likes}</span>
-              <strong>Status</strong><span>{aboutEntry.data.status}</span>
-            </div>
-            <div class="divider95" aria-hidden="true">--------------------</div>
-            <h3>{aboutEntry.data.heading}</h3>
             <div
-              class="markdown-body editable-note"
+              class="markdown-body editable-note editable-note-full"
               contenteditable="true"
               spellcheck="false"
               aria-label="Editable About Me text"
             >
+              <p>{aboutEntry.data.name}</p>
+              <p>{aboutEntry.data.tagline}</p>
+              <p>{aboutEntry.data.intro}</p>
+              <p>--------------------</p>
+              <p>Location: {aboutEntry.data.location}</p>
+              <p>Occupation: {aboutEntry.data.occupation}</p>
+              <p>Likes: {aboutEntry.data.likes}</p>
+              <p>Status: {aboutEntry.data.status}</p>
+              <p>--------------------</p>
+              <p>{aboutEntry.data.heading}</p>
               <AboutContent />
             </div>
           </div>
@@ -399,8 +402,8 @@ const personSchema = {
       </div>
       <div class="window-content cmd-window-content">
         <div class="win-scroll-shell win-scroll-shell-fill">
-          <div class="cmd-shell sunken win-scroll">Microsof(R) Windows 95
-(C)Copyright Microsof Corp 1981-1995.
+          <div class="cmd-shell sunken win-scroll">Microsoff(R) Windows 95
+(C)Copyright Microsoff Corp 1981-1995.
 
 <span class="prompt">C:\&gt;</span> net user webmaster
 Name                Eric Castro
@@ -530,6 +533,31 @@ SITE     HTM
 
     <section
       class="window cookie-window is-hidden"
+      id="emailWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="EricOS 95"
+      style="width: 290px; min-height: 0; z-index: 49;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon note"></div>
+          <div class="title-text">EricOS 95</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol info" aria-hidden="true"></div>
+          <p>You can contact me at eric(at)cast.ro</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="ie-link-btn" id="emailOk" type="button">OK</button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="window cookie-window is-hidden"
       id="shutdownWidget"
       role="dialog"
       aria-live="polite"
@@ -596,6 +624,15 @@ SITE     HTM
             </a>
             <a
               class="start-menu-item"
+              href="https://www.last.fm/user/eric_castro"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="title-icon ie start-menu-icon"></span>
+              <span>Last.fm</span>
+            </a>
+            <a
+              class="start-menu-item"
               href="https://mastodon.social/@ericcastro"
               target="_blank"
               rel="noreferrer"
@@ -605,9 +642,8 @@ SITE     HTM
             </a>
             <a
               class="start-menu-item"
-              href="mailto:hello@eric.ar"
-              target="_blank"
-              rel="noreferrer"
+              href="#"
+              id="startMenuEmailLink"
             >
               <span class="title-icon note start-menu-icon"></span>
               <span>E-mail</span>

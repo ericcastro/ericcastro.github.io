@@ -15,6 +15,10 @@ const requestResultOk = document.getElementById("requestResultOk");
 const guestbookLink = document.getElementById("guestbookLink");
 const guestbookWidget = document.getElementById("guestbookWidget");
 const guestbookOk = document.getElementById("guestbookOk");
+const emailLink = document.getElementById("emailLink");
+const startMenuEmailLink = document.getElementById("startMenuEmailLink");
+const emailWidget = document.getElementById("emailWidget");
+const emailOk = document.getElementById("emailOk");
 const shutdownMenuItem = document.getElementById("shutdownMenuItem");
 const shutdownWidget = document.getElementById("shutdownWidget");
 const shutdownOk = document.getElementById("shutdownOk");
@@ -29,11 +33,12 @@ const dialogs = [
   myComputerWidget,
   requestResultWidget,
   guestbookWidget,
+  emailWidget,
   shutdownWidget
 ].filter(Boolean);
 let dialogZ = 60;
 const homeBrowserAddress = "https://eric.cast.ro";
-const homeBrowserTitle = "Microsof Internet Exploder - https://eric.cast.ro";
+const homeBrowserTitle = "Microsoff Internet Exploder - https://eric.cast.ro";
 const homeDocumentTitle = document.title;
 const homeBrowserContent = browserHomeTemplate?.innerHTML ?? browserContent?.innerHTML ?? "";
 
@@ -173,6 +178,27 @@ function initializeGuestbookWidget() {
   });
 }
 
+function initializeEmailWidget() {
+  if (!emailWidget || !emailOk) return;
+
+  function openWidget(event) {
+    event.preventDefault();
+    showDialog(emailWidget);
+  }
+
+  if (emailLink) {
+    bindTapActivation(emailLink, openWidget);
+  }
+
+  if (startMenuEmailLink) {
+    bindTapActivation(startMenuEmailLink, openWidget);
+  }
+
+  bindTapActivation(emailOk, () => {
+    hideDialog(emailWidget);
+  });
+}
+
 function initializeShutdownWidget() {
   if (!shutdownMenuItem || !shutdownWidget || !shutdownOk) return;
 
@@ -233,6 +259,7 @@ function initializeInfiniteScroll() {
       const chunk = doc.querySelector("[data-post-chunk]");
       const postElements = chunk ? Array.from(chunk.children) : [];
       postElements.forEach((post) => postsFeed.appendChild(post));
+      initializePostExternalLinks(postsFeed);
 
       nextPage += 1;
       postsFeed.dataset.nextPage = String(nextPage);
@@ -290,7 +317,7 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
   const nextUrl = fragment.getAttribute("data-browser-url") ?? `/projects/${slug}/`;
   const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
   browserAddress.textContent = `https://eric.cast.ro${nextUrl}`;
-  browserWindowTitle.textContent = `Microsof Internet Exploder - https://eric.cast.ro${nextUrl}`;
+  browserWindowTitle.textContent = `Microsoff Internet Exploder - https://eric.cast.ro${nextUrl}`;
   document.title = nextTitle;
 
   if (replace) {
@@ -313,7 +340,19 @@ function restoreHomeBrowser({ push = true, replace = false } = {}) {
   } else if (push) {
     window.history.pushState({ view: "home" }, "", "/");
   }
+  initializePostExternalLinks(browserContent);
   initializeInfiniteScroll();
+}
+
+function initializePostExternalLinks(root = document) {
+  const origin = window.location.origin;
+  root.querySelectorAll(".post90s .markdown-body a[href]").forEach((link) => {
+    if (!(link instanceof HTMLAnchorElement)) return;
+    if (!/^https?:\/\//i.test(link.href)) return;
+    if (link.origin === origin) return;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+  });
 }
 
 function initializeProjectNavigation() {
@@ -389,7 +428,9 @@ initializeTheme();
 initializeCookieWidget();
 initializeMyComputerWidget();
 initializeGuestbookWidget();
+initializeEmailWidget();
 initializeShutdownWidget();
+initializePostExternalLinks(document);
 initializeInfiniteScroll();
 initializeProjectNavigation();
 
