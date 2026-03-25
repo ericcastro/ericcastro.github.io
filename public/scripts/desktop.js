@@ -86,6 +86,25 @@ function setInitialProjectsFrame() {
   projects.style.height = `${Math.max(minHeight, 474)}px`;
 }
 
+function setInitialCmdFrame() {
+  const cmd = document.getElementById("cmd");
+  if (!cmd || !desktopEl) return;
+
+  if (isCompactViewport()) {
+    const left = 28;
+    const top = 72;
+    cmd.style.left = `${left}px`;
+    cmd.style.top = `${top}px`;
+    return;
+  }
+
+  const left = 106;
+  const top = 10;
+
+  cmd.style.left = `${left}px`;
+  cmd.style.top = `${top}px`;
+}
+
 function isPrimaryPointer(event) {
   return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
 }
@@ -166,6 +185,7 @@ function activateWindow(win) {
   windows.forEach((candidate) => candidate.classList.remove("active"));
   win.classList.add("active");
   win.style.zIndex = String(++topZ);
+  syncTitleBars();
   renderTaskbar();
 }
 
@@ -253,8 +273,17 @@ function syncMaxButtons() {
   windows.forEach((win) => {
     const btn = win.querySelector('[data-action="maximize"]');
     if (!btn) return;
-    btn.classList.toggle("max", !state[win.id].maximized);
+    btn.classList.toggle("maximize", !state[win.id].maximized);
     btn.classList.toggle("restore", state[win.id].maximized);
+    btn.setAttribute("aria-label", state[win.id].maximized ? "Restore" : "Maximize");
+  });
+}
+
+function syncTitleBars() {
+  windows.forEach((win) => {
+    const titleBar = win.querySelector(".title-bar");
+    if (!titleBar) return;
+    titleBar.classList.toggle("inactive", !win.classList.contains("active"));
   });
 }
 
@@ -310,7 +339,7 @@ windows.forEach((win) => {
     dragHandle.addEventListener("dblclick", () => maximizeWindow(win));
     dragHandle.addEventListener("pointerdown", (event) => {
       if (!isPrimaryPointer(event)) return;
-      if (event.target.closest(".title-buttons")) return;
+      if (event.target.closest(".title-bar-controls")) return;
       if (state[win.id].maximized || !desktopEl) return;
       event.preventDefault();
       activateWindow(win);
@@ -325,13 +354,17 @@ windows.forEach((win) => {
         if (e.pointerId !== event.pointerId) return;
         const maxLeft = Math.max(0, desktopEl.clientWidth - win.offsetWidth);
         const maxTop = Math.max(0, desktopEl.clientHeight - win.offsetHeight);
-        const left = Math.min(
-          Math.max(0, e.clientX - desktopRect.left - offsetX),
-          maxLeft
+        const left = Math.round(
+          Math.min(
+            Math.max(0, e.clientX - desktopRect.left - offsetX),
+            maxLeft
+          )
         );
-        const top = Math.min(
-          Math.max(0, e.clientY - desktopRect.top - offsetY),
-          maxTop
+        const top = Math.round(
+          Math.min(
+            Math.max(0, e.clientY - desktopRect.top - offsetY),
+            maxTop
+          )
         );
         win.style.left = `${left}px`;
         win.style.top = `${top}px`;
@@ -422,10 +455,10 @@ windows.forEach((win) => {
         if (dir.includes("w")) newLeft = startLeft + startWidth - clamped.width;
         if (dir.includes("n")) newTop = startTop + startHeight - clamped.height;
 
-        win.style.left = `${Math.max(0, newLeft)}px`;
-        win.style.top = `${Math.max(0, newTop)}px`;
-        win.style.width = `${clamped.width}px`;
-        win.style.height = `${clamped.height}px`;
+        win.style.left = `${Math.round(Math.max(0, newLeft))}px`;
+        win.style.top = `${Math.round(Math.max(0, newTop))}px`;
+        win.style.width = `${Math.round(clamped.width)}px`;
+        win.style.height = `${Math.round(clamped.height)}px`;
       }
 
       function onUp(e) {
@@ -598,19 +631,30 @@ function updateClock() {
 window.addEventListener("resize", () => windows.forEach(clampWindow));
 
 syncMaxButtons();
+syncTitleBars();
 setInitialBrowserFrame();
 setInitialNotesFrame();
 setInitialProjectsFrame();
+setInitialCmdFrame();
 const browserWindow = document.getElementById("browser");
 const notesWindow = document.getElementById("notes");
+const cmdWindow = document.getElementById("cmd");
 
-if (isCompactViewport() && browserWindow && notesWindow) {
-  notesWindow.style.zIndex = "35";
+if (browserWindow) {
+  browserWindow.style.zIndex = "42";
+}
+
+if (isCompactViewport() && browserWindow) {
+  if (notesWindow) notesWindow.style.zIndex = "35";
+  if (cmdWindow) cmdWindow.style.zIndex = "36";
   browserWindow.style.zIndex = "42";
   topZ = 42;
   activateWindow(browserWindow);
 } else {
-  activateWindow(notesWindow ?? browserWindow);
+  if (notesWindow) notesWindow.style.zIndex = "35";
+  if (cmdWindow) cmdWindow.style.zIndex = "38";
+  topZ = 42;
+  activateWindow(browserWindow ?? notesWindow ?? cmdWindow);
 }
 updateClock();
 setInterval(updateClock, 30000);

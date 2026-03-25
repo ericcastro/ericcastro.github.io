@@ -1,3 +1,5 @@
+@import url("https://unpkg.com/98.css@0.1.21");
+
 @font-face {
   font-family: "Fixedsys Excelsior";
   src: url("/fonts/FSEX302.ttf") format("truetype");
@@ -10,19 +12,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "MS Sans Serif";
-  src: url("/fonts/ms-sans-serif.ttf/ms-sans-serif.ttf") format("truetype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "MS Sans Serif";
-  src: url("/fonts/ms-sans-serif-bold.ttf/ms-sans-serif-bold.ttf") format("truetype");
-  font-weight: 700;
-  font-display: swap;
-}
-
 :root {
   --desktop: #008080;
   --surface: #c0c0c0;
@@ -31,7 +20,7 @@
   --shadow: #808080;
   --dark: #000000;
   --title-active-start: #000080;
-  --title-active-end: #1084d0;
+  --title-active-end: #000080;
   --title-inactive-start: #7f7f7f;
   --title-inactive-end: #b5b5b5;
   --selection: #000080;
@@ -39,7 +28,7 @@
   --cmd-bg: #000000;
   --cmd-fg: #c0c0c0;
   --taskbar-h: 32px;
-  --font-ui: "MS Sans Serif";
+  --font-ui: "Pixelated MS Sans Serif", Arial, sans-serif;
   --font-ui-spacing: 0.25px;
   --font-mono: "Perfect DOS VGA 437", "Courier New", monospace;
   --link: #0000ff;
@@ -77,7 +66,7 @@ body {
 
 body.theme-dark {
   --desktop: #123646;
-  --surface: #9a9a9a;
+  --surface: #969696;
   --light: #f0f0f0;
   --light-soft: #d7d7d7;
   --shadow: #5b5b5b;
@@ -292,12 +281,6 @@ a:visited {
   position: absolute;
   min-width: 220px;
   min-height: 140px;
-  background: var(--surface);
-  border-top: 2px solid var(--light);
-  border-left: 2px solid var(--light);
-  border-right: 2px solid var(--dark);
-  border-bottom: 2px solid var(--dark);
-  box-shadow: inset -1px -1px 0 var(--shadow), inset 1px 1px 0 var(--light-soft);
   z-index: 10;
 }
 
@@ -376,16 +359,6 @@ a:visited {
   display: none;
 }
 
-.window.active .title-bar {
-  background: linear-gradient(90deg, var(--title-active-start), var(--title-active-end));
-  color: #fff;
-}
-
-.window:not(.active) .title-bar {
-  background: linear-gradient(90deg, var(--title-inactive-start), var(--title-inactive-end));
-  color: #dcdcdc;
-}
-
 .window.maximized {
   left: 0 !important;
   top: 0 !important;
@@ -394,13 +367,7 @@ a:visited {
 }
 
 .title-bar {
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2px 2px 2px 3px;
   cursor: move;
-  font-weight: bold;
   touch-action: none;
 }
 
@@ -408,7 +375,9 @@ a:visited {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .title-icon {
@@ -510,32 +479,6 @@ a:visited {
   border: 1px solid #000;
 }
 
-.title-text {
-  padding: 2px 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-
-.title-buttons {
-  display: flex;
-  gap: 2px;
-}
-
-.win-btn {
-  width: 16px;
-  height: 14px;
-  padding: 0;
-  position: relative;
-  background: var(--surface);
-  border: 1px solid #000;
-  border-top-color: #fff;
-  border-left-color: #fff;
-  box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
-}
-
 .win-btn:active,
 .task-btn:active,
 .start-btn:active,
@@ -546,68 +489,6 @@ a:visited {
   border-right-color: #fff;
   border-bottom-color: #fff;
   box-shadow: inset 1px 1px 0 #00000022;
-}
-
-.win-btn.min::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  bottom: 3px;
-  height: 2px;
-  background: #000;
-}
-
-.win-btn.max::before {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  top: 3px;
-  bottom: 3px;
-  border: 1px solid #000;
-  border-top-width: 2px;
-}
-
-.win-btn.restore::before {
-  content: "";
-  position: absolute;
-  width: 7px;
-  height: 5px;
-  right: 2px;
-  top: 2px;
-  border: 1px solid #000;
-  border-top-width: 2px;
-  background: var(--surface);
-}
-
-.win-btn.restore::after {
-  content: "";
-  position: absolute;
-  width: 7px;
-  height: 5px;
-  left: 3px;
-  bottom: 3px;
-  border: 1px solid #000;
-  border-top-width: 2px;
-  background: var(--surface);
-}
-
-.win-btn.close::before,
-.win-btn.close::after {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  top: 6px;
-  height: 1px;
-  background: #000;
-  transform: rotate(45deg);
-  transform-origin: center;
-}
-
-.win-btn.close::after {
-  transform: rotate(-45deg);
 }
 
 .menu-bar {
@@ -637,33 +518,34 @@ a:visited {
   overflow: hidden;
 }
 
+.browser-window-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0 4px 4px;
+}
+
+.notes-window-content {
+  padding: 0 3px 3px;
+}
+
 .status-bar {
   position: absolute;
   left: 2px;
   right: 2px;
   bottom: 2px;
-  height: 18px;
   display: flex;
   gap: 2px;
 }
 
-.status-bar > div {
+.status-bar-field {
   min-width: 0;
-  display: flex;
-  align-items: center;
-  padding: 0 4px;
-  border-top: 1px solid #808080;
-  border-left: 1px solid #808080;
-  border-right: 1px solid #fff;
-  border-bottom: 1px solid #fff;
-  background: var(--surface);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   letter-spacing: var(--font-ui-spacing);
 }
 
-.status-bar > div:first-child {
+.status-bar-field:first-child {
   flex: 1;
 }
 
@@ -682,25 +564,55 @@ a:visited {
   background: var(--surface);
 }
 
+.browser-window-content .ie-shell {
+  height: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.browser-window-content .status-bar {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  gap: 0;
+  margin-top: 1px;
+}
+
+.browser-window-content .status-bar-field {
+  letter-spacing: normal;
+}
+
 .ie-toolbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-areas:
     "tools badge"
     "address address";
-  gap: 4px;
-  align-items: center;
+  gap: 2px;
+  align-items: start;
   margin: 0;
-  padding: 1px 0 3px;
+  padding: 0 0 2px;
   background: var(--surface);
   border-bottom: 1px solid #808080;
 }
 
 .ie-toolbar-left {
-  grid-area: tools;
   display: flex;
-  gap: 3px;
+  gap: 2px;
   flex-wrap: wrap;
+}
+
+.toolbar-group {
+  grid-area: tools;
+  min-width: 0;
+  margin: 0 -2px 0 -2px;
+  padding: 2px 3px 3px;
+  align-self: stretch;
+}
+
+.toolbar-group legend {
+  display: none;
 }
 
 .nav-btn,
@@ -718,12 +630,14 @@ a:visited {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   height: 42px;
   min-width: 60px;
-  padding: 4px 6px;
+  padding: 5px 7px;
   text-align: center;
   touch-action: manipulation;
+  border: 1px solid transparent;
+  box-shadow: none;
 }
 
 .nav-btn .glyph {
@@ -737,9 +651,46 @@ a:visited {
 
 .nav-btn .label {
   display: block;
-  font-size: 10px;
+  font-size: inherit;
   line-height: 1;
-  letter-spacing: var(--font-ui-spacing);
+  text-shadow: none;
+}
+
+.nav-btn:hover,
+.nav-btn:focus-visible {
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-right-color: #808080;
+  border-bottom-color: #808080;
+  box-shadow: none;
+  outline: none;
+}
+
+.nav-btn:focus,
+.nav-btn:active {
+  outline: none;
+}
+
+.nav-btn:active {
+  background: var(--surface);
+  border-top: 1px solid #808080 !important;
+  border-left: 1px solid #808080 !important;
+  border-right: 1px solid #fff !important;
+  border-bottom: 1px solid #fff !important;
+  box-shadow: none !important;
+  color: inherit;
+}
+
+.nav-btn:active .label,
+.nav-btn:active .glyph {
+  color: inherit;
+  filter: none;
+  text-shadow: none;
+}
+
+.nav-btn .glyph,
+.nav-btn img {
+  text-shadow: none;
 }
 
 .toolbar-icon {
@@ -755,40 +706,46 @@ a:visited {
 .ie-badge {
   grid-area: badge;
   justify-self: end;
-  align-self: start;
-  width: 42px;
-  height: 42px;
+  align-self: stretch;
+  width: auto;
+  height: auto;
+  min-width: 52px;
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 6px;
+  padding: 4px;
   background: #f4f0d2;
+  border-top-width: 1px;
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
 }
 
 .ie-badge-icon {
   position: relative;
-  width: 24px;
-  height: 20px;
+  width: 28px;
+  height: 24px;
 }
 
 .ie-badge-icon::before {
   content: "e";
   position: absolute;
   left: 4px;
-  top: -7px;
+  top: -8px;
   color: #0a46c4;
   font-family: Tahoma, var(--font-ui);
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
-  line-height: 20px;
+  line-height: 24px;
 }
 
 .ie-badge-icon::after {
   content: "";
   position: absolute;
-  left: 3px;
-  top: 11px;
-  width: 17px;
+  left: 4px;
+  top: 14px;
+  width: 18px;
   height: 7px;
   border: 2px solid #d4a017;
   border-top-color: transparent;
@@ -802,7 +759,6 @@ a:visited {
   height: 24px;
   min-width: 52px;
   padding: 2px 8px;
-  font-family: Tahoma, var(--font-ui);
   font-size: 11px;
   line-height: 1;
   color: #000;
@@ -812,22 +768,18 @@ a:visited {
   grid-area: address;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
-}
-
-.address-label {
-  white-space: nowrap;
-  letter-spacing: var(--font-ui-spacing);
+  padding: 2px 2px 1px;
 }
 
 .address-box {
   min-width: 0;
   flex: 1;
-  height: 22px;
+  height: 20px;
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  padding: 0 4px;
   background: #fff;
   border-top: 2px solid #808080;
   border-left: 2px solid #808080;
@@ -836,13 +788,14 @@ a:visited {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  font-size: 11px;
 }
 
 .ie-page {
   position: relative;
   flex: 1;
   overflow: auto;
-  padding: 8px;
+  padding: 6px;
   background: #fff;
   font-family: "Times New Roman", serif;
   font-size: 16px;
@@ -876,7 +829,7 @@ a:visited {
 }
 
 .win-scroll-shell-about {
-  height: calc(100% - 18px);
+  height: 100%;
 }
 
 .win-scroll-shell-fill {
@@ -885,7 +838,7 @@ a:visited {
 
 .cmd-window-content {
   height: calc(100% - 18px);
-  padding: 0 0 1px;
+  padding: 0 0 4px;
 }
 
 .win-scroll-shell > .win-scroll {
@@ -901,6 +854,7 @@ a:visited {
   width: 18px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: #c0c0c0;
   border-top: 1px solid #fff;
   border-left: 1px solid #fff;
@@ -922,8 +876,18 @@ a:visited {
 }
 
 .win-scroll-button {
+  display: block;
+  width: 100%;
   height: 16px;
   flex: 0 0 16px;
+  min-width: 0;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+  line-height: 0;
+  border-radius: 0;
+  box-sizing: border-box;
 }
 
 .win-scroll-button:active,
@@ -988,15 +952,15 @@ a:visited {
 
 body.theme-dark .win-scroll-track,
 body.theme-dark .win-scroll-slot {
-  background: #3f3f3f;
+  background: #a2a2a2;
 }
 
 body.theme-dark .win-scroll-track {
-  background: #5a5a5a;
+  background: #b2b2b2;
 }
 
 body.theme-dark .win-scroll-slot-fill {
-  background: #2f2f2f;
+  background: #8d8d8d;
 }
 
 .retro-banner {
@@ -1143,8 +1107,8 @@ body.theme-dark .marquee-box {
 }
 
 body.theme-dark .address-box {
-  background: #0b0b0b;
-  color: #e7e7e7;
+  background: #fff;
+  color: #000;
 }
 
 body.theme-dark .about-body,
@@ -1180,6 +1144,9 @@ body.theme-dark .dark-toggle {
 
 .sidebar90s h3 {
   margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.05;
 }
 
 .sidebar90s ul,
@@ -1261,44 +1228,21 @@ body.theme-dark .infinite-status {
 .dark-toggle {
   width: 100%;
   min-height: 20px;
-  padding: 0;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
   font-family: "Times New Roman", serif;
   font-size: inherit;
   text-align: left;
-  touch-action: manipulation;
 }
 
-.dark-toggle-box {
-  position: relative;
-  width: 13px;
-  height: 13px;
-  flex: 0 0 auto;
-  background: #fff;
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-}
-
-.dark-toggle[aria-checked="true"] .dark-toggle-box::before {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 6px;
-  height: 3px;
-  border-left: 1px solid #000;
-  border-bottom: 1px solid #000;
-  transform: rotate(-45deg);
+.dark-toggle input {
+  margin: 0;
 }
 
 .dark-toggle-label {
+  font-size: inherit;
+  font-family: "Times New Roman", serif;
   line-height: 1;
   padding-top: 1px;
 }
@@ -1331,9 +1275,14 @@ body.theme-dark .dark-toggle-label {
   color: #e7e7e7;
 }
 
-body.theme-dark .dark-toggle[aria-checked="true"] .dark-toggle-box::before {
-  border-left-color: #000;
-  border-bottom-color: #000;
+body.theme-dark .window,
+body.theme-dark .window-body,
+body.theme-dark .ie-shell,
+body.theme-dark .menu-bar,
+body.theme-dark .ie-toolbar,
+body.theme-dark .status-bar,
+body.theme-dark .status-bar-field {
+  background: #969696;
 }
 
 .cookie-window {
@@ -1469,8 +1418,8 @@ body.theme-dark .cookie-window .window-content {
 }
 
 .about-body {
-  height: calc(100% - 18px);
-  padding: 1px;
+  height: 100%;
+  padding: 0;
   overflow: auto;
   font-family: "Fixedsys Excelsior", var(--font-mono);
   font-size: 16px;
@@ -1482,7 +1431,7 @@ body.theme-dark .cookie-window .window-content {
 .about-body h3,
 .about-body p,
 .about-body strong {
-  margin: 0 0 3px;
+  margin: 0 0 7px;
   font-weight: 400;
 }
 
@@ -1498,6 +1447,9 @@ body.theme-dark .cookie-window .window-content {
 
 .editable-note-full {
   min-height: 100%;
+  display: block;
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 .editable-note:focus {
@@ -1883,8 +1835,32 @@ body.theme-dark .cookie-window .window-content {
   white-space: pre-wrap;
 }
 
-.cmd-shell .prompt {
+.cmd-profile {
+  display: grid;
+  gap: 4px;
+  margin: 4px 0 8px;
+  white-space: normal;
+}
+
+.cmd-kv {
+  display: grid;
+  grid-template-columns: 12ch minmax(0, 1fr);
+  column-gap: 2ch;
+  align-items: start;
+}
+
+.cmd-key {
   color: #fff;
+}
+
+.cmd-value {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.cmd-shell .prompt {
+  color: var(--cmd-fg);
 }
 
 .cmd-shell .accent {
@@ -2268,14 +2244,6 @@ body.theme-dark .cookie-window .window-content {
 
   .window {
     min-width: 280px;
-  }
-
-  .title-bar {
-    padding-right: 1px;
-  }
-
-  .title-text {
-    font-size: 9px;
   }
 
   .menu-bar {

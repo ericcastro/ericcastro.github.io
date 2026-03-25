@@ -3,14 +3,19 @@ import { defineCollection, z } from "astro:content";
 const about = defineCollection({
   type: "content",
   schema: z.object({
-    name: z.string(),
-    tagline: z.string(),
-    intro: z.string(),
-    location: z.string(),
-    occupation: z.string(),
-    likes: z.string(),
-    status: z.string(),
     heading: z.string()
+  })
+});
+
+const cmd = defineCollection({
+  type: "content",
+  schema: z.object({
+    name: z.string(),
+    location: z.string(),
+    hometown: z.string(),
+    bio: z.string(),
+    occupation: z.string(),
+    status: z.string()
   })
 });
 
@@ -48,4 +53,4 @@ const projects = defineCollection({
   })
 });
 
-export const collections = { about, posts, projects };
+export const collections = { about, cmd, posts, projects };

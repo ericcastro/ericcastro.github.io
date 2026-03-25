@@ -89,7 +89,7 @@ function hideDialog(dialog) {
 function applyTheme(theme) {
   document.body.classList.toggle("theme-dark", theme === "dark");
   if (darkToggle) {
-    darkToggle.setAttribute("aria-checked", theme === "dark" ? "true" : "false");
+    darkToggle.checked = theme === "dark";
   }
 }
 
@@ -98,8 +98,8 @@ function initializeTheme() {
   applyTheme(savedTheme);
 
   if (!darkToggle) return;
-  bindTapActivation(darkToggle, () => {
-    const nextTheme = document.body.classList.contains("theme-dark") ? "light" : "dark";
+  darkToggle.addEventListener("change", () => {
+    const nextTheme = darkToggle.checked ? "dark" : "light";
     localStorage.setItem(themeStorageKey, nextTheme);
     applyTheme(nextTheme);
   });

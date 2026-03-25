@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import PostCard from "../components/PostCard.astro";
 import { getSortedPosts, POSTS_PER_PAGE } from "../lib/posts";
 
 const [aboutEntry] = await getCollection("about");
+const [cmdEntry] = await getCollection("cmd");
 const postEntries = await getSortedPosts();
 const projectEntries = (await getCollection("projects")).sort(
   (a, b) => a.data.order - b.data.order
@@ -14,8 +15,11 @@ if (!aboutEntry) {
   throw new Error("Missing about content entry in src/content/about.");
 }
 
-const aboutRendered = await render(aboutEntry);
-const AboutContent = aboutRendered.Content;
+if (!cmdEntry) {
+  throw new Error("Missing cmd content entry in src/content/cmd.");
+}
+
+const aboutNoteText = `${aboutEntry.data.heading}\n\n${aboutEntry.body.trim()}`;
 const initialPosts = postEntries.slice(0, POSTS_PER_PAGE);
 const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
 const pageTitle = "Eric Castro - Personal Website";
@@ -38,7 +42,7 @@ const personSchema = {
   description: pageDescription,
   homeLocation: {
     "@type": "Place",
-    name: aboutEntry.data.location
+    name: cmdEntry.data.location
   }
 };
 ---
@@ -58,10 +62,6 @@ const personSchema = {
         <div class="icon icon-ie"></div>
         <div class="icon-label">Internet Exploder</div>
       </div>
-      <div class="desktop-icon" data-icon="notes" tabindex="0">
-        <div class="icon icon-notepad"></div>
-        <div class="icon-label">Bio.txt</div>
-      </div>
       <div class="desktop-icon" data-icon="projects" tabindex="0">
         <div class="icon icon-folder"></div>
         <div class="icon-label">Projects</div>
@@ -70,6 +70,10 @@ const personSchema = {
         <div class="icon icon-cmd"></div>
         <div class="icon-label">Command Prompt</div>
       </div>
+      <div class="desktop-icon" data-icon="notes" tabindex="0">
+        <div class="icon icon-notepad"></div>
+        <div class="icon-label">README.TXT</div>
+      </div>
     </div>
 
     <section
@@ -77,30 +81,32 @@ const personSchema = {
       id="browser"
       data-window
       data-title="Microsoff Internet Exploder"
-      style="left: 280px; top: 38px; width: 760px; height: 500px; z-index: 35;"
+      style="left: 280px; top: 43px; width: 760px; height: 500px; z-index: 35;"
     >
         <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon ie"></div>
-          <div class="title-text" id="browserWindowTitle">https://eric.cast.ro - Microsoff Internet Exploder</div>
+          <div class="title-text title-bar-text" id="browserWindowTitle">https://eric.cast.ro - Microsoff Internet Exploder</div>
         </div>
-        <div class="title-buttons">
-          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
-          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+        <div class="title-bar-controls">
+          <button class="win-btn minimize" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn maximize" data-action="maximize" aria-label="Maximize"></button>
           <button class="win-btn close" data-action="close" aria-label="Close"></button>
         </div>
       </div>
       <div class="menu-bar"><span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Favorites</span><span>Help</span></div>
-      <div class="window-content">
+      <div class="window-content browser-window-content">
         <div class="ie-shell">
           <div class="ie-toolbar">
-            <div class="ie-toolbar-left">
-              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-back" src="/images/button-back.png" alt="" width="16" height="14" /></span><span class="label">Back</span></button>
-              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-forward" src="/images/button-forward.png" alt="" width="16" height="14" /></span><span class="label">Forward</span></button>
-              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-stop" src="/images/button-stop.png" alt="" width="19" height="19" /></span><span class="label">Stop</span></button>
-              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-refresh" src="/images/button-refresh.png" alt="" width="17" height="19" /></span><span class="label">Refresh</span></button>
-              <button class="nav-btn" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-home" src="/images/button-home.png" alt="" width="19" height="20" /></span><span class="label">Home</span></button>
-            </div>
+            <fieldset class="toolbar-group">
+              <div class="ie-toolbar-left">
+                <button class="nav-btn nav-btn-back" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-back" src="/images/button-back.png" alt="" width="16" height="14" /></span><span class="label">Back</span></button>
+                <button class="nav-btn nav-btn-forward" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-forward" src="/images/button-forward.png" alt="" width="16" height="14" /></span><span class="label">Forward</span></button>
+                <button class="nav-btn nav-btn-stop" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-stop" src="/images/button-stop.png" alt="" width="19" height="19" /></span><span class="label">Stop</span></button>
+                <button class="nav-btn nav-btn-refresh" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-refresh" src="/images/button-refresh.png" alt="" width="17" height="19" /></span><span class="label">Refresh</span></button>
+                <button class="nav-btn nav-btn-home" type="button"><span class="glyph" aria-hidden="true"><img class="toolbar-icon toolbar-icon-home" src="/images/button-home.png" alt="" width="19" height="20" /></span><span class="label">Home</span></button>
+              </div>
+            </fieldset>
             <div class="address-row">
               <div class="address-label">Address</div>
               <div class="address-box" id="browserAddress">https://eric.cast.ro</div>
@@ -134,25 +140,19 @@ const personSchema = {
             <div class="ie-layout">
               <div class="sidebar-column">
                 <aside class="sidebar90s">
-                  <button
-                    class="dark-toggle"
-                    id="darkModeToggle"
-                    type="button"
-                    role="checkbox"
-                    aria-checked="false"
-                  >
-                    <span class="dark-toggle-box" aria-hidden="true"></span>
-                    <span class="dark-toggle-label">Dark Mode</span>
-                  </button>
+                  <div class="field-row dark-toggle">
+                    <input id="darkModeToggle" type="checkbox" />
+                    <label class="dark-toggle-label" for="darkModeToggle">Dark Mode</label>
+                  </div>
 
                   <div class="sidebar-divider" aria-hidden="true"></div>
 
                   <h3>Site Menu</h3>
                   <ul>
                     <li><a href="/" data-browser-home>Homepage</a></li>
-                    <li><a href="#" data-open-window="notes">About Me</a></li>
-                    <li><a href="#" data-open-window="projects">Projects</a></li>
-                    <li><a href="#" data-open-window="cmd">System Info</a></li>
+                    <li><a href="javascript:void(0)" data-open-window="notes">About Me</a></li>
+                    <li><a href="javascript:void(0)" data-open-window="projects">Projects</a></li>
+                    <li><a href="javascript:void(0)" data-open-window="cmd">System Info</a></li>
                   </ul>
 
                   <h3>Cool Links</h3>
@@ -161,8 +161,8 @@ const personSchema = {
                     <li><a href="https://github.com/ericcastro/" target="_blank" rel="noreferrer">Github</a></li>
                     <li><a href="https://www.last.fm/user/eric_castro" target="_blank" rel="noreferrer">Last.fm</a></li>
                     <li><a href="https://mastodon.social/@ericcastro" target="_blank" rel="noreferrer">Mastodon</a></li>
-                    <li><a href="#" id="emailLink">E-mail</a></li>
-                    <li><a href="#" id="guestbookLink">Guestbook</a></li>
+                    <li><a href="javascript:void(0)" id="emailLink">E-mail</a></li>
+                    <li><a href="javascript:void(0)" id="guestbookLink">Guestbook</a></li>
                   </ul>
 
                 </aside>
@@ -250,8 +250,8 @@ const personSchema = {
           </div>
         </div>
         <div class="status-bar">
-          <div>Done</div>
-          <div>Internet zone</div>
+          <div class="status-bar-field">Done</div>
+          <div class="status-bar-field">Internet zone</div>
         </div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>
@@ -265,50 +265,34 @@ const personSchema = {
     </section>
 
     <section
-      class="window active"
+      class="window"
       id="notes"
       data-window
-      data-title="Bio - Notepad"
-      style="left: 28px; top: 292px; width: 396px; height: 340px; z-index: 42;"
+      data-title="README - Notepad"
+      style="left: 28px; top: 242px; width: 396px; height: 390px; z-index: 42;"
     >
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon note"></div>
-          <div class="title-text">Bio - Notepad</div>
+          <div class="title-text title-bar-text">README - Notepad</div>
         </div>
-        <div class="title-buttons">
-          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
-          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+        <div class="title-bar-controls">
+          <button class="win-btn minimize" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn maximize" data-action="maximize" aria-label="Maximize"></button>
           <button class="win-btn close" data-action="close" aria-label="Close"></button>
         </div>
       </div>
       <div class="menu-bar"><span>File</span><span>Edit</span><span>Search</span><span>Help</span></div>
-      <div class="window-content">
+      <div class="window-content notes-window-content">
         <div class="win-scroll-shell win-scroll-shell-about">
           <div class="about-body sunken win-scroll">
             <div
-              class="markdown-body editable-note editable-note-full"
+              class="editable-note editable-note-full"
               contenteditable="true"
               spellcheck="false"
               aria-label="Editable About Me text"
-            >
-              <p>{aboutEntry.data.name}</p>
-              <p>{aboutEntry.data.tagline}</p>
-              <p>{aboutEntry.data.intro}</p>
-              <p>--------------------</p>
-              <p>Location: {aboutEntry.data.location}</p>
-              <p>Occupation: {aboutEntry.data.occupation}</p>
-              <p>Likes: {aboutEntry.data.likes}</p>
-              <p>Status: {aboutEntry.data.status}</p>
-              <p>--------------------</p>
-              <p>{aboutEntry.data.heading}</p>
-              <AboutContent />
-            </div>
+            >{aboutNoteText}</div>
           </div>
-        </div>
-        <div class="status-bar">
-          <div>Ln 1, Col 1</div>
-          <div>100%</div>
         </div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>
@@ -331,11 +315,11 @@ const personSchema = {
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon paint"></div>
-          <div class="title-text">Projects - Paint</div>
+          <div class="title-text title-bar-text">Projects - Paint</div>
         </div>
-        <div class="title-buttons">
-          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
-          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+        <div class="title-bar-controls">
+          <button class="win-btn minimize" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn maximize" data-action="maximize" aria-label="Maximize"></button>
           <button class="win-btn close" data-action="close" aria-label="Close"></button>
         </div>
       </div>
@@ -370,7 +354,7 @@ const personSchema = {
             </div>
           </div>
         </div>
-        <div class="status-bar"><div>For Help, click Help Topics on the Help Menu.</div></div>
+        <div class="status-bar"><div class="status-bar-field">For Help, click Help Topics on the Help Menu.</div></div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>
       <div class="resize-handle e" data-resize="e"></div>
@@ -383,20 +367,20 @@ const personSchema = {
     </section>
 
     <section
-      class="window hidden"
+      class="window"
       id="cmd"
       data-window
-      data-title="C:\WINDOWS\SYSTEM32\CMD.EXE"
-      style="left: 240px; top: 180px; width: 420px; height: 320px; z-index: 15;"
+      data-title="Command Prompt"
+      style="left: 110px; top: 10px; width: 500px; height: 332px; z-index: 15;"
     >
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
           <div class="title-icon cmd"></div>
-          <div class="title-text">C:\WINDOWS\SYSTEM32\CMD.EXE</div>
+          <div class="title-text title-bar-text">Command Prompt</div>
         </div>
-        <div class="title-buttons">
-          <button class="win-btn min" data-action="minimize" aria-label="Minimize"></button>
-          <button class="win-btn max" data-action="maximize" aria-label="Maximize"></button>
+        <div class="title-bar-controls">
+          <button class="win-btn minimize" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn maximize" data-action="maximize" aria-label="Maximize"></button>
           <button class="win-btn close" data-action="close" aria-label="Close"></button>
         </div>
       </div>
@@ -406,15 +390,14 @@ const personSchema = {
 (C)Copyright Microsoff Corp 1981-1995.
 
 <span class="prompt">C:\&gt;</span> net user webmaster
-Name                Eric Castro
-Role                Builder of things
-Location            Paris, France
-Status              ONLINE
-
-<span class="prompt">C:\&gt;</span> dir widgets
-BIO      TXT
-PROJECTS BMP
-SITE     HTM
+<div class="cmd-profile">
+  <div class="cmd-kv"><span class="cmd-key">NAME</span><span class="cmd-value">{cmdEntry.data.name}</span></div>
+  <div class="cmd-kv"><span class="cmd-key">LOCATION</span><span class="cmd-value">{cmdEntry.data.location}</span></div>
+  <div class="cmd-kv"><span class="cmd-key">HOMETOWN</span><span class="cmd-value">{cmdEntry.data.hometown}</span></div>
+  <div class="cmd-kv"><span class="cmd-key">OCCUPATION</span><span class="cmd-value">{cmdEntry.data.occupation}</span></div>
+  <div class="cmd-kv"><span class="cmd-key">BIO</span><span class="cmd-value">{cmdEntry.data.bio}</span></div>
+  <div class="cmd-kv"><span class="cmd-key">STATUS</span><span class="cmd-value">{cmdEntry.data.status}</span></div>
+</div>
 
 <div class="cmd-output" id="cmdOutput"></div>
 <div class="cmd-input-line"><span class="prompt">C:\&gt;</span> <span class="cmd-entry" id="cmdEntry" contenteditable="true" spellcheck="false" aria-label="Command input"></span><span class="cmd-cursor">_</span></div></div>
@@ -441,7 +424,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon note"></div>
-          <div class="title-text">Cookie Notice</div>
+          <div class="title-text title-bar-text">Cookie Notice</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -467,7 +450,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon computer"></div>
-          <div class="title-text">EricOS 95</div>
+          <div class="title-text title-bar-text">EricOS 95</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -493,7 +476,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon computer"></div>
-          <div class="title-text">EricOS 95</div>
+          <div class="title-text title-bar-text">EricOS 95</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -518,7 +501,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon note"></div>
-          <div class="title-text">EricOS 95</div>
+          <div class="title-text title-bar-text">EricOS 95</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -543,7 +526,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon note"></div>
-          <div class="title-text">EricOS 95</div>
+          <div class="title-text title-bar-text">EricOS 95</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -568,7 +551,7 @@ SITE     HTM
       <div class="title-bar">
         <div class="title-left">
           <div class="title-icon note"></div>
-          <div class="title-text">EricOS 95</div>
+          <div class="title-text title-bar-text">EricOS 95</div>
         </div>
       </div>
       <div class="window-content cookie-body">
@@ -643,7 +626,7 @@ SITE     HTM
             </a>
             <a
               class="start-menu-item"
-              href="#"
+              href="javascript:void(0)"
               id="startMenuEmailLink"
             >
               <span class="title-icon note start-menu-icon"></span>
