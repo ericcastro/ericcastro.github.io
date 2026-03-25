@@ -26,6 +26,8 @@ const shutdownNo = document.getElementById("shutdownNo");
 const shutdownWidget = document.getElementById("shutdownWidget");
 const shutdownOk = document.getElementById("shutdownOk");
 const startMenuEl = document.getElementById("startMenu");
+const darkToggleRow = darkToggle?.closest(".dark-toggle");
+const darkToggleLabel = document.querySelector('label[for="darkModeToggle"]');
 const browserContent = document.getElementById("browserContent");
 const browserAddress = document.getElementById("browserAddress");
 const browserWindowTitle = document.getElementById("browserWindowTitle");
@@ -46,7 +48,7 @@ const dialogs = [
 ].filter(Boolean);
 let dialogZ = 60;
 const homeBrowserAddress = "https://eric.cast.ro";
-const homeBrowserTitle = "https://eric.cast.ro - Microsoff Internet Exploder";
+const homeBrowserTitle = "https://eric.cast.ro - Microsoff Internet Ersplorer";
 const homeDocumentTitle = document.title;
 const homeBrowserContent = browserHomeTemplate?.innerHTML ?? browserContent?.innerHTML ?? "";
 
@@ -107,6 +109,24 @@ function initializeTheme() {
     const nextTheme = darkToggle.checked ? "dark" : "light";
     localStorage.setItem(themeStorageKey, nextTheme);
     applyTheme(nextTheme);
+  });
+
+  function toggleThemeFromTap(event) {
+    if (event.target === darkToggle) return;
+    event.preventDefault();
+    darkToggle.checked = !darkToggle.checked;
+    darkToggle.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  [darkToggleRow, darkToggleLabel].filter(Boolean).forEach((element) => {
+    element.addEventListener("pointerup", (event) => {
+      if (!isPrimaryPointer(event)) return;
+      toggleThemeFromTap(event);
+    });
+    element.addEventListener("click", (event) => {
+      if (event.detail !== 0) return;
+      toggleThemeFromTap(event);
+    });
   });
 }
 
@@ -220,7 +240,11 @@ function initializeShutdownWidget() {
   }
 
   bindTapActivation(shutdownMenuItem, () => {
-    startMenuEl?.classList.add("hidden");
+    if (typeof window.setStartMenuOpen === "function") {
+      window.setStartMenuOpen(false);
+    } else {
+      startMenuEl?.classList.add("hidden");
+    }
     showDialog(shutdownConfirmWidget);
   });
 
@@ -395,7 +419,7 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
   const nextUrl = fragment.getAttribute("data-browser-url") ?? `/projects/${slug}/`;
   const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
   browserAddress.textContent = `https://eric.cast.ro${nextUrl}`;
-  browserWindowTitle.textContent = `https://eric.cast.ro${nextUrl} - Microsoff Internet Exploder`;
+  browserWindowTitle.textContent = `https://eric.cast.ro${nextUrl} - Microsoff Internet Ersplorer`;
   document.title = nextTitle;
 
   if (replace) {

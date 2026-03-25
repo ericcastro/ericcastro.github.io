@@ -21,12 +21,12 @@ function setInitialBrowserFrame() {
   if (isCompactViewport()) {
     const horizontalMargin = 8;
     const bottomMargin = 8;
-    const left = horizontalMargin;
-    const top = 8;
-    const width = Math.max(280, desktopEl.clientWidth - horizontalMargin * 2);
+    const left = horizontalMargin + 3;
+    const top = 28;
+    const width = Math.max(280, desktopEl.clientWidth - horizontalMargin * 2 - 5);
     const height = Math.max(
       parseInt(getComputedStyle(browser).minHeight, 10) || 140,
-      desktopEl.clientHeight - top - bottomMargin
+      desktopEl.clientHeight - top - bottomMargin - 20
     );
 
     browser.style.left = `${left}px`;
@@ -47,8 +47,18 @@ function setInitialNotesFrame() {
   const notes = document.getElementById("notes");
   if (!notes || !desktopEl) return;
 
-  const left = isCompactViewport() ? 8 : parseInt(notes.style.left || "28", 10);
-  const bottomMargin = isCompactViewport() ? 8 : 12;
+  if (isCompactViewport()) {
+    const left = 2;
+    const bottomMargin = 8;
+    const height = notes.offsetHeight || parseInt(notes.style.height || "280", 10);
+    const top = Math.max(0, desktopEl.clientHeight - height - bottomMargin);
+    notes.style.left = `${left}px`;
+    notes.style.top = `${top}px`;
+    return;
+  }
+
+  const left = parseInt(notes.style.left || "28", 10);
+  const bottomMargin = 12;
   const height = notes.offsetHeight || parseInt(notes.style.height || "280", 10);
   const top = Math.max(0, desktopEl.clientHeight - height - bottomMargin);
 
@@ -91,10 +101,14 @@ function setInitialCmdFrame() {
   if (!cmd || !desktopEl) return;
 
   if (isCompactViewport()) {
-    const left = 28;
-    const top = 72;
+    const top = 0;
+    const width = Math.min(360, Math.max(280, desktopEl.clientWidth - 40));
+    const height = Math.min(280, Math.max(180, desktopEl.clientHeight - top - 12));
+    const left = Math.max(0, desktopEl.clientWidth - width);
     cmd.style.left = `${left}px`;
     cmd.style.top = `${top}px`;
+    cmd.style.width = `${width}px`;
+    cmd.style.height = `${height}px`;
     return;
   }
 
@@ -222,6 +236,8 @@ function setStartMenuOpen(isOpen) {
   }
   renderTaskbar();
 }
+
+window.setStartMenuOpen = setStartMenuOpen;
 
 function minimizeWindow(win) {
   state[win.id].minimized = true;

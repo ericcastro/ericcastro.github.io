@@ -7,7 +7,7 @@
 }
 
 @font-face {
-  font-family: "More Perfect DOS VGA";
+  font-family: "MorePerfectDOSVGA";
   src: url("/fonts/MorePerfectDOSVGA.ttf") format("truetype");
   font-display: swap;
 }
@@ -65,7 +65,7 @@ body {
 }
 
 body.theme-dark {
-  --desktop: #123646;
+  --desktop: midnightblue;
   --surface: #969696;
   --light: #f0f0f0;
   --light-soft: #d7d7d7;
@@ -95,6 +95,9 @@ button {
   -webkit-appearance: none;
   border-radius: 0;
   color: #000;
+  text-shadow: none !important;
+  letter-spacing: normal;
+  font-synthesis: none;
 }
 
 a {
@@ -1117,7 +1120,7 @@ body.theme-dark .canvas {
 
 body.theme-dark .post-meta,
 body.theme-dark .tagline {
-  color: #4a4a4a;
+  color: #8f8f8f;
 }
 
 body.theme-dark .guestbook {
@@ -1363,15 +1366,18 @@ body.theme-dark .status-bar-field {
   line-height: 30px;
 }
 
-.cookie-actions {
+.dialog-actions {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.cookie-actions button {
+.dialog-actions button {
   min-width: 76px;
+  height: 26px;
+  padding: 0 12px !important;
+  text-shadow: none !important;
 }
 
 body.theme-dark .cookie-window {
@@ -1821,13 +1827,13 @@ body.theme-dark .cookie-window .window-content {
 
 .cmd-shell {
   height: 100%;
-  padding: 8px 10px;
+  padding: 6px 8px;
   overflow: auto;
   background: var(--cmd-bg);
   color: var(--cmd-fg);
-  font-family: "More Perfect DOS VGA", var(--font-mono);
-  font-size: 14px;
-  line-height: 1.35;
+  font-family: "MorePerfectDOSVGA", var(--font-mono);
+  font-size: 16px;
+  line-height: 1.2;
   white-space: pre-wrap;
   user-select: text;
 }
@@ -1839,15 +1845,15 @@ body.theme-dark .cookie-window .window-content {
 
 .cmd-profile {
   display: grid;
-  gap: 4px;
-  margin: 4px 0 8px;
+  gap: 2px;
+  margin: 2px 0 6px;
   white-space: normal;
 }
 
 .cmd-kv {
   display: grid;
   grid-template-columns: 12ch minmax(0, 1fr);
-  column-gap: 2ch;
+  column-gap: 1ch;
   align-items: start;
 }
 
@@ -1921,7 +1927,7 @@ body.theme-dark .cookie-window .window-content {
   flex: 0 0 auto;
   color: #000;
   touch-action: manipulation;
-  letter-spacing: 0.5px;
+  text-shadow: none;
 }
 
 .start-btn.menu-open,
@@ -2008,7 +2014,7 @@ body.theme-dark .cookie-window .window-content {
   width: 100%;
   text-align: left;
   touch-action: manipulation;
-  letter-spacing: var(--font-ui-spacing);
+  text-shadow: none;
 }
 
 .start-menu-item:visited {
@@ -2027,10 +2033,12 @@ body.theme-dark .cookie-window .window-content {
 }
 
 .start-menu-item:active {
-  background: #000080;
-  color: #fff;
-  box-shadow: none;
-  border: 0;
+  background: transparent !important;
+  color: #000 !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  text-shadow: none !important;
+  transform: none !important;
 }
 
 .start-menu-icon {
@@ -2111,13 +2119,12 @@ body.theme-dark .cookie-window .window-content {
   color: #000;
   font-weight: 400;
   touch-action: manipulation;
-  letter-spacing: var(--font-ui-spacing);
+  text-shadow: none;
 }
 
 .task-btn.active {
   background: var(--light-soft);
   font-weight: 700;
-  letter-spacing: 0.45px;
   box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf,
     inset 2px 2px #808080;
 }
@@ -2125,7 +2132,6 @@ body.theme-dark .cookie-window .window-content {
 .task-btn[aria-pressed="true"] {
   background: var(--light-soft);
   font-weight: 700;
-  letter-spacing: 0.45px;
   box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf,
     inset 2px 2px #808080;
 }
@@ -2142,7 +2148,7 @@ body.theme-dark .cookie-window .window-content {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  letter-spacing: var(--font-ui-spacing);
+  text-shadow: none;
 }
 
 .tray-box {
@@ -2367,6 +2373,22 @@ body.theme-dark .cookie-window .window-content {
 
   #projects-board .pixel-card:nth-child(even) {
     left: 146px !important;
+  }
+
+  .cmd-shell {
+    padding: 5px 6px;
+    font-size: 12px;
+    line-height: 1.1;
+  }
+
+  .cmd-profile {
+    gap: 1px;
+    margin: 2px 0 5px;
+  }
+
+  .cmd-kv {
+    grid-template-columns: 10ch minmax(0, 1fr);
+    column-gap: 1ch;
   }
 }
 
