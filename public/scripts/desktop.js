@@ -220,6 +220,7 @@ function setStartMenuOpen(isOpen) {
       .querySelectorAll("[data-start-submenu-toggle][aria-expanded='true']")
       .forEach((toggle) => toggle.setAttribute("aria-expanded", "false"));
   }
+  renderTaskbar();
 }
 
 function minimizeWindow(win) {
@@ -290,12 +291,19 @@ function syncTitleBars() {
 function renderTaskbar() {
   if (!taskbarTasks) return;
   taskbarTasks.innerHTML = "";
+  const startMenuIsOpen = startMenu && !startMenu.classList.contains("hidden");
   windows.forEach((win) => {
     if (state[win.id].closed) return;
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "task-btn";
-    if (win.classList.contains("active") && !state[win.id].minimized) {
+    btn.setAttribute(
+      "aria-pressed",
+      win.classList.contains("active") && !state[win.id].minimized && !startMenuIsOpen
+        ? "true"
+        : "false"
+    );
+    if (win.classList.contains("active") && !state[win.id].minimized && !startMenuIsOpen) {
       btn.classList.add("active");
     }
     const icon = win.querySelector(".title-icon")?.cloneNode(true);

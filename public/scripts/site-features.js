@@ -20,8 +20,12 @@ const startMenuEmailLink = document.getElementById("startMenuEmailLink");
 const emailWidget = document.getElementById("emailWidget");
 const emailOk = document.getElementById("emailOk");
 const shutdownMenuItem = document.getElementById("shutdownMenuItem");
+const shutdownConfirmWidget = document.getElementById("shutdownConfirmWidget");
+const shutdownYes = document.getElementById("shutdownYes");
+const shutdownNo = document.getElementById("shutdownNo");
 const shutdownWidget = document.getElementById("shutdownWidget");
 const shutdownOk = document.getElementById("shutdownOk");
+const startMenuEl = document.getElementById("startMenu");
 const browserContent = document.getElementById("browserContent");
 const browserAddress = document.getElementById("browserAddress");
 const browserWindowTitle = document.getElementById("browserWindowTitle");
@@ -37,6 +41,7 @@ const dialogs = [
   requestResultWidget,
   guestbookWidget,
   emailWidget,
+  shutdownConfirmWidget,
   shutdownWidget
 ].filter(Boolean);
 let dialogZ = 60;
@@ -203,10 +208,30 @@ function initializeEmailWidget() {
 }
 
 function initializeShutdownWidget() {
-  if (!shutdownMenuItem || !shutdownWidget || !shutdownOk) return;
+  if (
+    !shutdownMenuItem ||
+    !shutdownConfirmWidget ||
+    !shutdownYes ||
+    !shutdownNo ||
+    !shutdownWidget ||
+    !shutdownOk
+  ) {
+    return;
+  }
 
   bindTapActivation(shutdownMenuItem, () => {
+    startMenuEl?.classList.add("hidden");
+    showDialog(shutdownConfirmWidget);
+  });
+
+  bindTapActivation(shutdownYes, () => {
+    hideDialog(shutdownConfirmWidget);
+    document.body.classList.add("shutdown-mode");
     showDialog(shutdownWidget);
+  });
+
+  bindTapActivation(shutdownNo, () => {
+    hideDialog(shutdownConfirmWidget);
   });
 
   bindTapActivation(shutdownOk, () => {

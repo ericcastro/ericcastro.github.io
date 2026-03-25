@@ -112,6 +112,16 @@ a:visited {
   background: var(--desktop);
 }
 
+body.shutdown-mode .desktop {
+  inset: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+body.shutdown-mode .desktop-icons,
+body.shutdown-mode [data-window],
+body.shutdown-mode .taskbar {
+  display: none !important;
+}
+
 .desktop-icons {
   position: absolute;
   top: 10px;
@@ -477,18 +487,6 @@ a:visited {
   height: 2px;
   background: #c0c0c0;
   border: 1px solid #000;
-}
-
-.win-btn:active,
-.task-btn:active,
-.start-btn:active,
-.nav-btn:active,
-.ie-link-btn:active {
-  border-top-color: #808080;
-  border-left-color: #808080;
-  border-right-color: #fff;
-  border-bottom-color: #fff;
-  box-shadow: inset 1px 1px 0 #00000022;
 }
 
 .menu-bar {
@@ -1372,6 +1370,10 @@ body.theme-dark .status-bar-field {
   justify-content: center;
 }
 
+.cookie-actions button {
+  min-width: 76px;
+}
+
 body.theme-dark .cookie-window {
   color: #f3efc8;
 }
@@ -1908,19 +1910,8 @@ body.theme-dark .cookie-window .window-content {
   z-index: 9999;
 }
 
-.start-btn,
-.task-btn,
-.tray-box {
-  height: 26px;
-  background: var(--surface);
-  border-top: 1px solid #fff;
-  border-left: 1px solid #fff;
-  border-right: 1px solid #000;
-  border-bottom: 1px solid #000;
-  box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
-}
-
 .start-btn {
+  height: 26px;
   min-width: 58px;
   padding: 4px 8px 4px 4px;
   display: flex;
@@ -1933,12 +1924,11 @@ body.theme-dark .cookie-window .window-content {
   letter-spacing: 0.5px;
 }
 
-.start-btn.menu-open {
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-  box-shadow: inset 1px 1px 0 #00000022;
+.start-btn.menu-open,
+.start-btn[aria-expanded="true"] {
+  background: var(--light-soft);
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf,
+    inset 2px 2px #808080;
 }
 
 .start-logo {
@@ -1955,14 +1945,14 @@ body.theme-dark .cookie-window .window-content {
 .start-menu {
   position: absolute;
   left: 2px;
-  bottom: calc(var(--taskbar-h) + 2px);
+  bottom: calc(var(--taskbar-h) - 3px);
   width: 180px;
   display: flex;
   background: var(--surface);
-  border-top: 2px solid #fff;
-  border-left: 2px solid #fff;
-  border-right: 2px solid #000;
-  border-bottom: 2px solid #000;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
   box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
   z-index: 10000;
 }
@@ -2011,6 +2001,10 @@ body.theme-dark .cookie-window .window-content {
   text-decoration: none;
   background: transparent;
   border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
   width: 100%;
   text-align: left;
   touch-action: manipulation;
@@ -2028,6 +2022,15 @@ body.theme-dark .cookie-window .window-content {
   background: #000080;
   color: #fff;
   outline: none;
+  box-shadow: none;
+  border: 0;
+}
+
+.start-menu-item:active {
+  background: #000080;
+  color: #fff;
+  box-shadow: none;
+  border: 0;
 }
 
 .start-menu-icon {
@@ -2058,10 +2061,10 @@ body.theme-dark .cookie-window .window-content {
   display: none;
   padding: 3px;
   background: var(--surface);
-  border-top: 2px solid #fff;
-  border-left: 2px solid #fff;
-  border-right: 2px solid #000;
-  border-bottom: 2px solid #000;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
   box-shadow: inset -1px -1px 0 #808080, inset 1px 1px 0 #dfdfdf;
   z-index: 10001;
 }
@@ -2097,6 +2100,7 @@ body.theme-dark .cookie-window .window-content {
 }
 
 .task-btn {
+  height: 26px;
   min-width: 0;
   flex: 1 1 140px;
   max-width: 190px;
@@ -2112,13 +2116,18 @@ body.theme-dark .cookie-window .window-content {
 
 .task-btn.active {
   background: var(--light-soft);
-  border-top: 2px solid #808080;
-  border-left: 2px solid #808080;
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
-  box-shadow: inset 1px 1px 0 #00000022;
   font-weight: 700;
   letter-spacing: 0.45px;
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf,
+    inset 2px 2px #808080;
+}
+
+.task-btn[aria-pressed="true"] {
+  background: var(--light-soft);
+  font-weight: 700;
+  letter-spacing: 0.45px;
+  box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf,
+    inset 2px 2px #808080;
 }
 
 .task-icon {
@@ -2137,6 +2146,7 @@ body.theme-dark .cookie-window .window-content {
 }
 
 .tray-box {
+  height: 26px;
   flex: 0 0 auto;
   min-width: 78px;
   display: flex;

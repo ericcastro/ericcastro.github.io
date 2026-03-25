@@ -433,8 +433,8 @@ const personSchema = {
           <p>This website uses cookies for extremely serious settings management and general European compliance theater.</p>
         </div>
         <div class="cookie-actions">
-          <button class="ie-link-btn" id="cookieAccept" type="button">Accept All Cookies</button>
-          <button class="ie-link-btn" id="cookieDecline" type="button">Decline</button>
+          <button class="default" id="cookieAccept" type="button">Accept All Cookies</button>
+          <button id="cookieDecline" type="button">Decline</button>
         </div>
       </div>
     </section>
@@ -459,8 +459,8 @@ const personSchema = {
           <p>I find it a bit weird that you want to access my computer. You can request access, but I don't guarantee I will give it to you anytime soon.</p>
         </div>
         <div class="cookie-actions">
-          <button class="ie-link-btn" id="computerRequest" type="button">Request access</button>
-          <button class="ie-link-btn" id="computerCancel" type="button">Cancel</button>
+          <button class="default" id="computerRequest" type="button">Request access</button>
+          <button id="computerCancel" type="button">Cancel</button>
         </div>
       </div>
     </section>
@@ -485,7 +485,7 @@ const personSchema = {
           <p>Task failed successfully.</p>
         </div>
         <div class="cookie-actions">
-          <button class="ie-link-btn" id="requestResultOk" type="button">OK</button>
+          <button class="default" id="requestResultOk" type="button">OK</button>
         </div>
       </div>
     </section>
@@ -510,7 +510,7 @@ const personSchema = {
           <p>Under construction. Sorry.</p>
         </div>
         <div class="cookie-actions">
-          <button class="ie-link-btn" id="guestbookOk" type="button">OK</button>
+          <button class="default" id="guestbookOk" type="button">OK</button>
         </div>
       </div>
     </section>
@@ -535,7 +535,33 @@ const personSchema = {
           <p>You can contact me at eric(at)cast.ro</p>
         </div>
         <div class="cookie-actions">
-          <button class="ie-link-btn" id="emailOk" type="button">OK</button>
+          <button class="default" id="emailOk" type="button">OK</button>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="window cookie-window is-hidden"
+      id="shutdownConfirmWidget"
+      role="dialog"
+      aria-live="polite"
+      aria-label="EricOS 95"
+      style="width: 280px; min-height: 0; z-index: 49;"
+    >
+      <div class="title-bar">
+        <div class="title-left">
+          <div class="title-icon computer"></div>
+          <div class="title-text title-bar-text">EricOS 95</div>
+        </div>
+      </div>
+      <div class="window-content cookie-body">
+        <div class="alert-row">
+          <div class="alert-symbol warning" aria-hidden="true"></div>
+          <p>Are you sure you want to shut down?</p>
+        </div>
+        <div class="cookie-actions">
+          <button class="default" id="shutdownYes" type="button">Yes</button>
+          <button id="shutdownNo" type="button">No</button>
         </div>
       </div>
     </section>
@@ -560,7 +586,7 @@ const personSchema = {
           <p>It is now safe to turn off your browser.</p>
         </div>
         <div class="cookie-actions">
-          <button class="ie-link-btn" id="shutdownOk" type="button">OK</button>
+          <button class="default" id="shutdownOk" type="button">OK</button>
         </div>
       </div>
     </section>
@@ -671,10 +697,10 @@ const personSchema = {
           <div class="start-submenu" data-start-submenu="projects">
             {
               projectEntries.map((project) => (
-                <button class="start-menu-item" type="button" data-start-open="projects">
+                <a class="start-menu-item" href={`/projects/${project.slug}/`}>
                   <span class="title-icon paint start-menu-icon"></span>
                   <span>{project.data.title}</span>
-                </button>
+                </a>
               ))
             }
           </div>
