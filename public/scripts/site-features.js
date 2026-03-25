@@ -32,6 +32,7 @@ const browserContent = document.getElementById("browserContent");
 const browserAddress = document.getElementById("browserAddress");
 const browserWindowTitle = document.getElementById("browserWindowTitle");
 const browserHomeTemplate = document.getElementById("browserHomeTemplate");
+const browserNotFoundTemplate = document.getElementById("browserNotFoundTemplate");
 const cmdShell = document.getElementById("cmdShell");
 const cmdEntry = document.getElementById("cmdEntry");
 const cmdOutput = document.getElementById("cmdOutput");
@@ -51,6 +52,8 @@ const homeBrowserAddress = "https://eric.cast.ro";
 const homeBrowserTitle = "https://eric.cast.ro - Microsoff Internet Ersplorer";
 const homeDocumentTitle = document.title;
 const homeBrowserContent = browserHomeTemplate?.innerHTML ?? browserContent?.innerHTML ?? "";
+const homeBrowserOrigin = new URL(homeBrowserAddress).origin;
+let currentBrowserAddress = homeBrowserAddress;
 
 function isPrimaryPointer(event) {
   return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
@@ -76,6 +79,27 @@ function centerDialog(dialog) {
   const top = Math.max(0, Math.round((desktopRoot.clientHeight - height) / 2));
   dialog.style.left = `${left}px`;
   dialog.style.top = `${top}px`;
+}
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, (char) => {
+    if (char === "&") return "&amp;";
+    if (char === "<") return "&lt;";
+    if (char === ">") return "&gt;";
+    if (char === '"') return "&quot;";
+    return "&#39;";
+  });
+}
+
+function setBrowserChrome(nextUrl, nextDocumentTitle = homeDocumentTitle) {
+  currentBrowserAddress = nextUrl;
+  if (browserAddress) {
+    browserAddress.textContent = nextUrl;
+  }
+  if (browserWindowTitle) {
+    browserWindowTitle.textContent = `${nextUrl} - Microsoff Internet Ersplorer`;
+  }
+  document.title = nextDocumentTitle;
 }
 
 function showDialog(dialog) {
@@ -418,9 +442,7 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
   browserContent.innerHTML = fragment.innerHTML;
   const nextUrl = fragment.getAttribute("data-browser-url") ?? `/projects/${slug}/`;
   const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
-  browserAddress.textContent = `https://eric.cast.ro${nextUrl}`;
-  browserWindowTitle.textContent = `https://eric.cast.ro${nextUrl} - Microsoff Internet Ersplorer`;
-  document.title = nextTitle;
+  setBrowserChrome(`${homeBrowserOrigin}${nextUrl}`, nextTitle);
 
   if (replace) {
     window.history.replaceState({ view: "project", slug }, "", nextUrl);
@@ -434,9 +456,7 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
 function restoreHomeBrowser({ push = true, replace = false } = {}) {
   if (!browserContent || !browserAddress || !browserWindowTitle) return;
   browserContent.innerHTML = homeBrowserContent;
-  browserAddress.textContent = homeBrowserAddress;
-  browserWindowTitle.textContent = homeBrowserTitle;
-  document.title = homeDocumentTitle;
+  setBrowserChrome(homeBrowserAddress, homeDocumentTitle);
   if (replace) {
     window.history.replaceState({ view: "home" }, "", "/");
   } else if (push) {
@@ -444,6 +464,81 @@ function restoreHomeBrowser({ push = true, replace = false } = {}) {
   }
   initializePostExternalLinks(browserContent);
   initializeInfiniteScroll();
+}
+
+function renderBrowserNotFound(targetUrl) {
+  if (!browserContent || !browserNotFoundTemplate) return;
+  const content = browserNotFoundTemplate.innerHTML.replace(
+    "</article>",
+    `<p><code>${escapeHtml(targetUrl)}</code></p></article>`
+  );
+  browserContent.innerHTML = content;
+  setBrowserChrome(targetUrl, "404 Not Found | Eric Castro");
+  initializePostExternalLinks(browserContent);
+}
+
+function normalizeTypedBrowserUrl(rawValue) {
+  const raw = rawValue.trim();
+  if (!raw) return currentBrowserAddress;
+  if (raw === homeBrowserOrigin || raw === `${homeBrowserOrigin}/`) {
+    return `${homeBrowserOrigin}/`;
+  }
+
+  if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(raw)) {
+    return new URL(raw).toString();
+  }
+
+  if (raw.startsWith("/")) {
+    return new URL(raw, `${homeBrowserOrigin}/`).toString();
+  }
+
+  if (raw.includes(".") && !raw.includes(" ")) {
+    return new URL(`https://${raw}`).toString();
+  }
+
+  return new URL(raw.replace(/^\/?/, "/"), `${homeBrowserOrigin}/`).toString();
+}
+
+async function navigateBrowserAddress(rawValue) {
+  let targetUrl;
+  try {
+    targetUrl = normalizeTypedBrowserUrl(rawValue);
+  } catch {
+    renderBrowserNotFound(`${homeBrowserOrigin}/`);
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(targetUrl);
+  } catch {
+    renderBrowserNotFound(`${homeBrowserOrigin}/`);
+    return;
+  }
+
+  if (parsed.origin !== homeBrowserOrigin) {
+    showDialog(requestResultWidget);
+    if (browserAddress) browserAddress.textContent = currentBrowserAddress;
+    return;
+  }
+
+  const normalizedPath = parsed.pathname.endsWith("/") ? parsed.pathname : `${parsed.pathname}/`;
+  if (normalizedPath === "/") {
+    restoreHomeBrowser();
+    return;
+  }
+
+  const projectMatch = normalizedPath.match(/^\/projects\/([^/]+)\/$/);
+  if (projectMatch) {
+    try {
+      await loadProjectIntoBrowser(projectMatch[1]);
+    } catch {
+      renderBrowserNotFound(parsed.toString());
+    }
+    return;
+  }
+
+  renderBrowserNotFound(parsed.toString());
 }
 
 function initializePostExternalLinks(root = document) {
@@ -526,6 +621,33 @@ function initializeProjectNavigation() {
   }
 }
 
+function initializeBrowserAddressBar() {
+  if (!browserAddress) return;
+
+  browserAddress.addEventListener("focus", () => {
+    placeCaretAtEnd(browserAddress);
+  });
+
+  browserAddress.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      navigateBrowserAddress(browserAddress.textContent || "").catch((error) => console.error(error));
+      browserAddress.blur();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      browserAddress.textContent = currentBrowserAddress;
+      browserAddress.blur();
+    }
+  });
+
+  browserAddress.addEventListener("blur", () => {
+    browserAddress.textContent = currentBrowserAddress;
+  });
+}
+
 initializeTheme();
 initializeCookieWidget();
 initializeMyComputerWidget();
@@ -536,6 +658,7 @@ initializeCmdWidget();
 initializePostExternalLinks(document);
 initializeInfiniteScroll();
 initializeProjectNavigation();
+initializeBrowserAddressBar();
 
 window.addEventListener("resize", () => {
   dialogs.forEach((dialog) => {

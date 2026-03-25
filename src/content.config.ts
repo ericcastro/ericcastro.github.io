@@ -15,6 +15,7 @@ const cmd = defineCollection({
     hometown: z.string(),
     bio: z.string(),
     occupation: z.string(),
+    website: z.string(),
     status: z.string()
   })
 });

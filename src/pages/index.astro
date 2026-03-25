@@ -109,7 +109,13 @@ const personSchema = {
             </fieldset>
             <div class="address-row">
               <div class="address-label">Address</div>
-              <div class="address-box" id="browserAddress">https://eric.cast.ro</div>
+              <div
+                class="address-box"
+                id="browserAddress"
+                contenteditable="true"
+                spellcheck="false"
+                aria-label="Address bar"
+              >https://eric.cast.ro</div>
             </div>
             <div class="ie-badge sunken" aria-hidden="true">
               <div class="ie-badge-icon"></div>
@@ -219,6 +225,12 @@ const personSchema = {
                       <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
                     </div>
                   </div>
+                </template>
+                <template id="browserNotFoundTemplate">
+                  <article class="post90s project-post">
+                    <h2>404 Not Found</h2>
+                    <p><strong>The requested page did not match any page inside EricOS 95.</strong></p>
+                  </article>
                 </template>
                 <div id="browserContent">
                   <div
@@ -371,7 +383,7 @@ const personSchema = {
       id="cmd"
       data-window
       data-title="Command Prompt"
-      style="left: 110px; top: 10px; width: 500px; height: 360px; z-index: 15;"
+      style="left: 110px; top: 10px; width: 565px; height: 360px; z-index: 15;"
     >
       <div class="title-bar" data-drag-handle>
         <div class="title-left">
@@ -395,6 +407,7 @@ const personSchema = {
   <div class="cmd-kv"><span class="cmd-key">LOCATION</span><span class="cmd-value">{cmdEntry.data.location}</span></div>
   <div class="cmd-kv"><span class="cmd-key">HOMETOWN</span><span class="cmd-value">{cmdEntry.data.hometown}</span></div>
   <div class="cmd-kv"><span class="cmd-key">OCCUPATION</span><span class="cmd-value">{cmdEntry.data.occupation}</span></div>
+  <div class="cmd-kv"><span class="cmd-key">WEBSITE</span><span class="cmd-value">{cmdEntry.data.website}</span></div>
   <div class="cmd-kv"><span class="cmd-key">BIO</span><span class="cmd-value">{cmdEntry.data.bio}</span></div>
   <div class="cmd-kv"><span class="cmd-key">STATUS</span><span class="cmd-value">{cmdEntry.data.status}</span></div>
 </div>

@@ -790,6 +790,12 @@ body.shutdown-mode .taskbar {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 11px;
+  user-select: text;
+  cursor: text;
+}
+
+.address-box:focus {
+  outline: none;
 }
 
 .ie-page {
