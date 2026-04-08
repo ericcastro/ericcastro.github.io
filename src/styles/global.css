@@ -244,6 +244,29 @@ body.shutdown-mode .taskbar {
   border-bottom: none;
 }
 
+.icon-retruco::before,
+.icon-retruco::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 22px;
+  border: 1px solid #000;
+  border-radius: 2px;
+}
+
+.icon-retruco::before {
+  left: 6px;
+  top: 4px;
+  background: linear-gradient(135deg, #ffec84 0 50%, #d96b4a 50% 100%);
+  box-shadow: inset 1px 1px 0 #fff3c4;
+}
+
+.icon-retruco::after {
+  left: 11px;
+  top: 7px;
+  background: linear-gradient(135deg, #b7e0ff 0 50%, #4a79d9 50% 100%);
+}
+
 .icon-cmd::before {
   content: "";
   position: absolute;
@@ -372,6 +395,11 @@ body.shutdown-mode .taskbar {
   display: none;
 }
 
+.retruco-app-window {
+  min-width: 420px;
+  min-height: 360px;
+}
+
 .window.maximized {
   left: 0 !important;
   top: 0 !important;
@@ -455,6 +483,28 @@ body.shutdown-mode .taskbar {
   background: repeating-linear-gradient(to bottom, #000080 0 1px, transparent 1px 3px);
 }
 
+.title-icon.retruco::before,
+.title-icon.retruco::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 9px;
+  border: 1px solid #000;
+  border-radius: 1px;
+}
+
+.title-icon.retruco::before {
+  left: 1px;
+  top: 1px;
+  background: linear-gradient(135deg, #ffec84 0 50%, #d96b4a 50% 100%);
+}
+
+.title-icon.retruco::after {
+  left: 5px;
+  top: 3px;
+  background: linear-gradient(135deg, #b7e0ff 0 50%, #4a79d9 50% 100%);
+}
+
 .title-icon.cmd {
   background: #000;
   border-color: #c0c0c0;
@@ -493,12 +543,12 @@ body.shutdown-mode .taskbar {
 }
 
 .menu-bar {
-  height: 24px;
+  height: 21px;
   display: flex;
   align-items: center;
   gap: 14px;
   margin: 0 2px 0 2px;
-  padding: 0 6px;
+  padding: 0 4px;
   background: var(--surface);
   letter-spacing: var(--font-ui-spacing);
 }
@@ -510,6 +560,73 @@ body.shutdown-mode .taskbar {
 
 .menu-bar span::first-letter {
   text-decoration: underline;
+}
+
+.retruco-menu-bar {
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+}
+
+.retruco-menu-root {
+  position: relative;
+}
+
+.retruco-menu-toggle {
+  min-width: 0;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.retruco-menu-toggle::first-letter {
+  text-decoration: underline;
+}
+
+.retruco-menu-toggle:hover,
+.retruco-menu-toggle:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -1px;
+}
+
+.retruco-menu-toggle[aria-expanded="true"] {
+  background: #000080;
+  color: #fff;
+}
+
+.retruco-menu-panel {
+  position: absolute;
+  top: calc(100% + 1px);
+  left: 0;
+  min-width: 148px;
+  padding: 2px;
+  z-index: 6;
+}
+
+.retruco-menu-panel.is-hidden {
+  display: none;
+}
+
+.retruco-menu-panel button {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 3px 10px 3px 6px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+.retruco-menu-panel button:hover,
+.retruco-menu-panel button:focus-visible {
+  background: #000080;
+  color: #fff;
+  outline: none;
 }
 
 .window-content {
@@ -527,6 +644,46 @@ body.shutdown-mode .taskbar {
 
 .notes-window-content {
   padding: 0 3px 3px;
+}
+
+.retruco-window-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0 3px 3px;
+}
+
+.retruco-widget-shell {
+  flex: 1;
+  min-height: 0;
+  background: var(--surface);
+}
+
+.retruco-widget-mount {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #008000;
+}
+
+.retruco-widget-mount > .retruco-widget-host {
+  display: block;
+  height: 100%;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+.retruco-widget-mount .retruco-widget-frame-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.retruco-widget-mount .retruco-widget-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
 }
 
 .status-bar {
@@ -2266,6 +2423,11 @@ body.theme-dark .cookie-window .window-content {
 
   .window {
     min-width: 280px;
+  }
+
+  .retruco-app-window {
+    min-width: 300px;
+    min-height: 260px;
   }
 
   .menu-bar {

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RETRUCO Recovered Shell</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="desktop">
+      <section class="window-shell">
+        <header class="title-bar">
+          <span>RETRUCO</span>
+          <div class="window-buttons">
+            <button type="button" aria-label="Minimize"></button>
+            <button type="button" aria-label="Maximize"></button>
+            <button type="button" aria-label="Close"></button>
+          </div>
+        </header>
+
+        <nav class="menu-bar">
+          <button type="button" class="menu-link" data-menu-target="game-menu">Juego</button>
+          <button type="button" class="menu-link" data-menu-target="help-menu">Ayuda</button>
+        </nav>
+
+        <div class="menu-panel is-hidden" id="game-menu">
+          <button type="button" data-action="new-hand">Nuevo</button>
+          <button type="button" data-action="choose-partner">Elegir Pareja</button>
+          <button type="button" data-action="show-splash">Pantalla Inicial</button>
+          <button type="button" data-action="show-table">Mesa</button>
+        </div>
+
+        <div class="menu-panel is-hidden" id="help-menu">
+          <a id="help-link-cards" href="/reverse_engineering/contact/card-sheet-labeled.png" target="_blank" rel="noreferrer">Cartas</a>
+          <a id="help-link-resources" href="/reverse_engineering/contact/all-bitmaps.png" target="_blank" rel="noreferrer">Recursos</a>
+          <button type="button" data-action="show-inspector">Inspector</button>
+          <button type="button" data-action="about">Acerca De</button>
+        </div>
+
+        <section class="game-frame" id="game-frame">
+          <section class="screen splash-screen is-hidden" id="splash-screen">
+            <img class="splash-card splash-card-left" src="./assets/BITMAP/201.bmp" alt="Splash card left" />
+            <img class="splash-card splash-card-top" src="./assets/BITMAP/222.bmp" alt="Splash card top" />
+            <img class="splash-card splash-card-bottom" src="./assets/BITMAP/199.bmp" alt="Splash card bottom" />
+            <div class="splash-mark">RETRUCO</div>
+            <div class="splash-copy">
+              <div>(C) 1996, 1997 Por Rolando Herrero</div>
+              <div>Versión Freeware v.A2105.32b / R3</div>
+            </div>
+            <button type="button" class="asset-button splash-start" data-action="show-table">
+              <img src="./assets/BITMAP/NEXTU.bmp" alt="Start game" />
+            </button>
+          </section>
+
+          <section class="screen table-screen" id="table-screen">
+            <div class="player-slot slot-patrulla">
+              <img class="portrait" id="portrait-patrulla" alt="Patrulla portrait" />
+              <div class="speech-box" id="speech-patrulla"></div>
+              <div class="nameplate accent-green">PATRULLA</div>
+            </div>
+
+            <div class="player-slot slot-jugador">
+              <img class="portrait" id="portrait-jugador" alt="Jugador portrait" />
+              <div class="speech-box" id="speech-jugador"></div>
+              <div class="nameplate accent-gold">JUGADOR</div>
+            </div>
+
+            <div class="player-slot slot-monstruo">
+              <img class="portrait" id="portrait-monstruo" alt="Monstruo portrait" />
+              <div class="speech-box" id="speech-monstruo"></div>
+              <div class="nameplate accent-red">MONSTRUO</div>
+            </div>
+
+            <div class="player-slot slot-titan">
+              <img class="portrait" id="portrait-titan" alt="Titan portrait" />
+              <div class="speech-box" id="speech-titan"></div>
+              <div class="nameplate accent-gold">TITAN</div>
+            </div>
+
+            <div class="table-stack table-stack-patrulla" id="played-patrulla"></div>
+            <div class="table-stack table-stack-jugador" id="played-player"></div>
+            <div class="table-stack table-stack-monstruo" id="played-monstruo"></div>
+            <div class="table-stack table-stack-titan" id="played-titan"></div>
+
+            <footer class="control-strip">
+              <div class="player-hand" id="player-hand"></div>
+
+              <div class="action-grid" id="action-grid">
+                <div class="action-slot slot-envido">
+                  <button type="button" class="asset-button table-action" id="btn-envido"><img alt="Envido" /></button>
+                </div>
+                <div class="action-slot slot-real-envido">
+                  <button type="button" class="asset-button table-action" id="btn-real-envido"><img alt="Real envido" /></button>
+                </div>
+                <div class="action-slot slot-truco">
+                  <button type="button" class="asset-button table-action" id="btn-truco"><img alt="Truco" /></button>
+                </div>
+                <div class="action-slot slot-quiero">
+                  <button type="button" class="asset-button table-action" id="btn-quiero"><img alt="Quiero" /></button>
+                </div>
+                <div class="action-slot slot-falta-envido">
+                  <button type="button" class="asset-button table-action" id="btn-falta-envido"><img alt="Falta envido" /></button>
+                </div>
+
+                <div class="action-slot slot-no-quiero">
+                  <button type="button" class="asset-button table-action" id="btn-no-quiero"><img alt="No quiero" /></button>
+                </div>
+                <div class="action-slot"></div>
+                <div class="action-slot slot-paso">
+                  <button type="button" class="asset-button table-action" id="btn-paso"><img alt="Paso" /></button>
+                </div>
+                <div class="action-slot slot-mazo">
+                  <button type="button" class="asset-button table-action" id="btn-mazo"><img alt="Me voy al mazo" /></button>
+                </div>
+                <div class="action-slot"></div>
+
+                <div class="action-slot slot-new-game">
+                  <button type="button" class="asset-button table-action" id="btn-new-game"><img alt="Nuevo juego" /></button>
+                </div>
+                <div class="action-slot slot-next">
+                  <button type="button" class="asset-button table-action" id="btn-next"><img alt="Próxima mano" /></button>
+                </div>
+                <div class="action-slot"></div>
+                <div class="action-slot"></div>
+                <div class="action-slot"></div>
+              </div>
+
+              <aside class="scoreboard">
+                <div class="score-labels">
+                  <span class="score-red score-label">
+                    <span class="score-label-line">EQUIPO</span>
+                    <span class="score-label-line">UNO</span>
+                    <strong class="score-total" id="score-team-one">0</strong>
+                  </span>
+                  <span class="score-gold score-label">
+                    <span class="score-label-line">EQUIPO</span>
+                    <span class="score-label-line">DOS</span>
+                    <strong class="score-total" id="score-team-two">0</strong>
+                  </span>
+                </div>
+                <div class="score-members">
+                  <span id="team-one-members"></span>
+                  <span id="team-two-members"></span>
+                </div>
+                <div class="score-track">
+                  <svg class="score-tally" id="score-tally-team-one" viewBox="0 0 22 112" aria-hidden="true"></svg>
+                  <svg class="score-tally" id="score-tally-team-two" viewBox="0 0 22 112" aria-hidden="true"></svg>
+                </div>
+              </aside>
+            </footer>
+          </section>
+
+          <div class="window-overlays">
+            <section class="window-overlay partner-overlay is-hidden" id="partner-overlay" aria-hidden="true">
+              <div class="partner-panel" role="dialog" aria-modal="true" aria-labelledby="partner-title">
+                <div class="partner-copy">
+                  <h2 id="partner-title">VOS SOS JUGADOR</h2>
+                  <img class="portrait large" id="dialog-jugador" alt="Jugador portrait" />
+                  <p>CON QUIEN JUGAS?</p>
+                </div>
+                <div class="partner-options" id="partner-options"></div>
+              </div>
+            </section>
+
+            <section class="window-overlay about-overlay is-hidden" id="about-overlay" aria-hidden="true">
+              <div class="about-panel" role="dialog" aria-modal="true" aria-labelledby="about-title">
+                <h2 id="about-title">About RETRUCO...</h2>
+                <p>Freeware Version v.A2105.32b / R3</p>
+                <p>(C) 1996, 1997 by Rolando Herrero</p>
+                <p>Original Windows 95 four-player Truco build recovered from the PE resources.</p>
+                <button type="button" data-action="close-about">OK</button>
+              </div>
+            </section>
+
+            <section class="window-overlay inspector-overlay is-hidden" id="inspector-overlay" aria-hidden="true">
+              <div class="inspector-panel" role="dialog" aria-modal="true" aria-labelledby="inspector-title">
+                <div class="inspector-header">
+                  <div>
+                    <h2 id="inspector-title">Recovered Resources</h2>
+                    <p>Probe assets and audio lifted from <code>RETRUCO.EXE</code>.</p>
+                  </div>
+                  <button type="button" class="inspector-close" data-action="close-inspector" aria-label="Close inspector">
+                    X
+                  </button>
+                </div>
+
+                <div class="inspector-body">
+                  <section class="inspector-block">
+                    <h3>Manifest</h3>
+                    <dl class="manifest-stats">
+                      <div><dt>Bitmaps</dt><dd id="manifest-bitmaps">-</dd></div>
+                      <div><dt>Sounds</dt><dd id="manifest-sounds">-</dd></div>
+                      <div><dt>MIDI</dt><dd id="manifest-midi">-</dd></div>
+                      <div><dt>WAV</dt><dd id="manifest-wav">-</dd></div>
+                    </dl>
+                  </section>
+
+                  <section class="inspector-block">
+                    <h3>Current Hand</h3>
+                    <p class="inspector-note" id="hand-summary">Recovered hand analysis will appear here.</p>
+                    <ul class="call-list" id="hand-cards"></ul>
+                  </section>
+
+                  <section class="inspector-block">
+                    <h3>Bitmap Probe</h3>
+                    <label class="inspector-field" for="bitmap-picker">
+                      <span>Resource</span>
+                      <select id="bitmap-picker"></select>
+                    </label>
+                    <div class="bitmap-preview" id="bitmap-preview"></div>
+                    <p class="inspector-note" id="bitmap-note">Recovered bitmap notes will appear here.</p>
+                  </section>
+
+                  <section class="inspector-block">
+                    <h3>Audio Probe</h3>
+                    <label class="inspector-field" for="sound-picker">
+                      <span>Sound</span>
+                      <select id="sound-picker"></select>
+                    </label>
+                    <div class="audio-controls">
+                      <button type="button" data-action="play-selected-sound">Play Selected</button>
+                      <button type="button" data-action="play-main-midi">Play MIDIC</button>
+                      <button type="button" data-action="stop-audio">Stop</button>
+                    </div>
+                    <p class="inspector-note" id="audio-note">Select a recovered sound resource.</p>
+                  </section>
+
+                  <section class="inspector-block">
+                    <h3>Character Profiles</h3>
+                    <div class="profile-list" id="profile-list"></div>
+                  </section>
+
+                  <section class="inspector-block">
+                    <h3>Recovered Calls</h3>
+                    <ul class="call-list" id="call-list"></ul>
+                  </section>
+
+                  <section class="inspector-block">
+                    <h3>Recovered Rules</h3>
+                    <ul class="call-list" id="rules-list"></ul>
+                  </section>
+                </div>
+              </div>
+            </section>
+          </div>
+        </section>
+      </section>
+
+      <section class="seed-panel" aria-label="Replay seed controls">
+        <label class="seed-field" for="seed-input">
+          <span>Seed</span>
+          <input id="seed-input" name="seed" type="text" spellcheck="false" autocomplete="off" />
+        </label>
+        <div class="seed-actions">
+          <button type="button" id="btn-seed-apply">Usar</button>
+          <button type="button" id="btn-seed-random">Nueva</button>
+          <button type="button" id="btn-copy-state">Copiar Estado</button>
+        </div>
+        <div class="seed-readout">
+          <span id="seed-current">Seed base: -</span>
+          <span id="seed-hand">Proxima mano: -</span>
+        </div>
+        <section class="audio-panel" aria-label="Audio controls">
+          <div class="audio-setting">
+            <span class="audio-setting-label">Musica</span>
+            <label class="audio-toggle" for="music-mute">
+              <input type="checkbox" id="music-mute" />
+              <span>Mute</span>
+            </label>
+            <input type="range" id="music-volume" min="0" max="100" step="1" value="56" />
+            <output id="music-volume-value" for="music-volume">56%</output>
+          </div>
+          <div class="audio-setting">
+            <span class="audio-setting-label">Voces</span>
+            <label class="audio-toggle" for="voice-mute">
+              <input type="checkbox" id="voice-mute" />
+              <span>Mute</span>
+            </label>
+            <input type="range" id="voice-volume" min="0" max="100" step="1" value="100" />
+            <output id="voice-volume-value" for="voice-volume">100%</output>
+          </div>
+        </section>
+      </section>
+
+      <p class="debug-line" id="callout-box">RECOVERED DEBUG LINE</p>
+
+      <p class="status-line">
+        Recovered from <code>RETRUCO.EXE</code>. Layout and resources are grounded in the original binary; gameplay logic lift is still in progress.
+      </p>
+    </main>
+    <script>
+      window.RETRUCO_RUNTIME_CONFIG = {
+        liveReload: false,
+        helpContactBase: "./assets/contact/",
+      };
+    </script>
+    <script src="./assets/vendor/webaudio-tinysynth.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

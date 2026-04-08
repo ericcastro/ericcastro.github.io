@@ -36,6 +36,9 @@ const browserNotFoundTemplate = document.getElementById("browserNotFoundTemplate
 const cmdShell = document.getElementById("cmdShell");
 const cmdEntry = document.getElementById("cmdEntry");
 const cmdOutput = document.getElementById("cmdOutput");
+const retrucoWindow = document.getElementById("retruco");
+const retrucoWidgetHost = document.getElementById("retrucoWidgetHost");
+const retrucoMenuBar = document.getElementById("retrucoMenuBar");
 const consentCookieName = "ericos95_cookie_consent";
 const desktopRoot = document.querySelector(".desktop");
 const dialogs = [
@@ -48,6 +51,7 @@ const dialogs = [
   shutdownWidget
 ].filter(Boolean);
 let dialogZ = 60;
+let retrucoWidgetPromise = null;
 const homeBrowserAddress = "https://eric.cast.ro";
 const homeBrowserTitle = "https://eric.cast.ro - Microsoff Internet Ersplorer";
 const homeDocumentTitle = document.title;
@@ -334,6 +338,157 @@ function initializeCmdWidget() {
 
   requestAnimationFrame(() => {
     cmdShell.scrollTop = cmdShell.scrollHeight;
+  });
+}
+
+function closeRetrucoMenus() {
+  if (!retrucoMenuBar) return;
+  retrucoMenuBar
+    .querySelectorAll(".retruco-menu-panel")
+    .forEach((panel) => panel.classList.add("is-hidden"));
+  retrucoMenuBar
+    .querySelectorAll("[data-retruco-menu-toggle]")
+    .forEach((toggle) => toggle.setAttribute("aria-expanded", "false"));
+}
+
+function patchRetrucoFrame(widget) {
+  const frameDocument = widget?.frame?.contentDocument;
+  if (!frameDocument || frameDocument.getElementById("ericos95-retruco-patch")) return;
+
+  const style = frameDocument.createElement("style");
+  style.id = "ericos95-retruco-patch";
+  style.textContent = `
+    body.widget-frame-mode .desktop {
+      justify-items: center !important;
+      overflow: hidden !important;
+    }
+
+    body.widget-frame-mode .window-shell {
+      transform: none !important;
+      margin-right: 0 !important;
+      margin-bottom: 0 !important;
+    }
+  `;
+
+  frameDocument.head.append(style);
+}
+
+function syncRetrucoFrameSize() {
+  if (!retrucoWidgetHost) return;
+  const root = retrucoWidgetHost.querySelector(".retruco-widget-host");
+  if (!(root instanceof HTMLElement)) return;
+  const frame = root.querySelector(".retruco-widget-frame");
+  const availableWidth = Math.max(320, retrucoWidgetHost.clientWidth);
+  const availableHeight = Math.max(260, retrucoWidgetHost.clientHeight);
+
+  root.style.setProperty("--retruco-frame-width", `${availableWidth}px`);
+  root.style.setProperty("--retruco-frame-height", `${availableHeight}px`);
+
+  if (frame instanceof HTMLIFrameElement) {
+    frame.setAttribute("scrolling", "no");
+    frame.style.transform = "";
+    frame.style.left = "";
+  }
+}
+
+async function ensureRetrucoWidget() {
+  if (!retrucoWidgetHost) return null;
+  if (retrucoWidgetPromise) return retrucoWidgetPromise;
+
+  retrucoWidgetPromise = import("/retruco/widget.js")
+    .then(({ mountRetrucoWidget }) => {
+      const widget = mountRetrucoWidget(retrucoWidgetHost, {
+        baseUrl: "/retruco/",
+        frameTitle: "RETRUCO.exe"
+      });
+
+      window.retrucoWidget = widget;
+
+      widget.frame?.addEventListener(
+        "load",
+        () => {
+          patchRetrucoFrame(widget);
+          syncRetrucoFrameSize();
+        },
+        { once: true }
+      );
+
+      patchRetrucoFrame(widget);
+      syncRetrucoFrameSize();
+
+      if ("ResizeObserver" in window) {
+        const observer = new ResizeObserver(() => syncRetrucoFrameSize());
+        observer.observe(retrucoWidgetHost);
+      } else {
+        window.addEventListener("resize", syncRetrucoFrameSize);
+      }
+
+      return widget;
+    })
+    .catch((error) => {
+      console.error("Failed to mount RETRUCO widget", error);
+      retrucoWidgetPromise = null;
+      return null;
+    });
+
+  return retrucoWidgetPromise;
+}
+
+function initializeRetrucoWidget() {
+  if (!retrucoWidgetHost || !retrucoMenuBar || !retrucoWindow) return;
+
+  retrucoMenuBar.querySelectorAll("[data-retruco-menu-toggle]").forEach((toggle) => {
+    const menuName = toggle.getAttribute("data-retruco-menu-toggle");
+    const panel = retrucoMenuBar.querySelector(`[data-retruco-menu="${menuName}"]`);
+    if (!menuName || !(panel instanceof HTMLElement) || !(toggle instanceof HTMLElement)) return;
+
+    bindTapActivation(toggle, (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const willOpen = panel.classList.contains("is-hidden");
+      closeRetrucoMenus();
+      if (willOpen) {
+        panel.classList.remove("is-hidden");
+        toggle.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  retrucoMenuBar.querySelectorAll("[data-retruco-action]").forEach((button) => {
+    const action = button.getAttribute("data-retruco-action");
+    if (!action) return;
+
+    bindTapActivation(button, async (event) => {
+      event.preventDefault();
+      closeRetrucoMenus();
+      const widget = await ensureRetrucoWidget();
+      const method = widget?.[action];
+      if (typeof method === "function") {
+        method.call(widget);
+      }
+    });
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (!event.target.closest("#retrucoMenuBar")) {
+      closeRetrucoMenus();
+    }
+  });
+
+  retrucoWindow.addEventListener("pointerdown", () => {
+    void ensureRetrucoWidget();
+  });
+
+  retrucoWindow.addEventListener("desktop:window-opened", () => {
+    void ensureRetrucoWidget();
+  });
+
+  retrucoWindow.addEventListener("desktop:window-closed", () => {
+    closeRetrucoMenus();
+    retrucoWidgetPromise?.then((widget) => widget?.destroy?.()).catch(() => {});
+    retrucoWidgetHost.replaceChildren();
+    retrucoWidgetPromise = null;
+    window.retrucoWidget = null;
   });
 }
 
@@ -655,6 +810,7 @@ initializeGuestbookWidget();
 initializeEmailWidget();
 initializeShutdownWidget();
 initializeCmdWidget();
+initializeRetrucoWidget();
 initializePostExternalLinks(document);
 initializeInfiniteScroll();
 initializeProjectNavigation();

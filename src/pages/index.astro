@@ -74,6 +74,10 @@ const personSchema = {
         <div class="icon icon-notepad"></div>
         <div class="icon-label">README.TXT</div>
       </div>
+      <div class="desktop-icon" data-icon="retruco" tabindex="0">
+        <div class="icon icon-retruco"></div>
+        <div class="icon-label">RETRUCO.exe</div>
+      </div>
     </div>
 
     <section
@@ -367,6 +371,72 @@ const personSchema = {
           </div>
         </div>
         <div class="status-bar"><div class="status-bar-field">For Help, click Help Topics on the Help Menu.</div></div>
+      </div>
+      <div class="resize-handle n" data-resize="n"></div>
+      <div class="resize-handle e" data-resize="e"></div>
+      <div class="resize-handle s" data-resize="s"></div>
+      <div class="resize-handle w" data-resize="w"></div>
+      <div class="resize-handle nw" data-resize="nw"></div>
+      <div class="resize-handle ne" data-resize="ne"></div>
+      <div class="resize-handle sw" data-resize="sw"></div>
+      <div class="resize-handle se" data-resize="se"></div>
+    </section>
+
+    <section
+      class="window hidden"
+      id="retruco"
+      data-window
+      data-title="RETRUCO.exe"
+      style="left: 300px; top: 88px; width: 656px; height: 637px; z-index: 24;"
+    >
+      <div class="title-bar" data-drag-handle>
+        <div class="title-left">
+          <div class="title-icon retruco"></div>
+          <div class="title-text title-bar-text">RETRUCO.exe</div>
+        </div>
+        <div class="title-bar-controls">
+          <button class="win-btn minimize" data-action="minimize" aria-label="Minimize"></button>
+          <button class="win-btn maximize" data-action="maximize" aria-label="Maximize"></button>
+          <button class="win-btn close" data-action="close" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="menu-bar retruco-menu-bar" id="retrucoMenuBar">
+        <div class="retruco-menu-root">
+          <button
+            class="retruco-menu-toggle"
+            type="button"
+            data-retruco-menu-toggle="juego"
+            aria-expanded="false"
+          >
+            Juego
+          </button>
+          <div class="retruco-menu-panel window is-hidden" data-retruco-menu="juego">
+            <button type="button" data-retruco-action="newMatch">Nuevo</button>
+            <button type="button" data-retruco-action="choosePartner">Elegir Pareja</button>
+            <button type="button" data-retruco-action="showSplash">Pantalla Inicial</button>
+            <button type="button" data-retruco-action="showTable">Mesa</button>
+          </div>
+        </div>
+        <div class="retruco-menu-root">
+          <button
+            class="retruco-menu-toggle"
+            type="button"
+            data-retruco-menu-toggle="ayuda"
+            aria-expanded="false"
+          >
+            Ayuda
+          </button>
+          <div class="retruco-menu-panel window is-hidden" data-retruco-menu="ayuda">
+            <button type="button" data-retruco-action="showInspector">Inspector</button>
+            <button type="button" data-retruco-action="showAbout">Acerca De</button>
+            <button type="button" data-retruco-action="copyState">Copiar Estado</button>
+          </div>
+        </div>
+      </div>
+      <div class="window-content retruco-window-content">
+        <div class="retruco-widget-shell sunken">
+          <div id="retrucoWidgetHost" class="retruco-widget-mount" aria-label="RETRUCO widget"></div>
+        </div>
       </div>
       <div class="resize-handle n" data-resize="n"></div>
       <div class="resize-handle e" data-resize="e"></div>
@@ -689,6 +759,10 @@ const personSchema = {
             <button class="start-menu-item" type="button" data-start-open="browser">
               <span class="title-icon ie start-menu-icon"></span>
               <span>Internet Ersplorer</span>
+            </button>
+            <button class="start-menu-item" type="button" data-start-open="retruco">
+              <span class="title-icon retruco start-menu-icon"></span>
+              <span>RETRUCO.exe</span>
             </button>
             <button class="start-menu-item" type="button" data-start-open="cmd">
               <span class="title-icon cmd start-menu-icon"></span>

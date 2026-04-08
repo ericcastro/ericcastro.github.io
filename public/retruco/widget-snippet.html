@@ -1,0 +1,13 @@
+<!-- Example bare widget mount for a host page that owns the window chrome -->
+<div id="retruco-widget-host"></div>
+<script type="module">
+  import { mountRetrucoWidget } from "./widget.js";
+
+  const retruco = mountRetrucoWidget("#retruco-widget-host", {
+    seed: "demo-seed",
+  });
+
+  // Example host-side menu wiring:
+  // document.getElementById("retruco-new").addEventListener("click", () => retruco.newMatch());
+  // document.getElementById("retruco-about").addEventListener("click", () => retruco.showAbout());
+</script>

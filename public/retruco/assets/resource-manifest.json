@@ -1,0 +1,1714 @@
+{
+  "source": "RETRUCO.EXE",
+  "generatedAt": "2026-04-08T20:50:02.625Z",
+  "counts": {
+    "bitmaps": 142,
+    "sounds": 50,
+    "midi": 4,
+    "wav": 46
+  },
+  "portraits": {
+    "patrulla": "261.bmp",
+    "jugador": "303.bmp",
+    "monstruo": "268.bmp",
+    "titan": "269.bmp"
+  },
+  "mainMidiId": "200",
+  "rules": {
+    "variant": "Argentina truco, four-player couples",
+    "matchPoints": 15,
+    "splitScoreAt": 15,
+    "players": 4,
+    "teams": 2,
+    "cardsPerPlayer": 3,
+    "loopsPerRound": 3,
+    "envidoOnlyInFirstLoop": true,
+    "trucoCanBeCalledAnyTime": true,
+    "florEnabled": false,
+    "faltaEnvidoEnabled": true,
+    "deckInteraction": "No in-round interaction with the deck; 12 cards are dealt to players each round.",
+    "envido": {
+      "acceptedPoints": {
+        "envido": 2,
+        "realEnvido": 3,
+        "faltaEnvido": "to victory"
+      },
+      "declinedPoints": 1,
+      "scoring": "Two highest envido values of the same suit plus 20, otherwise the best single-card envido value.",
+      "sonBuenasRequiredToConcede": true
+    },
+    "truco": {
+      "acceptedPoints": {
+        "truco": 2,
+        "quieroRetruco": 3,
+        "quieroVale4": 4
+      },
+      "declinedPoints": {
+        "truco": 1,
+        "quieroRetruco": 2,
+        "quieroVale4": 3
+      },
+      "sequence": [
+        "truco",
+        "quieroRetruco",
+        "quieroVale4"
+      ],
+      "mazoEndsRound": true
+    }
+  },
+  "bitmapResources": [
+    "117.bmp",
+    "124.bmp",
+    "128.bmp",
+    "136.bmp",
+    "140.bmp",
+    "143.bmp",
+    "145.bmp",
+    "151.bmp",
+    "155.bmp",
+    "161.bmp",
+    "163.bmp",
+    "165.bmp",
+    "167.bmp",
+    "169.bmp",
+    "171.bmp",
+    "173.bmp",
+    "175.bmp",
+    "177.bmp",
+    "179.bmp",
+    "181.bmp",
+    "184.bmp",
+    "186.bmp",
+    "188.bmp",
+    "190.bmp",
+    "192.bmp",
+    "194.bmp",
+    "197.bmp",
+    "199.bmp",
+    "201.bmp",
+    "203.bmp",
+    "205.bmp",
+    "210.bmp",
+    "214.bmp",
+    "216.bmp",
+    "218.bmp",
+    "220.bmp",
+    "222.bmp",
+    "224.bmp",
+    "226.bmp",
+    "228.bmp",
+    "230.bmp",
+    "232.bmp",
+    "234.bmp",
+    "237.bmp",
+    "242.bmp",
+    "244.bmp",
+    "246.bmp",
+    "248.bmp",
+    "250.bmp",
+    "261.bmp",
+    "262.bmp",
+    "263.bmp",
+    "264.bmp",
+    "265.bmp",
+    "26567.bmp",
+    "266.bmp",
+    "267.bmp",
+    "268.bmp",
+    "269.bmp",
+    "270.bmp",
+    "271.bmp",
+    "272.bmp",
+    "273.bmp",
+    "274.bmp",
+    "275.bmp",
+    "276.bmp",
+    "277.bmp",
+    "278.bmp",
+    "279.bmp",
+    "280.bmp",
+    "281.bmp",
+    "282.bmp",
+    "283.bmp",
+    "284.bmp",
+    "285.bmp",
+    "286.bmp",
+    "287.bmp",
+    "288.bmp",
+    "289.bmp",
+    "290.bmp",
+    "291.bmp",
+    "292.bmp",
+    "293.bmp",
+    "294.bmp",
+    "295.bmp",
+    "296.bmp",
+    "297.bmp",
+    "298.bmp",
+    "299.bmp",
+    "300.bmp",
+    "301.bmp",
+    "302.bmp",
+    "303.bmp",
+    "304.bmp",
+    "305.bmp",
+    "306.bmp",
+    "307.bmp",
+    "308.bmp",
+    "309.bmp",
+    "30994.bmp",
+    "30995.bmp",
+    "30996.bmp",
+    "310.bmp",
+    "311.bmp",
+    "312.bmp",
+    "313.bmp",
+    "314.bmp",
+    "315.bmp",
+    "316.bmp",
+    "319.bmp",
+    "320.bmp",
+    "CANTARD.bmp",
+    "CANTARU.bmp",
+    "ENVIDOD.bmp",
+    "ENVIDOU.bmp",
+    "FALTAENVIDOD.bmp",
+    "FALTAENVIDOU.bmp",
+    "MEVOYALMAZOD.bmp",
+    "MEVOYALMAZOU.bmp",
+    "MORTO.bmp",
+    "NEWGAMED.bmp",
+    "NEWGAMEU.bmp",
+    "NEXTD.bmp",
+    "NEXTU.bmp",
+    "NOCANTARD.bmp",
+    "NOCANTARU.bmp",
+    "NOQUIEROD.bmp",
+    "NOQUIEROU.bmp",
+    "PASARD.bmp",
+    "PASARU.bmp",
+    "QUIEROD.bmp",
+    "QUIERORETRUCOD.bmp",
+    "QUIERORETRUCOU.bmp",
+    "QUIEROU.bmp",
+    "QUIEROVALE4D.bmp",
+    "QUIEROVALE4U.bmp",
+    "REALENVIDOD.bmp",
+    "REALENVIDOU.bmp",
+    "SONBUENASD.bmp",
+    "SONBUENASU.bmp",
+    "TRUCOD.bmp",
+    "TRUCOU.bmp"
+  ],
+  "knownBitmaps": {
+    "117.bmp": "1 de oros",
+    "124.bmp": "6 de oros",
+    "128.bmp": "2 de oros",
+    "136.bmp": "3 de oros",
+    "140.bmp": "4 de oros",
+    "143.bmp": "5 de oros",
+    "145.bmp": "7 de oros",
+    "151.bmp": "10 de oros",
+    "155.bmp": "11 de oros",
+    "161.bmp": "12 de oros",
+    "163.bmp": "1 de copas",
+    "165.bmp": "2 de copas",
+    "167.bmp": "3 de copas",
+    "169.bmp": "4 de copas. Bitmap also carries a JOKER overlay label in the recovered art.",
+    "171.bmp": "5 de copas",
+    "173.bmp": "6 de copas",
+    "175.bmp": "7 de copas",
+    "177.bmp": "12 de copas",
+    "179.bmp": "10 de copas",
+    "181.bmp": "11 de copas",
+    "184.bmp": "1 de espadas",
+    "186.bmp": "2 de espadas",
+    "188.bmp": "3 de espadas",
+    "190.bmp": "7 de espadas",
+    "192.bmp": "6 de espadas",
+    "194.bmp": "4 de espadas",
+    "197.bmp": "5 de espadas",
+    "199.bmp": "10 de espadas",
+    "201.bmp": "11 de espadas",
+    "203.bmp": "12 de espadas",
+    "205.bmp": "1 de bastos",
+    "210.bmp": "2 de bastos",
+    "214.bmp": "3 de bastos",
+    "216.bmp": "4 de bastos",
+    "218.bmp": "5 de bastos",
+    "220.bmp": "6 de bastos",
+    "222.bmp": "7 de bastos",
+    "224.bmp": "10 de bastos",
+    "226.bmp": "11 de bastos",
+    "228.bmp": "12 de bastos",
+    "230.bmp": "NO INFO placeholder",
+    "232.bmp": "Unverified extracted bitmap; not used on the reconstructed board.",
+    "234.bmp": "Black placeholder card",
+    "237.bmp": "Black placeholder card",
+    "261.bmp": "Patrulla portrait",
+    "268.bmp": "Monstruo portrait",
+    "269.bmp": "Titan portrait",
+    "303.bmp": "Jugador portrait",
+    "26567.bmp": "Unverified extracted bitmap; not used on the reconstructed board."
+  },
+  "stringResources": {
+    "100": "(C) 1996, 1997 by Rolando Herrero",
+    "102": "Freeware Version v.A2105.32b / R3",
+    "103": "RETRUCO",
+    "104": "YOU ARE",
+    "105": "CHOOSE YOUR PARTNER",
+    "106": "For additional information about RETRUCO",
+    "107": "E-Mail: rherrero@ba.net",
+    "108": "Web Page: http://home.ba.net/~rherrero",
+    "109": "Phone: +54 1 665 4453",
+    "110": "Freeware. PUBLIC DOMAIN Version.",
+    "111": "Made in Hurlingham, BAS, Argentina",
+    "115": "ENVIDO",
+    "118": "REAL ENVIDO",
+    "122": "FALTA ENVIDO",
+    "126": "TRUCO",
+    "130": "QUIERO RETRUCO",
+    "134": "QUIERO VALE 4",
+    "138": "QUIERO",
+    "141": "NO QUIERO",
+    "146": "SON BUENAS",
+    "149": "ME VOY AL MAZO",
+    "182": "YO TENGO ",
+    "195": "QUE TENES ",
+    "206": "PASO",
+    "209": "ESPADAS",
+    "211": "COPAS",
+    "213": "BASTOS",
+    "215": "OROS",
+    "217": "TIRO EL",
+    "219": "DE",
+    "221": "NO PODES CANTAR ESO",
+    "223": "TENES",
+    "225": "DO YOU HAVE ANYTHING?",
+    "227": "THERE ARE ",
+    "229": "ENVIDO POINTS",
+    "231": "TRUCO POINTS",
+    "233": "DO YOU HAVE ANYTIHNG FOR ENVIDO?",
+    "235": "ERROR: MAKE A COPY IN HARD DISK AND EXECUTE THERE.",
+    "238": "WON:",
+    "240": "WON:",
+    "241": "LOST:",
+    "243": "AND",
+    "245": "GANAMOS NOMAS",
+    "247": "LES VAMOS A LLENAR",
+    "249": "LA CANASTA",
+    "251": "VAN A PERDER",
+    "252": "QUE ESTAS ESPERANDO",
+    "253": "NO TENGO TODO EL DIA",
+    "255": "GILAZO",
+    "257": "INUTIL",
+    "258": "HAY REVANCHA?",
+    "259": "JUGAMOS DE NUEVO?",
+    "260": "ERROR:  RESOURCES NOT AVAILABLE",
+    "342": "SYSTEM RESOURCES ALTERED, ILLEGAL VERSION",
+    "61440": "Open",
+    "61441": "Save As",
+    "61442": "All Files (*.*)",
+    "61443": "Untitled",
+    "61457": "&Hide",
+    "61472": "No error message is available.",
+    "61473": "An unsupported operation was attempted.",
+    "61474": "A required resource was unavailable.",
+    "61475": "Out of memory.",
+    "61476": "An unknown error has occurred.",
+    "61588": "Linked %s",
+    "61589": "Unknown Type",
+    "61696": "Invalid filename.",
+    "61697": "Failed to open document.",
+    "61698": "Failed to save document.",
+    "61699": "Save changes to %1?",
+    "61700": "Failed to create empty document.",
+    "61701": "The file is too large to open.",
+    "61702": "Could not start print job.",
+    "61703": "Failed to launch help.",
+    "61704": "Internal application error.",
+    "61705": "Command failed.",
+    "61706": "Insufficient memory to perform operation.",
+    "61712": "Please enter an integer.",
+    "61713": "Please enter a number.",
+    "61714": "Please enter an integer between %1 and %2.",
+    "61715": "Please enter a number between %1 and %2.",
+    "61716": "Please enter no more than %1 characters.",
+    "61717": "Please select a button.",
+    "61718": "Please enter an integer between 0 and 255.",
+    "61719": "Please enter a positive integer.",
+    "61720": "Please enter a date and/or time.",
+    "61721": "Please enter a currency.",
+    "61728": "Unexpected file format.",
+    "61729": "%1\\nCannot find this file.\\nPlease verify that the correct path and file name are given.",
+    "61730": "Destination disk drive is full.",
+    "61731": "Unable to read from %1, it is opened by someone else.",
+    "61732": "Unable to write to %1, it is read-only or opened by someone else.",
+    "61733": "An unexpected error occurred while reading %1.",
+    "61734": "An unexpected error occurred while writing %1.",
+    "61829": "%1\\nUnable to register document.\\nThe document may already be open.",
+    "61836": "Unable to read write-only property.",
+    "61837": "Unable to write read-only property.",
+    "61840": "Unable to load mail system support.",
+    "61841": "Mail system DLL is invalid.",
+    "61842": "Send Mail failed to send message.",
+    "61856": "No error occurred.",
+    "61857": "An unknown error occurred while accessing %1.",
+    "61858": "%1 was not found.",
+    "61859": "%1 contains an invalid path.",
+    "61860": "%1 could not be opened because there are too many open files.",
+    "61861": "Access to %1 was denied.",
+    "61862": "An invalid file handle was associated with %1.",
+    "61863": "%1 could not be removed because it is the current directory.",
+    "61864": "%1 could not be created because the directory is full.",
+    "61865": "Seek failed on %1",
+    "61866": "A hardware I/O error was reported while accessing %1.",
+    "61867": "A sharing violation occurred while accessing %1.",
+    "61868": "A locking violation occurred while accessing %1.",
+    "61869": "Disk full while accessing %1.",
+    "61870": "An attempt was made to access %1 past its end.",
+    "61872": "No error occurred.",
+    "61873": "An unknown error occurred while accessing %1.",
+    "61874": "An attempt was made to write to the reading %1.",
+    "61875": "An attempt was made to access %1 past its end.",
+    "61876": "An attempt was made to read from the writing %1.",
+    "61877": "%1 has a bad format.",
+    "61878": "%1 contained an unexpected object.",
+    "61879": "%1 contains an incorrect schema.",
+    "61888": "pixels"
+  },
+  "callLexicon": {
+    "envido": "ENVIDO",
+    "realEnvido": "REAL ENVIDO",
+    "faltaEnvido": "FALTA ENVIDO",
+    "truco": "TRUCO",
+    "quieroRetruco": "QUIERO RETRUCO",
+    "quieroVale4": "QUIERO VALE 4",
+    "quiero": "QUIERO",
+    "noQuiero": "NO QUIERO",
+    "sonBuenas": "SON BUENAS",
+    "meVoyAlMazo": "ME VOY AL MAZO",
+    "yoTengo": "YO TENGO ",
+    "queTenes": "QUE TENES ",
+    "paso": "PASO",
+    "espadas": "ESPADAS",
+    "copas": "COPAS",
+    "bastos": "BASTOS",
+    "oros": "OROS",
+    "tiroEl": "TIRO EL",
+    "de": "DE",
+    "noPodesCantarEso": "NO PODES CANTAR ESO",
+    "tenes": "TENES",
+    "doYouHaveAnything": "DO YOU HAVE ANYTHING?",
+    "envidoPoints": "ENVIDO POINTS",
+    "trucoPoints": "TRUCO POINTS",
+    "doYouHaveAnythingForEnvido": "DO YOU HAVE ANYTIHNG FOR ENVIDO?"
+  },
+  "actionButtons": [
+    {
+      "key": "truco",
+      "up": "TRUCOU.bmp",
+      "down": "TRUCOD.bmp",
+      "stringId": "126",
+      "label": "TRUCO"
+    },
+    {
+      "key": "envido",
+      "up": "ENVIDOU.bmp",
+      "down": "ENVIDOD.bmp",
+      "stringId": "115",
+      "label": "ENVIDO"
+    },
+    {
+      "key": "realEnvido",
+      "up": "REALENVIDOU.bmp",
+      "down": "REALENVIDOD.bmp",
+      "stringId": "118",
+      "label": "REAL ENVIDO"
+    },
+    {
+      "key": "faltaEnvido",
+      "up": "FALTAENVIDOU.bmp",
+      "down": "FALTAENVIDOD.bmp",
+      "stringId": "122",
+      "label": "FALTA ENVIDO"
+    },
+    {
+      "key": "quiero",
+      "up": "QUIEROU.bmp",
+      "down": "QUIEROD.bmp",
+      "stringId": "138",
+      "label": "QUIERO"
+    },
+    {
+      "key": "noQuiero",
+      "up": "NOQUIEROU.bmp",
+      "down": "NOQUIEROD.bmp",
+      "stringId": "141",
+      "label": "NO QUIERO"
+    },
+    {
+      "key": "quieroRetruco",
+      "up": "QUIERORETRUCOU.bmp",
+      "down": "QUIERORETRUCOD.bmp",
+      "stringId": "130",
+      "label": "QUIERO RETRUCO"
+    },
+    {
+      "key": "quieroVale4",
+      "up": "QUIEROVALE4U.bmp",
+      "down": "QUIEROVALE4D.bmp",
+      "stringId": "134",
+      "label": "QUIERO VALE 4"
+    },
+    {
+      "key": "meVoyAlMazo",
+      "up": "MEVOYALMAZOU.bmp",
+      "down": "MEVOYALMAZOD.bmp",
+      "stringId": "149",
+      "label": "ME VOY AL MAZO"
+    },
+    {
+      "key": "paso",
+      "up": "PASARU.bmp",
+      "down": "PASARD.bmp",
+      "stringId": "206",
+      "label": "PASO"
+    },
+    {
+      "key": "sonBuenas",
+      "up": "SONBUENASU.bmp",
+      "down": "SONBUENASD.bmp",
+      "stringId": "146",
+      "label": "SON BUENAS"
+    },
+    {
+      "key": "cantar",
+      "up": "CANTARU.bmp",
+      "down": "CANTARD.bmp",
+      "label": null
+    },
+    {
+      "key": "noCantar",
+      "up": "NOCANTARU.bmp",
+      "down": "NOCANTARD.bmp",
+      "label": null
+    },
+    {
+      "key": "next",
+      "up": "NEXTU.bmp",
+      "down": "NEXTD.bmp",
+      "label": null
+    },
+    {
+      "key": "newGame",
+      "up": "NEWGAMEU.bmp",
+      "down": "NEWGAMED.bmp",
+      "label": null
+    }
+  ],
+  "voiceSequences": {
+    "notes": [
+      "Action sound ids below are recovered from the main dispatcher around 0x409e47-0x40a31d.",
+      "Card-play narration is a queued sequence. The base clip and suit fragments are exact.",
+      "Visible-rank sound ids below are a best-fit browser mapping from the recovered numeric fragment table in the action 0x05 branch.",
+      "Envido dialogue prompt clips below are a best-fit mapping from the remaining short recovered WAVs near the envido branch; exact per-phrase ids still need direct EXE confirmation.",
+      "Browser validation grounded 178.wav as VEINTI Y and 196.wav as TREINTA Y for envido score assembly.",
+      "Taunt strings and their voice ids are recovered from handlers around 0x40755b-0x40766a, 0x408ac4-0x408b2a, and siblings."
+    ],
+    "actions": {
+      "envido": {
+        "actionId": 14,
+        "soundIds": [
+          "113"
+        ]
+      },
+      "realEnvido": {
+        "actionId": 15,
+        "soundIds": [
+          "116"
+        ]
+      },
+      "faltaEnvido": {
+        "actionId": 16,
+        "soundIds": [
+          "119"
+        ]
+      },
+      "truco": {
+        "actionId": 2,
+        "soundIds": [
+          "123"
+        ]
+      },
+      "quieroRetruco": {
+        "actionId": 3,
+        "soundIds": [
+          "127"
+        ]
+      },
+      "quieroVale4": {
+        "actionId": 4,
+        "soundIds": [
+          "131"
+        ]
+      },
+      "quiero": {
+        "actionId": 6,
+        "soundIds": [
+          "135"
+        ]
+      },
+      "noQuiero": {
+        "actionId": 7,
+        "soundIds": [
+          "139"
+        ]
+      },
+      "meVoyAlMazo": {
+        "actionId": 22,
+        "soundIds": [
+          "142"
+        ]
+      },
+      "sonBuenas": {
+        "actionId": 26,
+        "soundIds": [
+          "144"
+        ]
+      },
+      "paso": {
+        "actionId": 28,
+        "soundIds": [
+          "204"
+        ]
+      }
+    },
+    "phrases": {
+      "yoTengo": {
+        "soundIds": [
+          "180"
+        ]
+      },
+      "queTenes": {
+        "soundIds": [
+          "193"
+        ]
+      },
+      "tenes": {
+        "soundIds": [
+          "178"
+        ]
+      },
+      "veinte": {
+        "soundIds": [
+          "174"
+        ]
+      },
+      "veintiY": {
+        "soundIds": [
+          "178"
+        ]
+      },
+      "treinta": {
+        "soundIds": [
+          "176"
+        ]
+      },
+      "treintaY": {
+        "soundIds": [
+          "196"
+        ]
+      }
+    },
+    "banter": {
+      "winner": {
+        "text": "GANAMOS NOMAS",
+        "soundIds": [
+          "328",
+          "331"
+        ]
+      },
+      "randomBoasts": [
+        {
+          "text": "VAN A PERDER",
+          "soundIds": [
+            "330"
+          ]
+        },
+        {
+          "text": "LES VAMOS A LLENAR LA CANASTA",
+          "soundIds": [
+            "329"
+          ]
+        }
+      ],
+      "rematchPrompts": [
+        {
+          "text": "AH, REVANCHA?",
+          "soundIds": [
+            "332"
+          ]
+        },
+        {
+          "text": "JUGAMOS DE NUEVO?",
+          "soundIds": [
+            "333"
+          ]
+        }
+      ],
+      "startEffect": {
+        "text": "START_FROG",
+        "soundIds": [
+          "343"
+        ]
+      },
+      "idleTauntOpeners": [
+        {
+          "text": "QUE ESTAS ESPERANDO",
+          "soundIds": [
+            "326"
+          ]
+        },
+        {
+          "text": "NO TENGO TODO EL DIA",
+          "soundIds": [
+            "327"
+          ]
+        }
+      ],
+      "idleTauntClosers": [
+        {
+          "text": "GILAZO",
+          "soundIds": [
+            "324"
+          ]
+        },
+        {
+          "text": "INUTIL",
+          "soundIds": [
+            "325"
+          ]
+        }
+      ]
+    },
+    "cardPlay": {
+      "actionId": 5,
+      "baseSoundId": "191",
+      "rankSoundIdsByVisibleRank": {
+        "1": "150",
+        "2": "152",
+        "3": "154",
+        "4": "156",
+        "5": "158",
+        "6": "160",
+        "7": "162",
+        "10": "168",
+        "11": "170",
+        "12": "172"
+      },
+      "suitSoundIds": {
+        "espadas": "183",
+        "copas": "185",
+        "bastos": "187",
+        "oros": "189"
+      },
+      "rankSoundIdsRecovered": [
+        "147",
+        "150",
+        "152",
+        "154",
+        "156",
+        "158",
+        "160",
+        "162",
+        "164",
+        "166",
+        "168",
+        "170",
+        "172",
+        "174",
+        "176"
+      ]
+    },
+    "taunts": [
+      {
+        "stringIds": [
+          "252",
+          "253"
+        ],
+        "labels": [
+          "QUE ESTAS ESPERANDO",
+          "NO TENGO TODO EL DIA"
+        ],
+        "soundIds": [
+          "324",
+          "325"
+        ]
+      },
+      {
+        "stringIds": [
+          "255",
+          "257"
+        ],
+        "labels": [
+          "GILAZO",
+          "INUTIL"
+        ],
+        "soundIds": [
+          "326",
+          "327"
+        ]
+      }
+    ]
+  },
+  "playableDeck": [
+    "117.bmp",
+    "124.bmp",
+    "128.bmp",
+    "136.bmp",
+    "140.bmp",
+    "143.bmp",
+    "145.bmp",
+    "151.bmp",
+    "155.bmp",
+    "161.bmp",
+    "163.bmp",
+    "165.bmp",
+    "167.bmp",
+    "169.bmp",
+    "171.bmp",
+    "173.bmp",
+    "175.bmp",
+    "177.bmp",
+    "179.bmp",
+    "181.bmp",
+    "184.bmp",
+    "186.bmp",
+    "188.bmp",
+    "190.bmp",
+    "192.bmp",
+    "194.bmp",
+    "197.bmp",
+    "199.bmp",
+    "201.bmp",
+    "203.bmp",
+    "205.bmp",
+    "210.bmp",
+    "214.bmp",
+    "216.bmp",
+    "218.bmp",
+    "220.bmp",
+    "222.bmp",
+    "224.bmp",
+    "226.bmp",
+    "228.bmp"
+  ],
+  "cardCatalog": [
+    {
+      "bitmap": "117.bmp",
+      "rank": 1,
+      "suit": "oros",
+      "label": "1 de oros",
+      "envidoScore": 1,
+      "trucoStrength": 8
+    },
+    {
+      "bitmap": "124.bmp",
+      "rank": 6,
+      "suit": "oros",
+      "label": "6 de oros",
+      "envidoScore": 6,
+      "trucoStrength": 3
+    },
+    {
+      "bitmap": "128.bmp",
+      "rank": 2,
+      "suit": "oros",
+      "label": "2 de oros",
+      "envidoScore": 2,
+      "trucoStrength": 9
+    },
+    {
+      "bitmap": "136.bmp",
+      "rank": 3,
+      "suit": "oros",
+      "label": "3 de oros",
+      "envidoScore": 3,
+      "trucoStrength": 10
+    },
+    {
+      "bitmap": "140.bmp",
+      "rank": 4,
+      "suit": "oros",
+      "label": "4 de oros",
+      "envidoScore": 4,
+      "trucoStrength": 1
+    },
+    {
+      "bitmap": "143.bmp",
+      "rank": 5,
+      "suit": "oros",
+      "label": "5 de oros",
+      "envidoScore": 5,
+      "trucoStrength": 2
+    },
+    {
+      "bitmap": "145.bmp",
+      "rank": 7,
+      "suit": "oros",
+      "label": "7 de oros",
+      "envidoScore": 7,
+      "trucoStrength": 11
+    },
+    {
+      "bitmap": "151.bmp",
+      "rank": 10,
+      "suit": "oros",
+      "label": "10 de oros",
+      "envidoScore": 0,
+      "trucoStrength": 5
+    },
+    {
+      "bitmap": "155.bmp",
+      "rank": 11,
+      "suit": "oros",
+      "label": "11 de oros",
+      "envidoScore": 0,
+      "trucoStrength": 6
+    },
+    {
+      "bitmap": "161.bmp",
+      "rank": 12,
+      "suit": "oros",
+      "label": "12 de oros",
+      "envidoScore": 0,
+      "trucoStrength": 7
+    },
+    {
+      "bitmap": "163.bmp",
+      "rank": 1,
+      "suit": "copas",
+      "label": "1 de copas",
+      "envidoScore": 1,
+      "trucoStrength": 8
+    },
+    {
+      "bitmap": "165.bmp",
+      "rank": 2,
+      "suit": "copas",
+      "label": "2 de copas",
+      "envidoScore": 2,
+      "trucoStrength": 9
+    },
+    {
+      "bitmap": "167.bmp",
+      "rank": 3,
+      "suit": "copas",
+      "label": "3 de copas",
+      "envidoScore": 3,
+      "trucoStrength": 10
+    },
+    {
+      "bitmap": "169.bmp",
+      "rank": 4,
+      "suit": "copas",
+      "label": "4 de copas",
+      "envidoScore": 4,
+      "trucoStrength": 1,
+      "notes": "Bitmap also carries a JOKER overlay label in the recovered art."
+    },
+    {
+      "bitmap": "171.bmp",
+      "rank": 5,
+      "suit": "copas",
+      "label": "5 de copas",
+      "envidoScore": 5,
+      "trucoStrength": 2
+    },
+    {
+      "bitmap": "173.bmp",
+      "rank": 6,
+      "suit": "copas",
+      "label": "6 de copas",
+      "envidoScore": 6,
+      "trucoStrength": 3
+    },
+    {
+      "bitmap": "175.bmp",
+      "rank": 7,
+      "suit": "copas",
+      "label": "7 de copas",
+      "envidoScore": 7,
+      "trucoStrength": 4
+    },
+    {
+      "bitmap": "177.bmp",
+      "rank": 12,
+      "suit": "copas",
+      "label": "12 de copas",
+      "envidoScore": 0,
+      "trucoStrength": 7
+    },
+    {
+      "bitmap": "179.bmp",
+      "rank": 10,
+      "suit": "copas",
+      "label": "10 de copas",
+      "envidoScore": 0,
+      "trucoStrength": 5
+    },
+    {
+      "bitmap": "181.bmp",
+      "rank": 11,
+      "suit": "copas",
+      "label": "11 de copas",
+      "envidoScore": 0,
+      "trucoStrength": 6
+    },
+    {
+      "bitmap": "184.bmp",
+      "rank": 1,
+      "suit": "espadas",
+      "label": "1 de espadas",
+      "envidoScore": 1,
+      "trucoStrength": 14
+    },
+    {
+      "bitmap": "186.bmp",
+      "rank": 2,
+      "suit": "espadas",
+      "label": "2 de espadas",
+      "envidoScore": 2,
+      "trucoStrength": 9
+    },
+    {
+      "bitmap": "188.bmp",
+      "rank": 3,
+      "suit": "espadas",
+      "label": "3 de espadas",
+      "envidoScore": 3,
+      "trucoStrength": 10
+    },
+    {
+      "bitmap": "190.bmp",
+      "rank": 7,
+      "suit": "espadas",
+      "label": "7 de espadas",
+      "envidoScore": 7,
+      "trucoStrength": 12
+    },
+    {
+      "bitmap": "192.bmp",
+      "rank": 6,
+      "suit": "espadas",
+      "label": "6 de espadas",
+      "envidoScore": 6,
+      "trucoStrength": 3
+    },
+    {
+      "bitmap": "194.bmp",
+      "rank": 4,
+      "suit": "espadas",
+      "label": "4 de espadas",
+      "envidoScore": 4,
+      "trucoStrength": 1
+    },
+    {
+      "bitmap": "197.bmp",
+      "rank": 5,
+      "suit": "espadas",
+      "label": "5 de espadas",
+      "envidoScore": 5,
+      "trucoStrength": 2
+    },
+    {
+      "bitmap": "199.bmp",
+      "rank": 10,
+      "suit": "espadas",
+      "label": "10 de espadas",
+      "envidoScore": 0,
+      "trucoStrength": 5
+    },
+    {
+      "bitmap": "201.bmp",
+      "rank": 11,
+      "suit": "espadas",
+      "label": "11 de espadas",
+      "envidoScore": 0,
+      "trucoStrength": 6
+    },
+    {
+      "bitmap": "203.bmp",
+      "rank": 12,
+      "suit": "espadas",
+      "label": "12 de espadas",
+      "envidoScore": 0,
+      "trucoStrength": 7
+    },
+    {
+      "bitmap": "205.bmp",
+      "rank": 1,
+      "suit": "bastos",
+      "label": "1 de bastos",
+      "envidoScore": 1,
+      "trucoStrength": 13
+    },
+    {
+      "bitmap": "210.bmp",
+      "rank": 2,
+      "suit": "bastos",
+      "label": "2 de bastos",
+      "envidoScore": 2,
+      "trucoStrength": 9
+    },
+    {
+      "bitmap": "214.bmp",
+      "rank": 3,
+      "suit": "bastos",
+      "label": "3 de bastos",
+      "envidoScore": 3,
+      "trucoStrength": 10
+    },
+    {
+      "bitmap": "216.bmp",
+      "rank": 4,
+      "suit": "bastos",
+      "label": "4 de bastos",
+      "envidoScore": 4,
+      "trucoStrength": 1
+    },
+    {
+      "bitmap": "218.bmp",
+      "rank": 5,
+      "suit": "bastos",
+      "label": "5 de bastos",
+      "envidoScore": 5,
+      "trucoStrength": 2
+    },
+    {
+      "bitmap": "220.bmp",
+      "rank": 6,
+      "suit": "bastos",
+      "label": "6 de bastos",
+      "envidoScore": 6,
+      "trucoStrength": 3
+    },
+    {
+      "bitmap": "222.bmp",
+      "rank": 7,
+      "suit": "bastos",
+      "label": "7 de bastos",
+      "envidoScore": 7,
+      "trucoStrength": 4
+    },
+    {
+      "bitmap": "224.bmp",
+      "rank": 10,
+      "suit": "bastos",
+      "label": "10 de bastos",
+      "envidoScore": 0,
+      "trucoStrength": 5
+    },
+    {
+      "bitmap": "226.bmp",
+      "rank": 11,
+      "suit": "bastos",
+      "label": "11 de bastos",
+      "envidoScore": 0,
+      "trucoStrength": 6
+    },
+    {
+      "bitmap": "228.bmp",
+      "rank": 12,
+      "suit": "bastos",
+      "label": "12 de bastos",
+      "envidoScore": 0,
+      "trucoStrength": 7
+    }
+  ],
+  "characterProfiles": [
+    {
+      "index": 0,
+      "key": "patrulla",
+      "displayName": "PATRULLA",
+      "portrait": "261.bmp",
+      "namePointer": "0x4361e8",
+      "faceBitmaps": [
+        "262.bmp",
+        "263.bmp",
+        "264.bmp",
+        "265.bmp",
+        "266.bmp",
+        "267.bmp"
+      ],
+      "signStripBitmaps": [
+        "282.bmp",
+        "283.bmp",
+        "284.bmp",
+        "285.bmp",
+        "286.bmp",
+        "287.bmp",
+        "288.bmp"
+      ]
+    },
+    {
+      "index": 1,
+      "key": "monstruo",
+      "displayName": "MONSTRUO",
+      "portrait": "268.bmp",
+      "namePointer": "0x4361dc",
+      "faceBitmaps": [
+        "270.bmp",
+        "271.bmp",
+        "272.bmp",
+        "273.bmp",
+        "274.bmp",
+        "275.bmp"
+      ],
+      "signStripBitmaps": [
+        "289.bmp",
+        "290.bmp",
+        "291.bmp",
+        "292.bmp",
+        "293.bmp",
+        "294.bmp",
+        "295.bmp"
+      ]
+    },
+    {
+      "index": 2,
+      "key": "titan",
+      "displayName": "TITAN",
+      "portrait": "269.bmp",
+      "namePointer": "0x4361d4",
+      "faceBitmaps": [
+        "276.bmp",
+        "277.bmp",
+        "278.bmp",
+        "279.bmp",
+        "280.bmp",
+        "281.bmp"
+      ],
+      "signStripBitmaps": [
+        "296.bmp",
+        "297.bmp",
+        "298.bmp",
+        "299.bmp",
+        "300.bmp",
+        "301.bmp",
+        "302.bmp"
+      ]
+    },
+    {
+      "index": 3,
+      "key": "jugador",
+      "displayName": "JUGADOR",
+      "portrait": "303.bmp",
+      "namePointer": "gameState+0x110",
+      "faceBitmaps": [
+        "304.bmp",
+        "305.bmp",
+        "306.bmp",
+        "307.bmp",
+        "308.bmp",
+        "309.bmp"
+      ],
+      "signStripBitmaps": [
+        "310.bmp",
+        "311.bmp",
+        "312.bmp",
+        "313.bmp",
+        "314.bmp",
+        "315.bmp",
+        "316.bmp"
+      ]
+    }
+  ],
+  "buttons": [
+    "TRUCOU.bmp",
+    "TRUCOD.bmp",
+    "ENVIDOU.bmp",
+    "ENVIDOD.bmp",
+    "REALENVIDOU.bmp",
+    "REALENVIDOD.bmp",
+    "FALTAENVIDOU.bmp",
+    "FALTAENVIDOD.bmp",
+    "QUIEROU.bmp",
+    "QUIEROD.bmp",
+    "NOQUIEROU.bmp",
+    "NOQUIEROD.bmp",
+    "QUIERORETRUCOU.bmp",
+    "QUIERORETRUCOD.bmp",
+    "QUIEROVALE4U.bmp",
+    "QUIEROVALE4D.bmp",
+    "MEVOYALMAZOU.bmp",
+    "MEVOYALMAZOD.bmp",
+    "PASARU.bmp",
+    "PASARD.bmp",
+    "SONBUENASU.bmp",
+    "SONBUENASD.bmp",
+    "CANTARU.bmp",
+    "CANTARD.bmp",
+    "NOCANTARU.bmp",
+    "NOCANTARD.bmp",
+    "NEXTU.bmp",
+    "NEXTD.bmp",
+    "NEWGAMEU.bmp",
+    "NEWGAMED.bmp"
+  ],
+  "soundResources": [
+    {
+      "id": "113",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "116",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "119",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "123",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "127",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "131",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "135",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "139",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "142",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "144",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "147",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "150",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "152",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "154",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "156",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "158",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "160",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "162",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "164",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "166",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "168",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "170",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "172",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "174",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "176",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "178",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "180",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "183",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "185",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "187",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "189",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "191",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "193",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "196",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "198",
+      "type": "midi",
+      "externalMainTrack": false
+    },
+    {
+      "id": "200",
+      "type": "midi",
+      "externalMainTrack": true
+    },
+    {
+      "id": "202",
+      "type": "midi",
+      "externalMainTrack": false
+    },
+    {
+      "id": "204",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "207",
+      "type": "midi",
+      "externalMainTrack": false
+    },
+    {
+      "id": "324",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "325",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "326",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "327",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "328",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "329",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "330",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "331",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "332",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "333",
+      "type": "wav",
+      "externalMainTrack": false
+    },
+    {
+      "id": "343",
+      "type": "wav",
+      "externalMainTrack": false
+    }
+  ],
+  "typedSoundCopies": [
+    {
+      "id": "113",
+      "filename": "113.wav"
+    },
+    {
+      "id": "116",
+      "filename": "116.wav"
+    },
+    {
+      "id": "119",
+      "filename": "119.wav"
+    },
+    {
+      "id": "123",
+      "filename": "123.wav"
+    },
+    {
+      "id": "127",
+      "filename": "127.wav"
+    },
+    {
+      "id": "131",
+      "filename": "131.wav"
+    },
+    {
+      "id": "135",
+      "filename": "135.wav"
+    },
+    {
+      "id": "139",
+      "filename": "139.wav"
+    },
+    {
+      "id": "142",
+      "filename": "142.wav"
+    },
+    {
+      "id": "144",
+      "filename": "144.wav"
+    },
+    {
+      "id": "147",
+      "filename": "147.wav"
+    },
+    {
+      "id": "150",
+      "filename": "150.wav"
+    },
+    {
+      "id": "152",
+      "filename": "152.wav"
+    },
+    {
+      "id": "154",
+      "filename": "154.wav"
+    },
+    {
+      "id": "156",
+      "filename": "156.wav"
+    },
+    {
+      "id": "158",
+      "filename": "158.wav"
+    },
+    {
+      "id": "160",
+      "filename": "160.wav"
+    },
+    {
+      "id": "162",
+      "filename": "162.wav"
+    },
+    {
+      "id": "164",
+      "filename": "164.wav"
+    },
+    {
+      "id": "166",
+      "filename": "166.wav"
+    },
+    {
+      "id": "168",
+      "filename": "168.wav"
+    },
+    {
+      "id": "170",
+      "filename": "170.wav"
+    },
+    {
+      "id": "172",
+      "filename": "172.wav"
+    },
+    {
+      "id": "174",
+      "filename": "174.wav"
+    },
+    {
+      "id": "176",
+      "filename": "176.wav"
+    },
+    {
+      "id": "178",
+      "filename": "178.wav"
+    },
+    {
+      "id": "180",
+      "filename": "180.wav"
+    },
+    {
+      "id": "183",
+      "filename": "183.wav"
+    },
+    {
+      "id": "185",
+      "filename": "185.wav"
+    },
+    {
+      "id": "187",
+      "filename": "187.wav"
+    },
+    {
+      "id": "189",
+      "filename": "189.wav"
+    },
+    {
+      "id": "191",
+      "filename": "191.wav"
+    },
+    {
+      "id": "193",
+      "filename": "193.wav"
+    },
+    {
+      "id": "196",
+      "filename": "196.wav"
+    },
+    {
+      "id": "198",
+      "filename": "198.mid"
+    },
+    {
+      "id": "200",
+      "filename": "200.mid"
+    },
+    {
+      "id": "202",
+      "filename": "202.mid"
+    },
+    {
+      "id": "204",
+      "filename": "204.wav"
+    },
+    {
+      "id": "207",
+      "filename": "207.mid"
+    },
+    {
+      "id": "324",
+      "filename": "324.wav"
+    },
+    {
+      "id": "325",
+      "filename": "325.wav"
+    },
+    {
+      "id": "326",
+      "filename": "326.wav"
+    },
+    {
+      "id": "327",
+      "filename": "327.wav"
+    },
+    {
+      "id": "328",
+      "filename": "328.wav"
+    },
+    {
+      "id": "329",
+      "filename": "329.wav"
+    },
+    {
+      "id": "330",
+      "filename": "330.wav"
+    },
+    {
+      "id": "331",
+      "filename": "331.wav"
+    },
+    {
+      "id": "332",
+      "filename": "332.wav"
+    },
+    {
+      "id": "333",
+      "filename": "333.wav"
+    },
+    {
+      "id": "343",
+      "filename": "343.wav"
+    }
+  ]
+}

@@ -96,6 +96,29 @@ function setInitialProjectsFrame() {
   projects.style.height = `${Math.max(minHeight, 474)}px`;
 }
 
+function setInitialRetrucoFrame() {
+  const retruco = document.getElementById("retruco");
+  if (!retruco || !desktopEl) return;
+
+  if (isCompactViewport()) {
+    const horizontalMargin = 8;
+    const top = 18;
+    const width = Math.max(
+      parseInt(getComputedStyle(retruco).minWidth, 10) || 320,
+      desktopEl.clientWidth - horizontalMargin * 2
+    );
+    const height = Math.max(
+      parseInt(getComputedStyle(retruco).minHeight, 10) || 260,
+      desktopEl.clientHeight - top - 8
+    );
+
+    retruco.style.left = `${horizontalMargin}px`;
+    retruco.style.top = `${top}px`;
+    retruco.style.width = `${width}px`;
+    retruco.style.height = `${height}px`;
+  }
+}
+
 function setInitialCmdFrame() {
   const cmd = document.getElementById("cmd");
   if (!cmd || !desktopEl) return;
@@ -184,6 +207,14 @@ function showWindow(win) {
   win.classList.remove("hidden");
 }
 
+function dispatchWindowLifecycle(win, name) {
+  win.dispatchEvent(
+    new CustomEvent(name, {
+      bubbles: false
+    })
+  );
+}
+
 function getVisibleWindows() {
   return windows.filter((win) => !state[win.id].closed && !state[win.id].minimized);
 }
@@ -204,10 +235,14 @@ function activateWindow(win) {
 }
 
 function restoreWindow(win) {
+  const wasClosed = state[win.id].closed;
   state[win.id].closed = false;
   state[win.id].minimized = false;
   showWindow(win);
   activateWindow(win);
+  if (wasClosed) {
+    dispatchWindowLifecycle(win, "desktop:window-opened");
+  }
 }
 
 function openWindowById(id) {
@@ -254,6 +289,7 @@ function closeWindow(win) {
   state[win.id].closed = true;
   state[win.id].minimized = false;
   hideWindow(win);
+  dispatchWindowLifecycle(win, "desktop:window-closed");
   if (win.classList.contains("active")) {
     windows.forEach((candidate) => candidate.classList.remove("active"));
     const next = getTopVisibleWindow();
@@ -659,6 +695,7 @@ syncTitleBars();
 setInitialBrowserFrame();
 setInitialNotesFrame();
 setInitialProjectsFrame();
+setInitialRetrucoFrame();
 setInitialCmdFrame();
 const browserWindow = document.getElementById("browser");
 const notesWindow = document.getElementById("notes");
