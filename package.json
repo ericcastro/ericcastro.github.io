@@ -7,8 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "clean": "rm -rf .astro dist",
-    "preview": "astro preview",
-    "sync:retruco": "zsh scripts/sync-retruco-widget.sh"
+    "preview": "astro preview"
   },
   "dependencies": {
     "astro": "^5.2.0"
