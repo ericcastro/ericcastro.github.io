@@ -575,6 +575,14 @@ openTriggers.forEach((trigger) => {
   });
 });
 
+document.addEventListener("click", (event) => {
+  if (event.defaultPrevented) return;
+  const trigger = event.target.closest("[data-open-window]");
+  if (!(trigger instanceof HTMLElement)) return;
+  event.preventDefault();
+  openWindowById(trigger.dataset.openWindow);
+});
+
 document.addEventListener("pointerdown", (event) => {
   if (!event.target.closest(".desktop-icon")) {
     icons.forEach((icon) => icon.classList.remove("selected"));

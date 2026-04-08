@@ -1,0 +1,30 @@
+---
+import { render } from "astro:content";
+
+interface Props {
+  entry: any;
+}
+
+const { entry } = Astro.props;
+const rendered = await render(entry);
+const Content = rendered.Content;
+---
+
+<article class="post90s">
+  <h2>{entry.data.title}</h2>
+  <div class="post-meta">
+    Posted on {entry.data.date}
+    {entry.data.author ? ` by ${entry.data.author}` : ""}
+    {" "}
+    <a href={`/posts/${entry.slug}/`} class="post-permalink">(permalink)</a>
+    {entry.data.category ? (
+      <>
+        {" "}
+        in the category <span>{entry.data.category}</span>
+      </>
+    ) : null}
+  </div>
+  <div class="markdown-body post-body">
+    <Content />
+  </div>
+</article>

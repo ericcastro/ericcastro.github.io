@@ -608,6 +608,37 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
   document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
 }
 
+async function loadPostIntoBrowser(slug, { push = true, replace = false } = {}) {
+  if (!browserContent || !browserAddress || !browserWindowTitle) return;
+  window.openWindowById?.("browser");
+
+  const response = await fetch(`/post-fragments/${slug}/`);
+  if (!response.ok) {
+    throw new Error(`Failed to load post fragment for ${slug}`);
+  }
+
+  const html = await response.text();
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const fragment = doc.querySelector("[data-browser-fragment='post']");
+  if (!fragment) {
+    throw new Error(`Missing browser fragment for ${slug}`);
+  }
+
+  browserContent.innerHTML = fragment.innerHTML;
+  const nextUrl = fragment.getAttribute("data-browser-url") ?? `/posts/${slug}/`;
+  const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
+  setBrowserChrome(`${homeBrowserOrigin}${nextUrl}`, nextTitle);
+  initializePostExternalLinks(browserContent);
+
+  if (replace) {
+    window.history.replaceState({ view: "post", slug }, "", nextUrl);
+  } else if (push) {
+    window.history.pushState({ view: "post", slug }, "", nextUrl);
+  }
+
+  document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
+}
+
 function restoreHomeBrowser({ push = true, replace = false } = {}) {
   if (!browserContent || !browserAddress || !browserWindowTitle) return;
   browserContent.innerHTML = homeBrowserContent;
@@ -693,6 +724,16 @@ async function navigateBrowserAddress(rawValue) {
     return;
   }
 
+  const postMatch = normalizedPath.match(/^\/posts\/([^/]+)\/$/);
+  if (postMatch) {
+    try {
+      await loadPostIntoBrowser(postMatch[1]);
+    } catch {
+      renderBrowserNotFound(parsed.toString());
+    }
+    return;
+  }
+
   renderBrowserNotFound(parsed.toString());
 }
 
@@ -723,13 +764,32 @@ function initializeProjectNavigation() {
       return;
     }
 
-    const link = target.closest("a[href^='/projects/']");
-    if (!(link instanceof HTMLAnchorElement)) return;
+    const projectLink = target.closest("a[href^='/projects/']");
+    if (projectLink instanceof HTMLAnchorElement) {
+      const slug = projectLink.getAttribute("href")?.split("/").filter(Boolean).pop();
+      if (!slug) return;
 
-    const slug = link.getAttribute("href")?.split("/").filter(Boolean).pop();
+      const signature = `${event.type}:project:${slug}`;
+      if (lastHandledProjectNav === signature) return;
+      lastHandledProjectNav = signature;
+      window.setTimeout(() => {
+        if (lastHandledProjectNav === signature) {
+          lastHandledProjectNav = "";
+        }
+      }, 0);
+
+      event.preventDefault();
+      loadProjectIntoBrowser(slug).catch((error) => console.error(error));
+      return;
+    }
+
+    const postLink = target.closest("a[href^='/posts/']");
+    if (!(postLink instanceof HTMLAnchorElement)) return;
+
+    const slug = postLink.getAttribute("href")?.split("/").filter(Boolean).pop();
     if (!slug) return;
 
-    const signature = `${event.type}:${slug}`;
+    const signature = `${event.type}:post:${slug}`;
     if (lastHandledProjectNav === signature) return;
     lastHandledProjectNav = signature;
     window.setTimeout(() => {
@@ -739,7 +799,7 @@ function initializeProjectNavigation() {
     }, 0);
 
     event.preventDefault();
-    loadProjectIntoBrowser(slug).catch((error) => console.error(error));
+    loadPostIntoBrowser(slug).catch((error) => console.error(error));
   }
 
   document.addEventListener("click", handleProjectNavigation);
@@ -755,9 +815,16 @@ function initializeProjectNavigation() {
       return;
     }
 
-    const match = path.match(/^\/projects\/([^/]+)\/?$/);
-    if (!match) return;
-    loadProjectIntoBrowser(match[1], { push: false }).catch((error) => console.error(error));
+    const projectMatch = path.match(/^\/projects\/([^/]+)\/?$/);
+    if (projectMatch) {
+      loadProjectIntoBrowser(projectMatch[1], { push: false }).catch((error) => console.error(error));
+      return;
+    }
+
+    const postMatch = path.match(/^\/posts\/([^/]+)\/?$/);
+    if (postMatch) {
+      loadPostIntoBrowser(postMatch[1], { push: false }).catch((error) => console.error(error));
+    }
   });
 
   const initialQueryProject = new URLSearchParams(window.location.search).get("project");
@@ -768,9 +835,25 @@ function initializeProjectNavigation() {
     return;
   }
 
+  const initialQueryPost = new URLSearchParams(window.location.search).get("post");
+  if (initialQueryPost) {
+    loadPostIntoBrowser(initialQueryPost, { push: false, replace: true }).catch((error) =>
+      console.error(error)
+    );
+    return;
+  }
+
   const directProjectMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/);
   if (directProjectMatch) {
     loadProjectIntoBrowser(directProjectMatch[1], { push: false, replace: true }).catch((error) =>
+      console.error(error)
+    );
+    return;
+  }
+
+  const directPostMatch = window.location.pathname.match(/^\/posts\/([^/]+)\/?$/);
+  if (directPostMatch) {
+    loadPostIntoBrowser(directPostMatch[1], { push: false, replace: true }).catch((error) =>
       console.error(error)
     );
   }

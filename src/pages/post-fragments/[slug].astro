@@ -1,0 +1,22 @@
+---
+import { getCollection } from "astro:content";
+import PostDetail from "../../components/PostDetail.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+---
+
+<div
+  data-browser-fragment="post"
+  data-browser-url={`/posts/${entry.slug}/`}
+  data-browser-title={`${entry.data.title} | Eric Castro`}
+>
+  <PostDetail entry={entry} />
+</div>

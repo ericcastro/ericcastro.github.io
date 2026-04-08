@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  return posts.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const redirectPath = `/?post=${entry.slug}`;
+---
+
+<BaseLayout
+  title={`${entry.data.title} | Eric Castro`}
+  description={entry.body.slice(0, 160).replace(/\s+/g, " ").trim()}
+  canonicalPath={`/posts/${entry.slug}/`}
+  type="article"
+>
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <div class="project-redirect-page">
+    <p>Loading post inside EricOS 95...</p>
+    <p><a href={redirectPath}>Continue</a></p>
+  </div>
+  <script is:inline define:vars={{ redirectPath }}>
+    window.location.replace(redirectPath);
+  </script>
+</BaseLayout>
