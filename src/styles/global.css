@@ -170,147 +170,55 @@ body.shutdown-mode .taskbar {
   flex: 0 0 auto;
 }
 
-.icon-ie::before {
-  content: "e";
-  position: absolute;
-  left: 5px;
-  top: 0;
-  width: 20px;
-  height: 24px;
-  color: #0a46c4;
-  font-family: Tahoma, var(--font-ui);
-  font-weight: bold;
-  font-size: 31px;
-  line-height: 24px;
+.icon-ie,
+.icon-notepad,
+.icon-folder {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
-.icon-ie::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 11px;
-  width: 22px;
-  height: 9px;
-  border: 2px solid #d4a017;
-  border-top-color: transparent;
-  border-left-color: transparent;
-  border-radius: 50%;
-  transform: rotate(-10deg);
+.icon-ie {
+  background-image: url("/images/icons/ie-desktop.png");
 }
 
-.icon-notepad::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 3px;
-  width: 20px;
-  height: 25px;
-  background: #fff;
-  border: 1px solid #000;
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #808080;
+.icon-notepad {
+  background-image: url("/images/icons/readme.png");
 }
 
-.icon-notepad::after {
-  content: "";
-  position: absolute;
-  left: 9px;
-  top: 8px;
-  width: 14px;
-  height: 1px;
-  background: #000080;
-  box-shadow: 0 4px 0 #000080, 0 8px 0 #000080, 0 12px 0 #000080;
+.icon-folder {
+  background-image: url("/images/icons/projects-bitmap.png");
 }
 
-.icon-folder::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 9px;
-  width: 24px;
-  height: 16px;
-  background: #cda300;
-  border: 1px solid #000;
-}
-
+.icon-ie::before,
+.icon-ie::after,
+.icon-notepad::before,
+.icon-notepad::after,
+.icon-folder::before,
 .icon-folder::after {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 5px;
-  width: 10px;
-  height: 5px;
-  background: #e7c043;
-  border: 1px solid #000;
-  border-bottom: none;
+  content: none;
+}
+
+.icon-retruco {
+  background: url("/images/icons/retruco.png") center / contain no-repeat;
 }
 
 .icon-retruco::before,
 .icon-retruco::after {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 22px;
-  border: 1px solid #000;
-  border-radius: 2px;
+  content: none;
 }
 
-.icon-retruco::before {
-  left: 6px;
-  top: 4px;
-  background: linear-gradient(135deg, #ffec84 0 50%, #d96b4a 50% 100%);
-  box-shadow: inset 1px 1px 0 #fff3c4;
+.icon-cmd {
+  background: url("/images/icons/prompt-desktop.png") center / contain no-repeat;
 }
 
-.icon-retruco::after {
-  left: 11px;
-  top: 7px;
-  background: linear-gradient(135deg, #b7e0ff 0 50%, #4a79d9 50% 100%);
-}
-
-.icon-cmd::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 4px;
-  width: 24px;
-  height: 18px;
-  background: #000;
-  border: 1px solid #c0c0c0;
-  box-shadow: inset 1px 1px 0 #fff;
-}
-
+.icon-cmd::before,
 .icon-cmd::after {
-  content: "C:\\>";
-  position: absolute;
-  left: 7px;
-  top: 9px;
-  font-family: var(--font-mono);
-  font-size: 7px;
-  color: #fff;
+  content: none;
 }
 
-.icon-computer::before {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 4px;
-  width: 22px;
-  height: 15px;
-  background: linear-gradient(#1a58bf 0 7px, #dcdcdc 7px 100%);
-  border: 1px solid #000;
-  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #808080;
-}
-
-.icon-computer::after {
-  content: "";
-  position: absolute;
-  left: 11px;
-  top: 21px;
-  width: 10px;
-  height: 5px;
-  background: #c0c0c0;
-  border: 1px solid #000;
-  box-shadow: inset 1px 1px 0 #fff;
+.icon-computer {
+  background: url("/images/icons/my-computer.png") center / contain no-repeat;
 }
 
 .window {
@@ -421,6 +329,15 @@ body.shutdown-mode .taskbar {
   overflow: hidden;
 }
 
+.title-bar-text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
 .title-icon {
   width: 14px;
   height: 14px;
@@ -431,93 +348,75 @@ body.shutdown-mode .taskbar {
   overflow: hidden;
 }
 
+.title-icon.ie,
+.title-icon.paint,
+.title-icon.note,
+.title-icon.bitmap,
+.title-icon.readme {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .title-icon.ie {
-  background: #fff;
+  background-image: url("/images/icons/ie-small.png");
 }
 
-.title-icon.ie::before {
-  content: "e";
-  position: absolute;
-  left: 2px;
-  top: -5px;
-  color: #0a46c4;
-  font-family: Tahoma, var(--font-ui);
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 14px;
+.title-icon.paint {
+  background-image: url("/images/icons/mspaint.png");
 }
 
-.title-icon.ie::after {
-  content: "";
-  position: absolute;
-  left: 1px;
-  top: 6px;
-  width: 10px;
-  height: 4px;
-  border: 1px solid #d4a017;
-  border-top-color: transparent;
-  border-left-color: transparent;
-  border-radius: 50%;
-  transform: rotate(-10deg);
+.title-icon.note {
+  background-image: url("/images/icons/notepad-small.png");
 }
 
-.title-icon.paint::before {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid #000;
-  border-radius: 50%;
-  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
+.title-icon.bitmap {
+  background-image: url("/images/icons/projects-bitmap.png");
 }
 
-.title-icon.note::before {
-  content: "";
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  top: 3px;
-  bottom: 3px;
-  background: repeating-linear-gradient(to bottom, #000080 0 1px, transparent 1px 3px);
+.title-icon.readme {
+  background-image: url("/images/icons/readme.png");
+}
+
+.title-icon.ie::before,
+.title-icon.ie::after,
+.title-icon.paint::before,
+.title-icon.paint::after,
+.title-icon.note::before,
+.title-icon.note::after,
+.title-icon.bitmap::before,
+.title-icon.bitmap::after,
+.title-icon.readme::before,
+.title-icon.readme::after {
+  content: none;
+}
+
+.title-icon.retruco {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background: transparent url("/images/icons/retruco.png") center / contain no-repeat;
 }
 
 .title-icon.retruco::before,
 .title-icon.retruco::after {
-  content: "";
-  position: absolute;
-  width: 6px;
-  height: 9px;
-  border: 1px solid #000;
-  border-radius: 1px;
-}
-
-.title-icon.retruco::before {
-  left: 1px;
-  top: 1px;
-  background: linear-gradient(135deg, #ffec84 0 50%, #d96b4a 50% 100%);
-}
-
-.title-icon.retruco::after {
-  left: 5px;
-  top: 3px;
-  background: linear-gradient(135deg, #b7e0ff 0 50%, #4a79d9 50% 100%);
+  content: none;
 }
 
 .title-icon.cmd {
-  background: #000;
-  border-color: #c0c0c0;
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background: transparent url("/images/icons/prompt-small.png") center / contain no-repeat;
 }
 
-.title-icon.cmd::before {
-  content: ">";
-  position: absolute;
-  left: 3px;
-  top: -1px;
-  color: #fff;
-  font-family: var(--font-mono);
-  font-size: 11px;
+.title-icon.cmd::before,
+.title-icon.cmd::after {
+  content: none;
 }
 
 .title-icon.computer::before {
@@ -2103,12 +2002,9 @@ body.theme-dark .cookie-window .window-content {
 .start-logo {
   width: 16px;
   height: 16px;
-  border: 1px solid #000;
-  transform: skewX(-12deg);
-  background: linear-gradient(90deg, #f00 0 50%, #0f0 50% 100%),
-    linear-gradient(#00f 0 50%, #ff0 50% 100%);
-  background-size: 8px 16px, 16px 8px;
-  background-repeat: no-repeat;
+  border: 0;
+  transform: none;
+  background: transparent url("/images/icons/start.png") center / contain no-repeat;
 }
 
 .start-menu {
