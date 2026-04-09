@@ -157,12 +157,33 @@ function isPrimaryPointer(event) {
 
 function bindTapActivation(element, handler) {
   if (!element) return;
-  element.addEventListener("click", (event) => {
-    if (event.detail !== 0) return;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchActivatedAt = 0;
+
+  element.addEventListener(
+    "touchstart",
+    (event) => {
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    },
+    { passive: true }
+  );
+
+  element.addEventListener("touchend", (event) => {
+    const touch = event.changedTouches?.[0];
+    if (!touch) return;
+    const movedX = Math.abs(touch.clientX - touchStartX);
+    const movedY = Math.abs(touch.clientY - touchStartY);
+    if (movedX > 10 || movedY > 10) return;
+    touchActivatedAt = Date.now();
     handler(event);
   });
-  element.addEventListener("pointerup", (event) => {
-    if (!isPrimaryPointer(event)) return;
+
+  element.addEventListener("click", (event) => {
+    if (Date.now() - touchActivatedAt < 700) return;
     handler(event);
   });
 }
@@ -554,14 +575,7 @@ windows.forEach((win) => {
       if (action === "close") closeWindow(win);
     }
 
-    btn.addEventListener("click", (event) => {
-      if (event.detail !== 0) return;
-      handleWindowButton(event);
-    });
-    btn.addEventListener("pointerup", (event) => {
-      if (!isPrimaryPointer(event)) return;
-      handleWindowButton(event);
-    });
+    bindTapActivation(btn, handleWindowButton);
   });
 });
 
@@ -582,6 +596,32 @@ openTriggers.forEach((trigger) => {
     event.preventDefault();
     openWindowById(trigger.dataset.openWindow);
   });
+});
+
+let delegatedTouchOpenStartX = 0;
+let delegatedTouchOpenStartY = 0;
+
+document.addEventListener(
+  "touchstart",
+  (event) => {
+    const touch = event.changedTouches?.[0];
+    if (!touch) return;
+    delegatedTouchOpenStartX = touch.clientX;
+    delegatedTouchOpenStartY = touch.clientY;
+  },
+  { passive: true }
+);
+
+document.addEventListener("touchend", (event) => {
+  const touch = event.changedTouches?.[0];
+  if (!touch) return;
+  const movedX = Math.abs(touch.clientX - delegatedTouchOpenStartX);
+  const movedY = Math.abs(touch.clientY - delegatedTouchOpenStartY);
+  if (movedX > 10 || movedY > 10) return;
+  const trigger = event.target.closest?.("[data-open-window]");
+  if (!(trigger instanceof HTMLElement)) return;
+  event.preventDefault();
+  openWindowById(trigger.dataset.openWindow);
 });
 
 document.addEventListener("click", (event) => {

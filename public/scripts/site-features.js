@@ -67,12 +67,33 @@ function isPrimaryPointer(event) {
 
 function bindTapActivation(element, handler) {
   if (!element) return;
-  element.addEventListener("click", (event) => {
-    if (event.detail !== 0) return;
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchActivatedAt = 0;
+
+  element.addEventListener(
+    "touchstart",
+    (event) => {
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    },
+    { passive: true }
+  );
+
+  element.addEventListener("touchend", (event) => {
+    const touch = event.changedTouches?.[0];
+    if (!touch) return;
+    const movedX = Math.abs(touch.clientX - touchStartX);
+    const movedY = Math.abs(touch.clientY - touchStartY);
+    if (movedX > 10 || movedY > 10) return;
+    touchActivatedAt = Date.now();
     handler(event);
   });
-  element.addEventListener("pointerup", (event) => {
-    if (!isPrimaryPointer(event)) return;
+
+  element.addEventListener("click", (event) => {
+    if (Date.now() - touchActivatedAt < 700) return;
     handler(event);
   });
 }
@@ -111,7 +132,13 @@ function setBrowserChrome(nextUrl, nextDocumentTitle = homeDocumentTitle) {
 function showDialog(dialog) {
   if (!dialog) return;
   dialogs.forEach((candidate) => candidate.classList.remove("active"));
-  dialog.style.zIndex = String(dialogZ++);
+  const topWindowZ = Math.max(
+    0,
+    ...Array.from(document.querySelectorAll("[data-window]")).map((windowEl) =>
+      Number(windowEl.style.zIndex || 0)
+    )
+  );
+  dialog.style.zIndex = String(Math.max(dialogZ++, topWindowZ + 5));
   dialog.classList.remove("is-hidden");
   dialog.classList.add("active");
   centerDialog(dialog);
@@ -148,15 +175,8 @@ function initializeTheme() {
     darkToggle.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  [darkToggleRow, darkToggleLabel].filter(Boolean).forEach((element) => {
-    element.addEventListener("pointerup", (event) => {
-      if (!isPrimaryPointer(event)) return;
-      toggleThemeFromTap(event);
-    });
-    element.addEventListener("click", (event) => {
-      if (event.detail !== 0) return;
-      toggleThemeFromTap(event);
-    });
+  bindTapActivation(darkToggleRow, (event) => {
+    toggleThemeFromTap(event);
   });
 }
 
@@ -434,7 +454,7 @@ async function ensureRetrucoWidget() {
     .then(({ mountRetrucoWidget }) => {
       const widget = mountRetrucoWidget(retrucoWidgetHost, {
         baseUrl: "/retruco/",
-        frameTitle: "RETRUCO.exe"
+        frameTitle: "RETRUCO.EXE"
       });
 
       window.retrucoWidget = widget;
@@ -789,25 +809,39 @@ function initializeProjectNavigation() {
   if (!browserContent) return;
 
   let lastHandledProjectNav = "";
+  let touchNavStartX = 0;
+  let touchNavStartY = 0;
+  let lastTouchNavigationAt = 0;
 
   function handleProjectNavigation(event) {
+    if (event.type === "click" && Date.now() - lastTouchNavigationAt < 700) return;
     const target = event.target;
-    if (!(target instanceof Element)) return;
+    if (!(target instanceof Element)) return false;
 
     const homeLink = target.closest("[data-browser-home]");
     if (homeLink instanceof HTMLAnchorElement) {
       event.preventDefault();
       restoreHomeBrowser();
-      return;
+      return true;
+    }
+
+    const anyLink = target.closest("a[href]");
+    if (anyLink instanceof HTMLAnchorElement) {
+      const href = anyLink.getAttribute("href") ?? "";
+      if (/^https?:\/\//i.test(href) && anyLink.origin !== window.location.origin) {
+        event.preventDefault();
+        window.open(anyLink.href, "_blank", "noopener,noreferrer");
+        return true;
+      }
     }
 
     const projectLink = target.closest("a[href^='/projects/']");
     if (projectLink instanceof HTMLAnchorElement) {
       const slug = projectLink.getAttribute("href")?.split("/").filter(Boolean).pop();
-      if (!slug) return;
+      if (!slug) return false;
 
       const signature = `${event.type}:project:${slug}`;
-      if (lastHandledProjectNav === signature) return;
+      if (lastHandledProjectNav === signature) return true;
       lastHandledProjectNav = signature;
       window.setTimeout(() => {
         if (lastHandledProjectNav === signature) {
@@ -817,17 +851,17 @@ function initializeProjectNavigation() {
 
       event.preventDefault();
       loadProjectIntoBrowser(slug).catch((error) => console.error(error));
-      return;
+      return true;
     }
 
     const postLink = target.closest("a[href^='/posts/']");
-    if (!(postLink instanceof HTMLAnchorElement)) return;
+    if (!(postLink instanceof HTMLAnchorElement)) return false;
 
     const slug = postLink.getAttribute("href")?.split("/").filter(Boolean).pop();
-    if (!slug) return;
+    if (!slug) return false;
 
     const signature = `${event.type}:post:${slug}`;
-    if (lastHandledProjectNav === signature) return;
+    if (lastHandledProjectNav === signature) return true;
     lastHandledProjectNav = signature;
     window.setTimeout(() => {
       if (lastHandledProjectNav === signature) {
@@ -837,13 +871,33 @@ function initializeProjectNavigation() {
 
     event.preventDefault();
     loadPostIntoBrowser(slug).catch((error) => console.error(error));
+    return true;
   }
 
-  document.addEventListener("click", handleProjectNavigation);
-  document.addEventListener("pointerup", (event) => {
-    if (!isPrimaryPointer(event)) return;
-    handleProjectNavigation(event);
+  document.addEventListener(
+    "touchstart",
+    (event) => {
+      const touch = event.changedTouches?.[0];
+      if (!touch) return;
+      touchNavStartX = touch.clientX;
+      touchNavStartY = touch.clientY;
+    },
+    { passive: true }
+  );
+
+  document.addEventListener("touchend", (event) => {
+    const touch = event.changedTouches?.[0];
+    if (!touch) return;
+    const movedX = Math.abs(touch.clientX - touchNavStartX);
+    const movedY = Math.abs(touch.clientY - touchNavStartY);
+    if (movedX > 10 || movedY > 10) return;
+    const handled = handleProjectNavigation(event);
+    if (handled) {
+      lastTouchNavigationAt = Date.now();
+    }
   });
+
+  document.addEventListener("click", handleProjectNavigation);
 
   window.addEventListener("popstate", () => {
     const path = window.location.pathname;

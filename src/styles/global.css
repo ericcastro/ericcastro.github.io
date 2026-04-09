@@ -366,6 +366,10 @@ body.shutdown-mode .taskbar {
   background-image: url("/images/icons/ie-small.png");
 }
 
+.title-bar .title-icon.ie {
+  background-image: url("/images/icons/ie-titlebar-small.png");
+}
+
 .title-icon.paint {
   background-image: url("/images/icons/mspaint.png");
 }
@@ -538,11 +542,11 @@ body.shutdown-mode .taskbar {
 .browser-window-content {
   display: flex;
   flex-direction: column;
-  padding: 0 4px 4px;
+  padding: 0 1px 1px;
 }
 
 .notes-window-content {
-  padding: 0 3px 3px;
+  padding: 0 1px 1px;
 }
 
 .retruco-window-content {
