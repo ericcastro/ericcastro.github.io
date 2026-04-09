@@ -52,6 +52,8 @@ const dialogs = [
 ].filter(Boolean);
 let dialogZ = 60;
 let retrucoWidgetPromise = null;
+const RETRUCO_NATIVE_WIDTH = 640;
+const RETRUCO_NATIVE_HEIGHT = 580;
 const homeBrowserAddress = "https://eric.cast.ro";
 const homeBrowserTitle = "https://eric.cast.ro - Microsoff Internet Ersplorer";
 const homeDocumentTitle = document.title;
@@ -373,6 +375,29 @@ function patchRetrucoFrame(widget) {
   frameDocument.head.append(style);
 }
 
+function bringRetrucoToFront() {
+  window.openWindowById?.("retruco");
+}
+
+function bindRetrucoFrameActivation(widget) {
+  const frame = widget?.frame;
+  const frameWindow = frame?.contentWindow;
+  const frameDocument = frame?.contentDocument;
+  if (!(frame instanceof HTMLIFrameElement) || !frameWindow || !frameDocument) return;
+  if (frame.dataset.ericos95ActivationBound === "true") return;
+
+  const activate = () => bringRetrucoToFront();
+
+  frame.addEventListener("pointerdown", activate);
+  frame.addEventListener("mousedown", activate);
+  frame.addEventListener("focus", activate);
+  frameWindow.addEventListener("focus", activate);
+  frameDocument.addEventListener("pointerdown", activate, true);
+  frameDocument.addEventListener("mousedown", activate, true);
+
+  frame.dataset.ericos95ActivationBound = "true";
+}
+
 function syncRetrucoFrameSize() {
   if (!retrucoWidgetHost) return;
   const root = retrucoWidgetHost.querySelector(".retruco-widget-host");
@@ -380,13 +405,23 @@ function syncRetrucoFrameSize() {
   const frame = root.querySelector(".retruco-widget-frame");
   const availableWidth = Math.max(320, retrucoWidgetHost.clientWidth);
   const availableHeight = Math.max(260, retrucoWidgetHost.clientHeight);
+  const useCompactScale = window.innerWidth <= 768;
+  const compactScale = Math.min(
+    1,
+    availableWidth / RETRUCO_NATIVE_WIDTH,
+    availableHeight / RETRUCO_NATIVE_HEIGHT
+  );
+  const frameScale = useCompactScale ? compactScale : 1;
 
   root.style.setProperty("--retruco-frame-width", `${availableWidth}px`);
   root.style.setProperty("--retruco-frame-height", `${availableHeight}px`);
 
   if (frame instanceof HTMLIFrameElement) {
     frame.setAttribute("scrolling", "no");
-    frame.style.transform = "";
+    frame.style.width = `${RETRUCO_NATIVE_WIDTH}px`;
+    frame.style.height = `${RETRUCO_NATIVE_HEIGHT}px`;
+    frame.style.transformOrigin = "top left";
+    frame.style.transform = frameScale < 1 ? `scale(${frameScale})` : "none";
     frame.style.left = "";
   }
 }
@@ -408,12 +443,14 @@ async function ensureRetrucoWidget() {
         "load",
         () => {
           patchRetrucoFrame(widget);
+          bindRetrucoFrameActivation(widget);
           syncRetrucoFrameSize();
         },
         { once: true }
       );
 
       patchRetrucoFrame(widget);
+      bindRetrucoFrameActivation(widget);
       syncRetrucoFrameSize();
 
       if ("ResizeObserver" in window) {

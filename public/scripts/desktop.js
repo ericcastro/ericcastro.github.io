@@ -101,14 +101,23 @@ function setInitialRetrucoFrame() {
   if (!retruco || !desktopEl) return;
 
   if (isCompactViewport()) {
-    const horizontalMargin = 8;
+    const horizontalMargin = 0;
     const top = 18;
+    const baseWidth =
+      parseInt(retruco.style.width || "0", 10) ||
+      parseInt(getComputedStyle(retruco).width, 10) ||
+      656;
+    const baseHeight =
+      parseInt(retruco.style.height || "0", 10) ||
+      parseInt(getComputedStyle(retruco).height, 10) ||
+      627;
     const width = Math.max(
       parseInt(getComputedStyle(retruco).minWidth, 10) || 320,
       desktopEl.clientWidth - horizontalMargin * 2
     );
-    const height = Math.max(
-      parseInt(getComputedStyle(retruco).minHeight, 10) || 260,
+    const proportionalHeight = Math.round((width * baseHeight) / baseWidth) + 22;
+    const height = Math.min(
+      Math.max(parseInt(getComputedStyle(retruco).minHeight, 10) || 260, proportionalHeight),
       desktopEl.clientHeight - top - 8
     );
 
@@ -124,7 +133,7 @@ function setInitialCmdFrame() {
   if (!cmd || !desktopEl) return;
 
   if (isCompactViewport()) {
-    const top = 0;
+    const top = 5;
     const width = Math.min(360, Math.max(280, desktopEl.clientWidth - 40));
     const height = Math.min(280, Math.max(180, desktopEl.clientHeight - top - 12));
     const left = Math.max(0, desktopEl.clientWidth - width);
