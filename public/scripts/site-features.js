@@ -516,7 +516,7 @@ function showClippyAboutHint() {
     label: "Read the full story",
     secondary: {
       href: "clippy:goodbye",
-      label: "What ? you want me to leave ?"
+      label: "What? you want me to leave?"
     },
     delayMs: 0,
     forceShow: true,
@@ -611,7 +611,7 @@ function getNoWindowsClippyDescriptor() {
   return {
     topic: "no-windows-open",
     message:
-      "It looks like you got lost?\n\nDouble click on **Internet Ersplorer** icon to launch the home page, or simply...",
+      "It looks like you got lost?\n\n Go ahead and double-click on **Internet Ersplorer** icon to start browsing Eric's website, or simply...",
     href: "/",
     label: "Take me there",
     once: false,
@@ -1242,7 +1242,7 @@ function initializeClippy() {
 
     if (href === "clippy:goodbye") {
       triggerClippyHint("clippy-staying", {
-        message: "Well, **fuck you**.\n\nI'm not going anywhere.",
+        message: "Well, **how about no**?\n\nI'm not going anywhere.",
         once: false
       });
       if (clippyImage) {
