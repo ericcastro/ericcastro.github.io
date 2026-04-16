@@ -1,5 +1,6 @@
 ---
 title: "30 years of RETRUCO.exe"
+shortTitle: "RETRUCO 30 years"
 date: 9 April 2026
 author: Webmaster Eric
 featured: true

@@ -411,7 +411,7 @@ function showClippyAboutHint() {
   triggerClippyHint("clippy-about", {
     message:
       "I'm Clippy, EricOS 95 assistant.\n\nBack when I was working at Microsoft, I was always eager to help but users simply wanted me out of their sight.\n\nMicrosoft fired me in 2003.\n\nEric gave me a job again.",
-    href: "/posts/2026-04-16-clippy-got-a-new-job/",
+    href: "/posts/2026-04-16-is-back/",
     label: "Click here to read the full story",
     secondary: {
       href: "clippy:goodbye",
