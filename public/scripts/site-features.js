@@ -61,8 +61,9 @@ const dialogs = [
 let dialogZ = 60;
 let retrucoWidgetPromise = null;
 const shownClippyTopics = new Set();
+const dismissedClippyContexts = new Set();
 let activeClippyContext = "";
-let dismissedClippyContext = "";
+let visibleClippyContext = "";
 const CLIPPY_SPRITE_COLUMNS = 27;
 const CLIPPY_SPRITE_ROWS = 34;
 const CLIPPY_IDLE_ANIMATIONS = [
@@ -119,6 +120,9 @@ let clippyAnimationToken = 0;
 let clippyLastFrameOffsets = { Column: 0, Row: 0 };
 let clippyClickTimer = null;
 let clippySuppressClickUntil = 0;
+let clippyHintTimeout = null;
+let clippyHintToken = 0;
+const CLIPPY_HINT_DELAY_MS = 1000;
 
 function isPrimaryPointer(event) {
   return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
@@ -210,6 +214,11 @@ function hideDialog(dialog) {
 }
 
 function hideClippyBalloon() {
+  if (clippyHintTimeout) {
+    clearTimeout(clippyHintTimeout);
+    clippyHintTimeout = null;
+  }
+  clippyHintToken += 1;
   clippyBalloon?.classList.add("is-hidden");
   clippyLink?.classList.add("is-hidden");
   clippySecondaryLink?.classList.add("is-hidden");
@@ -363,9 +372,14 @@ async function initializeClippyAnimator() {
   });
 }
 
-function showClippyHint(topic, { message, href = "", label = "", secondary, once = true } = {}) {
+function showClippyHint(
+  topic,
+  { message, href = "", label = "", secondary, once = true, forceShow = false } = {}
+) {
   if (!clippyBalloon || !clippyMessage || !clippyLink || !clippySecondaryLink) return;
+  const contextKey = getClippyContextKey({ topic, message, href, label });
   if (once && shownClippyTopics.has(topic)) return;
+  if (!forceShow && dismissedClippyContexts.has(contextKey)) return;
   if (once) {
     shownClippyTopics.add(topic);
   }
@@ -392,7 +406,30 @@ function showClippyHint(topic, { message, href = "", label = "", secondary, once
     clippySecondaryLink.textContent = "";
   }
 
+  visibleClippyContext = contextKey;
   clippyBalloon.classList.remove("is-hidden");
+}
+
+function queueClippyHint(topic, options = {}) {
+  const delayMs = Math.max(0, options.delayMs ?? CLIPPY_HINT_DELAY_MS);
+  if (clippyHintTimeout) {
+    clearTimeout(clippyHintTimeout);
+    clippyHintTimeout = null;
+  }
+
+  clippyHintToken += 1;
+  const token = clippyHintToken;
+
+  if (delayMs === 0) {
+    showClippyHint(topic, options);
+    return;
+  }
+
+  clippyHintTimeout = window.setTimeout(() => {
+    clippyHintTimeout = null;
+    if (token !== clippyHintToken) return;
+    showClippyHint(topic, options);
+  }, delayMs);
 }
 
 function triggerClippyHint(topic, options = {}) {
@@ -404,19 +441,21 @@ function triggerClippyHint(topic, options = {}) {
       onDone: () => scheduleNextClippyIdle(500)
     });
   }
-  showClippyHint(topic, options);
+  queueClippyHint(topic, options);
 }
 
 function showClippyAboutHint() {
   triggerClippyHint("clippy-about", {
     message:
-      "I'm Clippy, EricOS 95 assistant.\n\nBack when I was working at Microsoft, I was always eager to help but users simply wanted me out of their sight.\n\nMicrosoft fired me in 2003.\n\nEric gave me a job again.",
-    href: "/posts/2026-04-16-is-back/",
-    label: "Click here to read the full story",
+      "I'm **Clippy**, EricOS 95 assistant.\n\nBack when I was working at Microsoft, I was always eager to help but users simply wanted me out of their sight.\n\nMicrosoft fired me in 2003.\n\nEric gave me a job again.",
+    href: "/posts/2026-04-16-clippy-is-back/",
+    label: "Read the full story",
     secondary: {
       href: "clippy:goodbye",
-      label: "Are you also going to ask me to leave?"
+      label: "What ? you want me to leave ?"
     },
+    delayMs: 0,
+    forceShow: true,
     once: false,
     animation: "Explain"
   });
@@ -505,10 +544,6 @@ function syncContextualClippy() {
   const descriptor = getActiveClippyDescriptor();
   const nextContext = getClippyContextKey(descriptor);
 
-  if (nextContext !== activeClippyContext) {
-    dismissedClippyContext = "";
-  }
-
   activeClippyContext = nextContext;
 
   if (!descriptor) {
@@ -516,12 +551,7 @@ function syncContextualClippy() {
     return;
   }
 
-  if (dismissedClippyContext && dismissedClippyContext === nextContext) {
-    hideClippyBalloon();
-    return;
-  }
-
-  showClippyHint(descriptor.topic, descriptor);
+  queueClippyHint(descriptor.topic, descriptor);
 }
 
 function initializeClippyDrag() {
@@ -1060,7 +1090,9 @@ function initializeClippy() {
 
   bindTapActivation(clippyClose, (event) => {
     event.preventDefault();
-    dismissedClippyContext = activeClippyContext;
+    if (visibleClippyContext) {
+      dismissedClippyContexts.add(visibleClippyContext);
+    }
     hideClippyBalloon();
   });
 
@@ -1068,7 +1100,9 @@ function initializeClippy() {
     const target = event.target;
     if (!(target instanceof Element)) return;
     if (target.closest("a, button")) return;
-    dismissedClippyContext = activeClippyContext;
+    if (visibleClippyContext) {
+      dismissedClippyContexts.add(visibleClippyContext);
+    }
     hideClippyBalloon();
   });
 

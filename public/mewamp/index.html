@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mewamp 95</title>
+    <meta
+      name="description"
+      content="A fake Winamp playlist powered by Last.fm recent tracks and YouTube embeds."
+    />
+    <link rel="stylesheet" href="https://unpkg.com/98.css@0.1.21" />
+    <link rel="stylesheet" href="/mewamp/style.css" />
+    <script>
+      window.MEWAMP_CONFIG = {
+        youtubeApiKey: ""
+      };
+    </script>
+    <script src="https://unpkg.com/webamp@2.2.0/built/webamp.bundle.min.js" defer></script>
+    <script src="/mewamp/app.js" defer></script>
+  </head>
+  <body>
+    <div class="desktop-chrome">
+      <section class="window masthead-window">
+        <div class="title-bar">
+          <div class="title-bar-text">MEWAMP.EXE</div>
+          <div class="title-bar-controls" aria-hidden="true">
+            <button type="button" tabindex="-1"></button>
+            <button type="button" tabindex="-1"></button>
+            <button type="button" tabindex="-1"></button>
+          </div>
+        </div>
+        <div class="window-body masthead-body">
+          <div>
+            <p class="masthead-kicker">Webamp + Last.fm + YouTube</p>
+            <h1>Mewamp 95</h1>
+            <p class="masthead-copy">
+              Recent scrobbles become a fake Winamp playlist. Webamp now drives
+              the official YouTube embed through a custom media bridge, so play,
+              pause, stop, and seek all follow the real stream.
+            </p>
+          </div>
+          <div class="masthead-actions">
+            <button id="reloadButton" type="button">Reload Scrobbles</button>
+            <a class="masthead-link" href="/">Back to EricOS 95</a>
+          </div>
+        </div>
+      </section>
+
+      <main class="workspace">
+        <section class="window stage-window">
+          <div class="title-bar">
+            <div class="title-bar-text">Mewamp Playlist Builder</div>
+            <div class="title-bar-controls" aria-hidden="true">
+              <button type="button" tabindex="-1"></button>
+              <button type="button" tabindex="-1"></button>
+              <button type="button" tabindex="-1"></button>
+            </div>
+          </div>
+          <div class="window-body stage-body">
+            <div class="status-row">
+              <div class="status-box">
+                <strong id="statusPrimary">Booting Mewamp 95...</strong>
+                <span id="statusSecondary">
+                  Fetching recent tracks and matching them to YouTube.
+                </span>
+              </div>
+              <div class="status-box status-box-compact">
+                <strong id="playlistCount">0 / 20 tracks ready</strong>
+                <span id="resolverMode">Lookup mode: Cloudflare Pages fallback</span>
+              </div>
+            </div>
+            <div id="webampStage" class="webamp-stage" aria-label="Webamp stage"></div>
+            <div class="hint-bar">
+              <span>
+                Hotkeys: <kbd>X</kbd> play, <kbd>C</kbd> pause, <kbd>V</kbd>
+                stop, <kbd>Z</kbd>/<kbd>B</kbd> previous and next.
+              </span>
+              <span>
+                Play, pause, stop, seek, and scrub stay linked to YouTube.
+                EQ and visualizer data stay approximate because YouTube audio
+                never enters Webamp's audio graph.
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <section class="window video-window">
+          <div class="title-bar">
+            <div class="title-bar-text">Now Playing On YouTube</div>
+            <div class="title-bar-controls" aria-hidden="true">
+              <button type="button" tabindex="-1"></button>
+              <button type="button" tabindex="-1"></button>
+              <button type="button" tabindex="-1"></button>
+            </div>
+          </div>
+          <div class="window-body video-body">
+            <div class="video-shell">
+              <div id="youtubePlayer" class="youtube-player" aria-label="YouTube player"></div>
+              <div id="youtubePlaceholder" class="youtube-placeholder">
+                <strong>No track loaded yet.</strong>
+                <span>
+                  Pick something in Webamp and the matching YouTube embed will
+                  appear here.
+                </span>
+              </div>
+            </div>
+
+            <div class="track-card">
+              <img
+                id="trackArtwork"
+                class="track-artwork"
+                alt="Album artwork for the selected track"
+                src=""
+              />
+              <div class="track-copy">
+                <strong id="trackTitle">Waiting for a scrobble...</strong>
+                <span id="trackArtist">Nothing selected yet.</span>
+                <span id="trackAlbum">Album unknown.</span>
+                <span id="trackPlayedAt">Last played time unknown.</span>
+              </div>
+            </div>
+
+            <div class="field-row-stacked controls-group">
+              <label for="youtubeStatus">YouTube status</label>
+              <div id="youtubeStatus" class="sunken-panel status-panel">
+                Ready to load the next match.
+              </div>
+            </div>
+
+            <div class="field-row-stacked controls-group">
+              <label for="matchMeta">Match details</label>
+              <div id="matchMeta" class="sunken-panel status-panel">
+                Search details will appear here.
+              </div>
+            </div>
+
+            <div class="action-row">
+              <a
+                id="openYoutubeButton"
+                class="button-link disabled"
+                href="https://www.youtube.com/"
+                target="_blank"
+                rel="noreferrer"
+                aria-disabled="true"
+              >
+                Open on YouTube
+              </a>
+              <a
+                id="openLastfmButton"
+                class="button-link disabled"
+                href="https://www.last.fm/user/eric_castro"
+                target="_blank"
+                rel="noreferrer"
+                aria-disabled="true"
+              >
+                Open on Last.fm
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

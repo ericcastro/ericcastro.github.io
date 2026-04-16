@@ -1,0 +1,333 @@
+@font-face {
+  font-family: "W95";
+  src: url("/fonts/w95font/w95font.woff2") format("woff2");
+  font-display: swap;
+}
+
+:root {
+  --desktop-blue: #0c4a7f;
+  --desktop-blue-dark: #082845;
+  --paper: #c0c0c0;
+  --line: #808080;
+  --shadow: #3a3a3a;
+  --ink: #111111;
+  --accent: #0f64a9;
+  --accent-soft: rgba(15, 100, 169, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "W95", "Pixelated MS Sans Serif", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.18), transparent 36%),
+    linear-gradient(135deg, var(--desktop-blue), var(--desktop-blue-dark));
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 12px 12px;
+  opacity: 0.22;
+}
+
+.desktop-chrome {
+  position: relative;
+  width: min(1440px, calc(100% - 24px));
+  margin: 12px auto;
+  padding-bottom: 12px;
+}
+
+.masthead-window,
+.stage-window,
+.video-window {
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.masthead-window {
+  margin-bottom: 16px;
+}
+
+.masthead-body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px;
+}
+
+.masthead-kicker {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.masthead-body h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1;
+}
+
+.masthead-copy {
+  max-width: 680px;
+  margin: 10px 0 0;
+  line-height: 1.45;
+}
+
+.masthead-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.masthead-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(760px, 1fr) minmax(320px, 420px);
+  gap: 16px;
+  align-items: start;
+}
+
+.stage-body,
+.video-body {
+  padding: 14px;
+}
+
+.status-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 250px);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.status-box {
+  display: grid;
+  gap: 5px;
+  padding: 10px 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(226, 235, 244, 0.8));
+  border: 2px solid #f4f4f4;
+  box-shadow:
+    inset -1px -1px 0 var(--line),
+    inset 1px 1px 0 #ffffff;
+}
+
+.status-box-compact strong,
+.status-box strong {
+  font-size: 13px;
+}
+
+.status-box span {
+  line-height: 1.35;
+}
+
+.webamp-stage {
+  position: relative;
+  min-height: 620px;
+  overflow: auto;
+  border: 2px solid #f4f4f4;
+  box-shadow:
+    inset -1px -1px 0 var(--line),
+    inset 1px 1px 0 #ffffff;
+  background:
+    linear-gradient(180deg, rgba(11, 41, 68, 0.08), rgba(255, 255, 255, 0)),
+    repeating-linear-gradient(
+      45deg,
+      rgba(15, 100, 169, 0.08) 0 12px,
+      rgba(255, 255, 255, 0) 12px 24px
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(209, 220, 230, 0.95));
+}
+
+.hint-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.video-shell {
+  position: relative;
+  min-height: 260px;
+  border: 2px solid #f4f4f4;
+  box-shadow:
+    inset -1px -1px 0 var(--line),
+    inset 1px 1px 0 #ffffff;
+  background: #0b1f33;
+  overflow: hidden;
+}
+
+.youtube-player,
+.youtube-player iframe {
+  width: 100%;
+  min-height: 260px;
+}
+
+.youtube-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+  color: #f1f5f9;
+  background:
+    linear-gradient(180deg, rgba(10, 20, 34, 0.2), rgba(10, 20, 34, 0.55)),
+    radial-gradient(circle at top, rgba(96, 165, 250, 0.4), transparent 45%),
+    linear-gradient(135deg, #133457, #08111c);
+}
+
+.youtube-placeholder.is-hidden {
+  display: none;
+}
+
+.track-card {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+.track-artwork {
+  width: 86px;
+  height: 86px;
+  object-fit: cover;
+  border: 2px solid #f4f4f4;
+  box-shadow:
+    inset -1px -1px 0 var(--line),
+    inset 1px 1px 0 #ffffff;
+  background:
+    linear-gradient(135deg, rgba(15, 100, 169, 0.2), rgba(255, 255, 255, 0.45)),
+    var(--paper);
+}
+
+.track-copy {
+  display: grid;
+  gap: 5px;
+  align-self: center;
+}
+
+.track-copy strong {
+  font-size: 15px;
+}
+
+.controls-group {
+  margin-top: 14px;
+}
+
+.status-panel {
+  min-height: 54px;
+  padding: 10px 12px;
+  line-height: 1.4;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 12px;
+  color: inherit;
+  text-decoration: none;
+  background: var(--paper);
+  border: 2px solid #dfdfdf;
+  box-shadow:
+    inset -1px -1px 0 var(--shadow),
+    inset 1px 1px 0 #ffffff;
+}
+
+.button-link:active {
+  box-shadow:
+    inset 1px 1px 0 var(--shadow),
+    inset -1px -1px 0 #ffffff;
+}
+
+.button-link.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 2px 5px;
+  font: inherit;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #7d7d7d;
+  box-shadow: inset 1px 1px 0 #ffffff;
+}
+
+@media (max-width: 1240px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .webamp-stage {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-chrome {
+    width: min(100%, calc(100% - 10px));
+    margin: 5px auto;
+  }
+
+  .masthead-body,
+  .status-row {
+    grid-template-columns: 1fr;
+  }
+
+  .masthead-body {
+    flex-direction: column;
+  }
+
+  .masthead-body h1 {
+    font-size: 28px;
+  }
+
+  .stage-body,
+  .video-body {
+    padding: 10px;
+  }
+
+  .webamp-stage {
+    min-height: 520px;
+  }
+}
