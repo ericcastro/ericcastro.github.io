@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const redirectPath = "/?blog=1";
+---
+
+<BaseLayout
+  title="Blog | Eric Castro"
+  description="Archive of all blog posts published on Eric Castro's website."
+  canonicalPath="/blog/"
+  type="website"
+>
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <div class="project-redirect-page">
+    <p>Loading blog inside EricOS 95...</p>
+    <p><a href={redirectPath}>Continue</a></p>
+  </div>
+  <script is:inline define:vars={{ redirectPath }}>
+    window.location.replace(redirectPath);
+  </script>
+</BaseLayout>

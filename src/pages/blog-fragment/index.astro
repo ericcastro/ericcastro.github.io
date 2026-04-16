@@ -1,0 +1,14 @@
+---
+import BlogIndex from "../../components/BlogIndex.astro";
+import { getSortedPosts } from "../../lib/posts";
+
+const posts = await getSortedPosts();
+---
+
+<div
+  data-browser-fragment="blog"
+  data-browser-url="/blog/"
+  data-browser-title="Blog | Eric Castro"
+>
+  <BlogIndex posts={posts} />
+</div>

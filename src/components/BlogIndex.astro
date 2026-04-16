@@ -1,0 +1,21 @@
+---
+interface Props {
+  posts: any[];
+}
+
+const { posts } = Astro.props;
+---
+
+<article class="post90s project-post">
+  <h2>Blog</h2>
+  <p><strong>All posts in reverse chronological order.</strong></p>
+  <ul>
+    {
+      posts.map((entry) => (
+        <li>
+          <a href={`/posts/${entry.slug}/`}>{entry.data.title}</a> ({entry.data.date})
+        </li>
+      ))
+    }
+  </ul>
+</article>
