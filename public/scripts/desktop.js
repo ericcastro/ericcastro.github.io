@@ -10,6 +10,16 @@ const startSubmenuToggles = Array.from(
 );
 let topZ = 40;
 
+function notifyActiveWindowChanged(win) {
+  document.dispatchEvent(
+    new CustomEvent("desktop:active-window-changed", {
+      detail: {
+        id: win?.id ?? null
+      }
+    })
+  );
+}
+
 function isCompactViewport() {
   return window.innerWidth <= 768;
 }
@@ -262,6 +272,7 @@ function activateWindow(win) {
   win.style.zIndex = String(++topZ);
   syncTitleBars();
   renderTaskbar();
+  notifyActiveWindowChanged(win);
 }
 
 function restoreWindow(win) {
@@ -282,6 +293,17 @@ function openWindowById(id) {
 }
 
 window.openWindowById = openWindowById;
+
+function focusWindowById(id) {
+  const win = document.getElementById(id);
+  if (!win) return;
+  state[win.id].closed = false;
+  state[win.id].minimized = false;
+  showWindow(win);
+  activateWindow(win);
+}
+
+window.focusWindowById = focusWindowById;
 
 function setStartMenuOpen(isOpen) {
   if (!startButton || !startMenu) return;
@@ -311,6 +333,7 @@ function minimizeWindow(win) {
     windows.forEach((candidate) => candidate.classList.remove("active"));
     const next = getTopVisibleWindow();
     if (next) activateWindow(next);
+    else notifyActiveWindowChanged(null);
   }
   renderTaskbar();
 }
@@ -324,6 +347,7 @@ function closeWindow(win) {
     windows.forEach((candidate) => candidate.classList.remove("active"));
     const next = getTopVisibleWindow();
     if (next) activateWindow(next);
+    else notifyActiveWindowChanged(null);
   }
   renderTaskbar();
 }
@@ -400,7 +424,7 @@ function renderTaskbar() {
     label.textContent = win.dataset.title ?? win.id;
     btn.appendChild(label);
 
-    bindTapActivation(btn, () => {
+    function handleTaskbarButtonActivation() {
       if (state[win.id].minimized) {
         restoreWindow(win);
       } else if (win.classList.contains("active")) {
@@ -410,7 +434,24 @@ function renderTaskbar() {
         showWindow(win);
         activateWindow(win);
       }
-    });
+    }
+
+    if (isCompactViewport()) {
+      bindTapActivation(btn, handleTaskbarButtonActivation);
+    } else {
+      let desktopActivatedAt = 0;
+
+      btn.addEventListener("pointerup", (event) => {
+        if (event.pointerType === "touch" || event.button !== 0) return;
+        desktopActivatedAt = Date.now();
+        handleTaskbarButtonActivation();
+      });
+
+      btn.addEventListener("click", () => {
+        if (Date.now() - desktopActivatedAt < 250) return;
+        handleTaskbarButtonActivation();
+      });
+    }
     taskbarTasks.appendChild(btn);
   });
 }

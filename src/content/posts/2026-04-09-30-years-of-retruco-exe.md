@@ -3,6 +3,10 @@ title: "30 years of RETRUCO.exe"
 date: 9 April 2026
 author: Webmaster Eric
 featured: true
+clippy:
+  message: "It looks like **30 years of RETRUCO.exe** was too nostalgic to leave trapped in a Windows 98 VM forever."
+  href: "window:retruco"
+  label: "Click here to play RETRUCO in your browser."
 ---
 There, I tasked Codex with a wonderful project and guided it through the process of reverse engineering this absolute niche but nostalgia-loaded Argentinian Truco card game freeware for Windows 95. If you’ve never heard of Truco, it’s a loud, fast card game from Argentina where bluffing, trash talk, and acting confident matter just as much as the cards in your hand. It's a huge part of Argentinian culture.
 

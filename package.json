@@ -7,9 +7,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "clean": "rm -rf .astro dist",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "pages:dev": "npx wrangler pages dev dist"
   },
   "dependencies": {
     "astro": "^5.2.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.81.1"
   }
 }

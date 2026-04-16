@@ -135,6 +135,129 @@ body.shutdown-mode .taskbar {
   z-index: 1;
 }
 
+.clippy-assistant {
+  position: absolute;
+  right: calc(var(--safe-right) + 10px);
+  bottom: calc(var(--taskbar-h) + var(--safe-bottom) + 10px);
+  width: 111px;
+  height: 91px;
+  z-index: 11050;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.clippy-assistant.is-hidden {
+  display: none;
+}
+
+.clippy-assistant > * {
+  pointer-events: auto;
+}
+
+.clippy-image {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 111px;
+  height: 91px;
+  background-image: url("/clippy/map.png");
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 2997px 3094px;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+  cursor: move;
+  touch-action: none;
+}
+
+.clippy-balloon {
+  position: absolute;
+  right: 40px;
+  bottom: 102px;
+  width: 180px;
+  max-width: 280px;
+  padding: 11px 24px 12px 12px;
+  background: #fff6b5;
+  color: #000;
+  border: 1px solid #000;
+  border-radius: 10px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  line-height: 1.32;
+}
+
+.clippy-balloon::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: -16px;
+  width: 18px;
+  height: 16px;
+  background: #000;
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 0 0);
+}
+
+.clippy-balloon::before {
+  content: "";
+  position: absolute;
+  right: 19px;
+  bottom: -14px;
+  width: 16px;
+  height: 14px;
+  background: #fff6b5;
+  clip-path: polygon(0 0, 100% 0, 100% 82%, 0 0);
+  z-index: 1;
+}
+
+.clippy-balloon.is-hidden,
+.clippy-link.is-hidden {
+  display: none;
+}
+
+.clippy-message {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.clippy-actions {
+  margin-top: 8px;
+}
+
+.clippy-link {
+  display: inline-block;
+  font-family: inherit;
+}
+
+.clippy-link-secondary {
+  display: block;
+  margin-top: 6px;
+}
+
+.clippy-close {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  min-width: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.clippy-close:hover,
+.clippy-close:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: 0;
+}
+
+.clippy-assistant.is-dragging .clippy-image {
+  cursor: grabbing;
+}
+
 .desktop-icon {
   width: 75px;
   display: flex;
@@ -775,8 +898,8 @@ body.shutdown-mode .taskbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  background: #f4f0d2;
+  padding: 3px;
+  background: #000;
   border-top-width: 1px;
   border-left-width: 1px;
   border-right-width: 1px;
@@ -784,35 +907,10 @@ body.shutdown-mode .taskbar {
 }
 
 .ie-badge-icon {
-  position: relative;
-  width: 28px;
-  height: 24px;
-}
-
-.ie-badge-icon::before {
-  content: "e";
-  position: absolute;
-  left: 4px;
-  top: -8px;
-  color: #0a46c4;
-  font-family: Tahoma, var(--font-ui);
-  font-size: 36px;
-  font-weight: bold;
-  line-height: 24px;
-}
-
-.ie-badge-icon::after {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 14px;
-  width: 18px;
-  height: 7px;
-  border: 2px solid #d4a017;
-  border-top-color: transparent;
-  border-left-color: transparent;
-  border-radius: 50%;
-  transform: rotate(-10deg);
+  width: 34px;
+  height: 34px;
+  background: url("/images/icons/ie-desktop.png") center / contain no-repeat;
+  image-rendering: pixelated;
 }
 
 
@@ -2197,6 +2295,17 @@ body.theme-dark .cookie-window .window-content {
   font-weight: 700;
   box-shadow: inset -1px -1px #ffffff, inset 1px 1px #0a0a0a, inset -2px -2px #dfdfdf,
     inset 2px 2px #808080;
+}
+
+body.theme-dark .task-btn {
+  background: #8e8e8e;
+}
+
+body.theme-dark .task-btn.active,
+body.theme-dark .task-btn[aria-pressed="true"] {
+  background: #b0b0b0;
+  box-shadow: inset -1px -1px #ededed, inset 1px 1px #4b4b4b, inset -2px -2px #cfcfcf,
+    inset 2px 2px #6a6a6a;
 }
 
 .task-icon {

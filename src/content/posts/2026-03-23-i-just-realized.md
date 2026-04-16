@@ -3,6 +3,7 @@ title: "I just realized"
 date: 23 March 2026
 author: Webmaster Eric
 featured: true
+clippy: "It looks like **those dangerous late-night realizations** will sometimes turn into a design philosophy."
 ---
 By choosing a Windows 95 aesthetic for this site - fake Internet Explorer window, clunky UI, nostalgic 90s web design - I accidentally made it timeless. Hear me out.
 

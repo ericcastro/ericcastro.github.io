@@ -17,6 +17,12 @@ const { project } = Astro.props;
   data-browser-fragment="project"
   data-browser-url={`/projects/${project.slug}/`}
   data-browser-title={`${project.data.title} | Eric Castro`}
+  data-clippy-topic={`project-${project.slug}`}
+  data-clippy-message={project.data.clippy?.message}
+  data-clippy-href={project.data.clippy?.href}
+  data-clippy-label={project.data.clippy?.label}
+  data-clippy-secondary-href={project.data.clippy?.secondary?.href}
+  data-clippy-secondary-label={project.data.clippy?.secondary?.label}
 >
   <ProjectDetail project={project} />
 </div>

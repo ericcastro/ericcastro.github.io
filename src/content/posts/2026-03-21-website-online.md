@@ -3,6 +3,7 @@ title: "Website Online"
 date: 21 March 2026
 author: Webmaster Eric
 featured: true
+clippy: "It looks like **EricOS 95** finally escaped into the open internet."
 ---
 Every time I thought of putting together some sort of personal landing page for myself under my `cast.ro` domain, something made it fail miserably. Most of the time it was my laziness, because let's be honest: motivating yourself to keep a personal website updated is quite the challenge when the only people interested are maybe some colleague aside from your mom and your dog _(I don't have a dog)_.
 

@@ -39,6 +39,14 @@ const cmdOutput = document.getElementById("cmdOutput");
 const retrucoWindow = document.getElementById("retruco");
 const retrucoWidgetHost = document.getElementById("retrucoWidgetHost");
 const retrucoMenuBar = document.getElementById("retrucoMenuBar");
+const projectsWindow = document.getElementById("projects");
+const clippyAssistant = document.getElementById("clippyAssistant");
+const clippyBalloon = document.getElementById("clippyBalloon");
+const clippyMessage = document.getElementById("clippyMessage");
+const clippyLink = document.getElementById("clippyLink");
+const clippySecondaryLink = document.getElementById("clippySecondaryLink");
+const clippyClose = document.getElementById("clippyClose");
+const clippyImage = document.querySelector("#clippyAssistant .clippy-image");
 const consentCookieName = "ericos95_cookie_consent";
 const desktopRoot = document.querySelector(".desktop");
 const dialogs = [
@@ -52,6 +60,50 @@ const dialogs = [
 ].filter(Boolean);
 let dialogZ = 60;
 let retrucoWidgetPromise = null;
+const shownClippyTopics = new Set();
+let activeClippyContext = "";
+let dismissedClippyContext = "";
+const CLIPPY_SPRITE_COLUMNS = 27;
+const CLIPPY_SPRITE_ROWS = 34;
+const CLIPPY_IDLE_ANIMATIONS = [
+  "RestPose",
+  "LookLeft",
+  "LookRight",
+  "LookUp",
+  "LookDown",
+  "LookUpLeft",
+  "LookUpRight",
+  "LookDownLeft",
+  "LookDownRight",
+  "Wave",
+  "Idle1_1",
+  "IdleAtom",
+  "IdleEyeBrowRaise",
+  "IdleFingerTap",
+  "IdleHeadScratch",
+  "IdleRopePile",
+  "IdleSideToSide",
+  "IdleSnooze",
+  "Searching",
+  "Thinking",
+  "IdleEyeBrowRaise"
+];
+const CLIPPY_GREETING_ANIMATIONS = ["Greeting", "Show", "Wave", "GetAttention"];
+const CLIPPY_FUN_ANIMATIONS = [
+  "Wave",
+  "Congratulate",
+  "GetAttention",
+  "GestureLeft",
+  "GestureRight",
+  "GestureUp",
+  "GestureDown",
+  "GetWizardy",
+  "GetTechy",
+  "GetArtsy",
+  "CheckingSomething",
+  "Thinking",
+  "Explain"
+];
 const RETRUCO_NATIVE_WIDTH = 640;
 const RETRUCO_NATIVE_HEIGHT = 580;
 const homeBrowserAddress = "https://eric.cast.ro";
@@ -60,6 +112,13 @@ const homeDocumentTitle = document.title;
 const homeBrowserContent = browserHomeTemplate?.innerHTML ?? browserContent?.innerHTML ?? "";
 const homeBrowserOrigin = new URL(homeBrowserAddress).origin;
 let currentBrowserAddress = homeBrowserAddress;
+let clippyAnimationsPromise = null;
+let clippyAnimationsByName = new Map();
+let clippyAnimationTimeout = null;
+let clippyAnimationToken = 0;
+let clippyLastFrameOffsets = { Column: 0, Row: 0 };
+let clippyClickTimer = null;
+let clippySuppressClickUntil = 0;
 
 function isPrimaryPointer(event) {
   return event.isPrimary !== false && (event.pointerType === "touch" || event.button === 0);
@@ -148,6 +207,422 @@ function hideDialog(dialog) {
   if (!dialog) return;
   dialog.classList.add("is-hidden");
   dialog.classList.remove("active");
+}
+
+function hideClippyBalloon() {
+  clippyBalloon?.classList.add("is-hidden");
+  clippyLink?.classList.add("is-hidden");
+  clippySecondaryLink?.classList.add("is-hidden");
+}
+
+function normalizeClippyMessage(message = "") {
+  return String(message).replace(/\\n/g, "\n");
+}
+
+function formatClippyMessage(message = "") {
+  const normalized = normalizeClippyMessage(message);
+  const parts = normalized.split("**");
+  const html = parts
+    .map((part, index) => {
+      const escaped = escapeHtml(part).replace(/\n/g, "<br>");
+      return index % 2 === 1 ? `<strong>${escaped}</strong>` : escaped;
+    })
+    .join("");
+  return html;
+}
+
+function applyClippySpriteMetrics() {
+  if (!clippyImage) return;
+  const frameWidth = clippyImage.clientWidth || 111;
+  const frameHeight = clippyImage.clientHeight || 91;
+  clippyImage.style.backgroundSize = `${frameWidth * CLIPPY_SPRITE_COLUMNS}px ${frameHeight * CLIPPY_SPRITE_ROWS}px`;
+}
+
+function setClippyFrame(offsets) {
+  if (!clippyImage) return;
+  const frame = offsets ?? clippyLastFrameOffsets ?? { Column: 0, Row: 0 };
+  if (offsets) {
+    clippyLastFrameOffsets = offsets;
+  }
+
+  applyClippySpriteMetrics();
+  const frameWidth = clippyImage.clientWidth || 111;
+  const frameHeight = clippyImage.clientHeight || 91;
+  clippyImage.style.backgroundPosition = `${-frame.Column * frameWidth}px ${-frame.Row * frameHeight}px`;
+}
+
+async function loadClippyAnimations() {
+  if (!clippyImage) return new Map();
+  if (!clippyAnimationsPromise) {
+    clippyAnimationsPromise = fetch("/clippy/animations.json")
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to load Clippy animations.");
+        return response.json();
+      })
+      .then((animations) => {
+        clippyAnimationsByName = new Map(
+          Array.isArray(animations) ? animations.map((animation) => [animation.Name, animation]) : []
+        );
+        return clippyAnimationsByName;
+      })
+      .catch((error) => {
+        console.error(error);
+        clippyAnimationsByName = new Map();
+        return clippyAnimationsByName;
+      });
+  }
+
+  return clippyAnimationsPromise;
+}
+
+function clearClippyAnimationTimer() {
+  if (clippyAnimationTimeout) {
+    clearTimeout(clippyAnimationTimeout);
+    clippyAnimationTimeout = null;
+  }
+}
+
+function runClippyAnimation(name, { onDone } = {}) {
+  const animation = clippyAnimationsByName.get(name);
+  if (!animation || !Array.isArray(animation.Frames) || !animation.Frames.length) return false;
+
+  clippyAnimationToken += 1;
+  const token = clippyAnimationToken;
+  clearClippyAnimationTimer();
+
+  let frameIndex = 0;
+
+  function step() {
+    if (token !== clippyAnimationToken) return;
+    const frame = animation.Frames[frameIndex];
+    if (!frame) {
+      onDone?.();
+      return;
+    }
+
+    if (frame.ImagesOffsets) {
+      setClippyFrame(frame.ImagesOffsets);
+    }
+
+    frameIndex += 1;
+    if (frameIndex >= animation.Frames.length) {
+      clippyAnimationTimeout = window.setTimeout(() => {
+        if (token !== clippyAnimationToken) return;
+        onDone?.();
+      }, Math.max(16, frame.Duration ?? 100));
+      return;
+    }
+
+    clippyAnimationTimeout = window.setTimeout(step, Math.max(16, frame.Duration ?? 100));
+  }
+
+  step();
+  return true;
+}
+
+function scheduleNextClippyIdle(delay = 400) {
+  clearClippyAnimationTimer();
+  clippyAnimationTimeout = window.setTimeout(() => {
+    playRandomClippyIdle();
+  }, delay);
+}
+
+function pickRandomClippyAnimation(names = CLIPPY_IDLE_ANIMATIONS) {
+  const availableNames = names.filter((name) => clippyAnimationsByName.has(name));
+  if (!availableNames.length) return null;
+  const currentName = clippyImage?.dataset.clippyAnimation || "";
+  const pool =
+    availableNames.length > 1 ? availableNames.filter((name) => name !== currentName) : availableNames;
+  return pool[Math.floor(Math.random() * pool.length)] ?? availableNames[0];
+}
+
+function playRandomClippyIdle() {
+  const nextAnimation = pickRandomClippyAnimation(CLIPPY_IDLE_ANIMATIONS);
+  if (!nextAnimation) return;
+  if (clippyImage) {
+    clippyImage.dataset.clippyAnimation = nextAnimation;
+  }
+  runClippyAnimation(nextAnimation, {
+    onDone: () => scheduleNextClippyIdle(2200 + Math.floor(Math.random() * 2600))
+  });
+}
+
+async function initializeClippyAnimator() {
+  if (!clippyImage) return;
+  setClippyFrame({ Column: 0, Row: 0 });
+  await loadClippyAnimations();
+  if (!clippyAnimationsByName.size) return;
+
+  const initialAnimation =
+    pickRandomClippyAnimation(CLIPPY_GREETING_ANIMATIONS) ??
+    pickRandomClippyAnimation(CLIPPY_IDLE_ANIMATIONS);
+  if (!initialAnimation) return;
+  clippyImage.dataset.clippyAnimation = initialAnimation;
+  runClippyAnimation(initialAnimation, {
+    onDone: () => scheduleNextClippyIdle(2400)
+  });
+}
+
+function showClippyHint(topic, { message, href = "", label = "", secondary, once = true } = {}) {
+  if (!clippyBalloon || !clippyMessage || !clippyLink || !clippySecondaryLink) return;
+  if (once && shownClippyTopics.has(topic)) return;
+  if (once) {
+    shownClippyTopics.add(topic);
+  }
+
+  clippyMessage.innerHTML = formatClippyMessage(message);
+
+  if (href && label) {
+    clippyLink.href = href;
+    clippyLink.textContent = label;
+    clippyLink.classList.remove("is-hidden");
+  } else {
+    clippyLink.classList.add("is-hidden");
+    clippyLink.removeAttribute("href");
+    clippyLink.textContent = "";
+  }
+
+  if (secondary?.href && secondary?.label) {
+    clippySecondaryLink.href = secondary.href;
+    clippySecondaryLink.textContent = secondary.label;
+    clippySecondaryLink.classList.remove("is-hidden");
+  } else {
+    clippySecondaryLink.classList.add("is-hidden");
+    clippySecondaryLink.removeAttribute("href");
+    clippySecondaryLink.textContent = "";
+  }
+
+  clippyBalloon.classList.remove("is-hidden");
+}
+
+function triggerClippyHint(topic, options = {}) {
+  if (options.animation && clippyAnimationsByName.has(options.animation)) {
+    if (clippyImage) {
+      clippyImage.dataset.clippyAnimation = options.animation;
+    }
+    runClippyAnimation(options.animation, {
+      onDone: () => scheduleNextClippyIdle(500)
+    });
+  }
+  showClippyHint(topic, options);
+}
+
+function showClippyAboutHint() {
+  triggerClippyHint("clippy-about", {
+    message:
+      "I'm Clippy, EricOS 95 assistant.\n\nBack when I was working at Microsoft, I was always eager to help but users simply wanted me out of their sight.\n\nMicrosoft fired me in 2003.\n\nEric gave me a job again.",
+    href: "/posts/2026-04-16-clippy-got-a-new-job/",
+    label: "Click here to read the full story",
+    secondary: {
+      href: "clippy:goodbye",
+      label: "Are you also going to ask me to leave?"
+    },
+    once: false,
+    animation: "Explain"
+  });
+}
+
+function playRandomClippyFunAnimation() {
+  const nextAnimation = pickRandomClippyAnimation(CLIPPY_FUN_ANIMATIONS);
+  if (!nextAnimation) return false;
+  if (clippyImage) {
+    clippyImage.dataset.clippyAnimation = nextAnimation;
+  }
+  return runClippyAnimation(nextAnimation, {
+    onDone: () => scheduleNextClippyIdle(2200)
+  });
+}
+
+function getClippyDescriptorFromElement(element) {
+  if (!(element instanceof HTMLElement)) return null;
+  const message = element.dataset.clippyMessage?.trim();
+  if (!message) return null;
+  return {
+    topic: element.dataset.clippyTopic || element.id || "general",
+    message,
+    href: element.dataset.clippyHref || "",
+    label: element.dataset.clippyLabel || "",
+    secondary:
+      element.dataset.clippySecondaryHref && element.dataset.clippySecondaryLabel
+        ? {
+            href: element.dataset.clippySecondaryHref,
+            label: element.dataset.clippySecondaryLabel
+          }
+        : undefined,
+    once: false
+  };
+}
+
+function applyBrowserClippyDescriptor(source) {
+  if (!browserContent) return;
+
+  delete browserContent.dataset.clippyTopic;
+  delete browserContent.dataset.clippyMessage;
+  delete browserContent.dataset.clippyHref;
+  delete browserContent.dataset.clippyLabel;
+  delete browserContent.dataset.clippySecondaryHref;
+  delete browserContent.dataset.clippySecondaryLabel;
+
+  if (!(source instanceof HTMLElement)) return;
+
+  if (source.dataset.clippyTopic) {
+    browserContent.dataset.clippyTopic = source.dataset.clippyTopic;
+  }
+  if (source.dataset.clippyMessage) {
+    browserContent.dataset.clippyMessage = source.dataset.clippyMessage;
+  }
+  if (source.dataset.clippyHref) {
+    browserContent.dataset.clippyHref = source.dataset.clippyHref;
+  }
+  if (source.dataset.clippyLabel) {
+    browserContent.dataset.clippyLabel = source.dataset.clippyLabel;
+  }
+  if (source.dataset.clippySecondaryHref) {
+    browserContent.dataset.clippySecondaryHref = source.dataset.clippySecondaryHref;
+  }
+  if (source.dataset.clippySecondaryLabel) {
+    browserContent.dataset.clippySecondaryLabel = source.dataset.clippySecondaryLabel;
+  }
+}
+
+function getClippyContextKey(descriptor) {
+  if (!descriptor) return "";
+  return [descriptor.topic, descriptor.message, descriptor.href || "", descriptor.label || ""].join("|");
+}
+
+function getActiveClippyDescriptor() {
+  const activeWindow = document.querySelector("[data-window].active:not(.hidden)");
+  if (!(activeWindow instanceof HTMLElement)) return null;
+
+  if (activeWindow.id === "browser") {
+    return getClippyDescriptorFromElement(browserContent);
+  }
+
+  return getClippyDescriptorFromElement(activeWindow);
+}
+
+function syncContextualClippy() {
+  const descriptor = getActiveClippyDescriptor();
+  const nextContext = getClippyContextKey(descriptor);
+
+  if (nextContext !== activeClippyContext) {
+    dismissedClippyContext = "";
+  }
+
+  activeClippyContext = nextContext;
+
+  if (!descriptor) {
+    hideClippyBalloon();
+    return;
+  }
+
+  if (dismissedClippyContext && dismissedClippyContext === nextContext) {
+    hideClippyBalloon();
+    return;
+  }
+
+  showClippyHint(descriptor.topic, descriptor);
+}
+
+function initializeClippyDrag() {
+  if (!clippyAssistant || !clippyImage || !desktopRoot) return;
+
+  let dragState = null;
+  let movedDuringDrag = false;
+
+  function updatePosition(clientX, clientY) {
+    if (!dragState) return;
+
+    const maxLeft = Math.max(0, desktopRoot.clientWidth - dragState.width);
+    const maxTop = Math.max(0, desktopRoot.clientHeight - dragState.height);
+    const left = Math.min(maxLeft, Math.max(0, Math.round(clientX - dragState.offsetX)));
+    const top = Math.min(maxTop, Math.max(0, Math.round(clientY - dragState.offsetY)));
+
+    clippyAssistant.style.left = `${left}px`;
+    clippyAssistant.style.top = `${top}px`;
+    clippyAssistant.style.right = "auto";
+    clippyAssistant.style.bottom = "auto";
+  }
+
+  clippyImage.addEventListener("pointerdown", (event) => {
+    if (!isPrimaryPointer(event)) return;
+    const assistantRect = clippyAssistant.getBoundingClientRect();
+    const desktopRect = desktopRoot.getBoundingClientRect();
+    movedDuringDrag = false;
+
+    dragState = {
+      pointerId: event.pointerId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      offsetX: event.clientX - assistantRect.left,
+      offsetY: event.clientY - assistantRect.top,
+      width: assistantRect.width,
+      height: assistantRect.height,
+      desktopLeft: desktopRect.left,
+      desktopTop: desktopRect.top
+    };
+
+    clippyImage.setPointerCapture(event.pointerId);
+    clippyAssistant.classList.add("is-dragging");
+    event.preventDefault();
+  });
+
+  clippyImage.addEventListener("pointermove", (event) => {
+    if (!dragState || event.pointerId !== dragState.pointerId) return;
+    if (
+      Math.abs(event.clientX - dragState.startClientX) > 3 ||
+      Math.abs(event.clientY - dragState.startClientY) > 3
+    ) {
+      movedDuringDrag = true;
+    }
+    updatePosition(
+      event.clientX - dragState.desktopLeft,
+      event.clientY - dragState.desktopTop
+    );
+  });
+
+  function endDrag(event) {
+    if (!dragState || event.pointerId !== dragState.pointerId) return;
+    clippyAssistant.classList.remove("is-dragging");
+    if (movedDuringDrag) {
+      clippySuppressClickUntil = Date.now() + 300;
+    }
+    try {
+      clippyImage.releasePointerCapture(event.pointerId);
+    } catch {}
+    dragState = null;
+  }
+
+  clippyImage.addEventListener("pointerup", endDrag);
+  clippyImage.addEventListener("pointercancel", endDrag);
+
+  clippyImage.addEventListener("click", (event) => {
+    if (Date.now() < clippySuppressClickUntil) {
+      event.preventDefault();
+      return;
+    }
+    if (clippyClickTimer) {
+      clearTimeout(clippyClickTimer);
+      clippyClickTimer = null;
+    }
+    clippyClickTimer = window.setTimeout(() => {
+      showClippyAboutHint();
+      clippyClickTimer = null;
+    }, 220);
+  });
+
+  clippyImage.addEventListener("dblclick", (event) => {
+    if (Date.now() < clippySuppressClickUntil) {
+      event.preventDefault();
+      return;
+    }
+    if (clippyClickTimer) {
+      clearTimeout(clippyClickTimer);
+      clippyClickTimer = null;
+    }
+    event.preventDefault();
+    playRandomClippyFunAnimation();
+  });
 }
 
 function applyTheme(theme) {
@@ -547,6 +1022,124 @@ function initializeRetrucoWidget() {
     retrucoWidgetPromise = null;
     window.retrucoWidget = null;
   });
+
+  projectsWindow?.addEventListener("desktop:window-opened", syncContextualClippy);
+}
+
+function initializeClippy() {
+  if (
+    !clippyAssistant ||
+    !clippyBalloon ||
+    !clippyMessage ||
+    !clippyLink ||
+    !clippySecondaryLink ||
+    !clippyClose
+  ) {
+    return;
+  }
+
+  window.triggerClippyHint = triggerClippyHint;
+  window.playClippyAnimation = (name) => {
+    if (!clippyAnimationsByName.has(name)) return false;
+    if (clippyImage) {
+      clippyImage.dataset.clippyAnimation = name;
+    }
+    return runClippyAnimation(name, {
+      onDone: () => scheduleNextClippyIdle(500)
+    });
+  };
+  initializeClippyDrag();
+  initializeClippyAnimator();
+  window.addEventListener("resize", applyClippySpriteMetrics);
+
+  document.addEventListener("ericos95:clippy", (event) => {
+    const detail = event instanceof CustomEvent ? event.detail ?? {} : {};
+    const topic = detail.topic ?? "general";
+    triggerClippyHint(topic, detail);
+  });
+
+  bindTapActivation(clippyClose, (event) => {
+    event.preventDefault();
+    dismissedClippyContext = activeClippyContext;
+    hideClippyBalloon();
+  });
+
+  function handleClippyAction(linkEl, event) {
+    const href = linkEl.getAttribute("href");
+    if (!href) return;
+    event.preventDefault();
+    hideClippyBalloon();
+
+    if (href === "clippy:goodbye") {
+      triggerClippyHint("clippy-staying", {
+        message: "Well, **fuck you**.\n\nI'm not going anywhere.",
+        once: false
+      });
+      if (clippyImage) {
+        clippyImage.dataset.clippyAnimation = "IdleSnooze";
+      }
+      runClippyAnimation("IdleSnooze", {
+        onDone: () => scheduleNextClippyIdle(4000)
+      });
+      return;
+    }
+
+    if (href.startsWith("window:")) {
+      const windowId = href.slice("window:".length);
+      if (windowId) {
+        window.openWindowById?.(windowId);
+        window.focusWindowById?.(windowId);
+        requestAnimationFrame(() => {
+          window.focusWindowById?.(windowId);
+        });
+      }
+      return;
+    }
+
+    let url;
+    try {
+      url = new URL(href, window.location.origin);
+    } catch {
+      return;
+    }
+
+    if (url.origin !== window.location.origin) {
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    const normalizedPath = url.pathname.endsWith("/") ? url.pathname : `${url.pathname}/`;
+
+    if (normalizedPath === "/") {
+      restoreHomeBrowser();
+      return;
+    }
+
+    const postMatch = normalizedPath.match(/^\/posts\/([^/]+)\/$/);
+    if (postMatch) {
+      loadPostIntoBrowser(postMatch[1]).catch((error) => console.error(error));
+      return;
+    }
+
+    const projectMatch = normalizedPath.match(/^\/projects\/([^/]+)\/$/);
+    if (projectMatch) {
+      loadProjectIntoBrowser(projectMatch[1]).catch((error) => console.error(error));
+      return;
+    }
+
+    window.location.href = url.toString();
+  }
+
+  bindTapActivation(clippyLink, (event) => {
+    handleClippyAction(clippyLink, event);
+  });
+
+  bindTapActivation(clippySecondaryLink, (event) => {
+    handleClippyAction(clippySecondaryLink, event);
+  });
+
+  document.addEventListener("desktop:active-window-changed", syncContextualClippy);
+  syncContextualClippy();
 }
 
 function initializeInfiniteScroll() {
@@ -651,15 +1244,50 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
     throw new Error(`Missing browser fragment for ${slug}`);
   }
 
+  applyBrowserClippyDescriptor(fragment);
   browserContent.innerHTML = fragment.innerHTML;
   const nextUrl = fragment.getAttribute("data-browser-url") ?? `/projects/${slug}/`;
   const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
   setBrowserChrome(`${homeBrowserOrigin}${nextUrl}`, nextTitle);
+  syncContextualClippy();
 
   if (replace) {
     window.history.replaceState({ view: "project", slug }, "", nextUrl);
   } else if (push) {
     window.history.pushState({ view: "project", slug }, "", nextUrl);
+  }
+
+  document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
+}
+
+async function loadBlogIntoBrowser({ push = true, replace = false } = {}) {
+  if (!browserContent || !browserAddress || !browserWindowTitle) return;
+  window.openWindowById?.("browser");
+
+  const response = await fetch("/blog-fragment/");
+  if (!response.ok) {
+    throw new Error("Failed to load blog fragment");
+  }
+
+  const html = await response.text();
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const fragment = doc.querySelector("[data-browser-fragment='blog']");
+  if (!fragment) {
+    throw new Error("Missing blog browser fragment");
+  }
+
+  applyBrowserClippyDescriptor(fragment);
+  browserContent.innerHTML = fragment.innerHTML;
+  const nextUrl = fragment.getAttribute("data-browser-url") ?? "/blog/";
+  const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
+  setBrowserChrome(`${homeBrowserOrigin}${nextUrl}`, nextTitle);
+  initializePostExternalLinks(browserContent);
+  syncContextualClippy();
+
+  if (replace) {
+    window.history.replaceState({ view: "blog" }, "", nextUrl);
+  } else if (push) {
+    window.history.pushState({ view: "blog" }, "", nextUrl);
   }
 
   document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
@@ -681,11 +1309,13 @@ async function loadPostIntoBrowser(slug, { push = true, replace = false } = {}) 
     throw new Error(`Missing browser fragment for ${slug}`);
   }
 
+  applyBrowserClippyDescriptor(fragment);
   browserContent.innerHTML = fragment.innerHTML;
   const nextUrl = fragment.getAttribute("data-browser-url") ?? `/posts/${slug}/`;
   const nextTitle = fragment.getAttribute("data-browser-title") ?? homeDocumentTitle;
   setBrowserChrome(`${homeBrowserOrigin}${nextUrl}`, nextTitle);
   initializePostExternalLinks(browserContent);
+  syncContextualClippy();
 
   if (replace) {
     window.history.replaceState({ view: "post", slug }, "", nextUrl);
@@ -698,8 +1328,10 @@ async function loadPostIntoBrowser(slug, { push = true, replace = false } = {}) 
 
 function restoreHomeBrowser({ push = true, replace = false } = {}) {
   if (!browserContent || !browserAddress || !browserWindowTitle) return;
+  applyBrowserClippyDescriptor(null);
   browserContent.innerHTML = homeBrowserContent;
   setBrowserChrome(homeBrowserAddress, homeDocumentTitle);
+  syncContextualClippy();
   if (replace) {
     window.history.replaceState({ view: "home" }, "", "/");
   } else if (push) {
@@ -711,6 +1343,7 @@ function restoreHomeBrowser({ push = true, replace = false } = {}) {
 
 function renderBrowserNotFound(targetUrl) {
   if (!browserContent || !browserNotFoundTemplate) return;
+  applyBrowserClippyDescriptor(null);
   const content = browserNotFoundTemplate.innerHTML.replace(
     "</article>",
     `<p><code>${escapeHtml(targetUrl)}</code></p></article>`
@@ -718,6 +1351,7 @@ function renderBrowserNotFound(targetUrl) {
   browserContent.innerHTML = content;
   setBrowserChrome(targetUrl, "404 Not Found | Eric Castro");
   initializePostExternalLinks(browserContent);
+  syncContextualClippy();
 }
 
 function normalizeTypedBrowserUrl(rawValue) {
@@ -768,6 +1402,15 @@ async function navigateBrowserAddress(rawValue) {
   const normalizedPath = parsed.pathname.endsWith("/") ? parsed.pathname : `${parsed.pathname}/`;
   if (normalizedPath === "/") {
     restoreHomeBrowser();
+    return;
+  }
+
+  if (normalizedPath === "/blog/") {
+    try {
+      await loadBlogIntoBrowser();
+    } catch {
+      renderBrowserNotFound(parsed.toString());
+    }
     return;
   }
 
@@ -822,6 +1465,13 @@ function initializeProjectNavigation() {
     if (homeLink instanceof HTMLAnchorElement) {
       event.preventDefault();
       restoreHomeBrowser();
+      return true;
+    }
+
+    const blogLink = target.closest("a[href='/blog/']");
+    if (blogLink instanceof HTMLAnchorElement) {
+      event.preventDefault();
+      loadBlogIntoBrowser().catch((error) => console.error(error));
       return true;
     }
 
@@ -906,6 +1556,11 @@ function initializeProjectNavigation() {
       return;
     }
 
+    if (path === "/blog/" || path === "/blog") {
+      loadBlogIntoBrowser({ push: false }).catch((error) => console.error(error));
+      return;
+    }
+
     const projectMatch = path.match(/^\/projects\/([^/]+)\/?$/);
     if (projectMatch) {
       loadProjectIntoBrowser(projectMatch[1], { push: false }).catch((error) => console.error(error));
@@ -934,6 +1589,11 @@ function initializeProjectNavigation() {
     return;
   }
 
+  if (new URLSearchParams(window.location.search).get("blog")) {
+    loadBlogIntoBrowser({ push: false, replace: true }).catch((error) => console.error(error));
+    return;
+  }
+
   const directProjectMatch = window.location.pathname.match(/^\/projects\/([^/]+)\/?$/);
   if (directProjectMatch) {
     loadProjectIntoBrowser(directProjectMatch[1], { push: false, replace: true }).catch((error) =>
@@ -947,6 +1607,11 @@ function initializeProjectNavigation() {
     loadPostIntoBrowser(directPostMatch[1], { push: false, replace: true }).catch((error) =>
       console.error(error)
     );
+    return;
+  }
+
+  if (window.location.pathname === "/blog/" || window.location.pathname === "/blog") {
+    loadBlogIntoBrowser({ push: false, replace: true }).catch((error) => console.error(error));
   }
 }
 
@@ -985,6 +1650,7 @@ initializeEmailWidget();
 initializeShutdownWidget();
 initializeCmdWidget();
 initializeRetrucoWidget();
+initializeClippy();
 initializePostExternalLinks(document);
 initializeInfiniteScroll();
 initializeProjectNavigation();

@@ -11,12 +11,22 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
+const clippy =
+  typeof entry.data.clippy === "string"
+    ? { message: entry.data.clippy }
+    : entry.data.clippy;
 ---
 
 <div
   data-browser-fragment="post"
   data-browser-url={`/posts/${entry.slug}/`}
   data-browser-title={`${entry.data.title} | Eric Castro`}
+  data-clippy-topic={`post-${entry.slug}`}
+  data-clippy-message={clippy?.message}
+  data-clippy-href={clippy?.href}
+  data-clippy-label={clippy?.label}
+  data-clippy-secondary-href={clippy?.secondary?.href}
+  data-clippy-secondary-label={clippy?.secondary?.label}
 >
   <PostDetail entry={entry} />
 </div>

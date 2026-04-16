@@ -21,6 +21,7 @@ if (!cmdEntry) {
 
 const aboutNoteText = `${aboutEntry.data.heading}\n\n${aboutEntry.body.trim()}`;
 const initialPosts = postEntries.slice(0, POSTS_PER_PAGE);
+const latestPosts = postEntries.slice(0, 5);
 const totalPostPages = Math.ceil(postEntries.length / POSTS_PER_PAGE);
 const pageTitle = "Eric Castro - Personal Website";
 const pageDescription =
@@ -163,6 +164,16 @@ const personSchema = {
                     <li><a href="javascript:void(0)" data-open-window="notes">About Me</a></li>
                     <li><a href="javascript:void(0)" data-open-window="projects">Projects</a></li>
                     <li><a href="javascript:void(0)" data-open-window="cmd">System Info</a></li>
+                  </ul>
+
+                  <h3>Blog</h3>
+                  <ul>
+                    {
+                      latestPosts.map((entry) => (
+                        <li><a href={`/posts/${entry.slug}/`}>{entry.data.shortTitle ?? entry.data.title}</a></li>
+                      ))
+                    }
+                    <li><a href="/blog/">All posts</a></li>
                   </ul>
 
                   <h3>Cool Links</h3>
@@ -326,6 +337,8 @@ const personSchema = {
       id="projects"
       data-window
       data-title="PROJECTS - Paint"
+      data-clippy-topic="projects"
+      data-clippy-message="It looks like you're exploring **PROJECTS.BMP**. Those Paint cards are clickable, and each one opens more details in the browser."
       style="left: 440px; top: 96px; width: 540px; height: 474px; z-index: 20;"
     >
       <div class="title-bar" data-drag-handle>
@@ -387,6 +400,10 @@ const personSchema = {
       id="retruco"
       data-window
       data-title="RETRUCO.EXE"
+      data-clippy-topic="retruco"
+      data-clippy-message="It looks like you're opening **RETRUCO.EXE**. This old truco relic was reverse engineered from its original EXE into JavaScript."
+      data-clippy-href="/posts/2026-04-09-30-years-of-retruco-exe/"
+      data-clippy-label="Click here to read the full story."
       style="left: 300px; top: 88px; width: 656px; height: 627px; z-index: 24;"
     >
       <div class="title-bar" data-drag-handle>
@@ -668,6 +685,23 @@ const personSchema = {
         </div>
       </div>
     </section>
+
+    <div class="clippy-assistant" id="clippyAssistant" aria-live="polite">
+      <div class="clippy-balloon is-hidden" id="clippyBalloon" role="dialog" aria-label="Assistant tip">
+        <button class="clippy-close" id="clippyClose" type="button" aria-label="Close assistant tip">×</button>
+        <p class="clippy-message" id="clippyMessage"></p>
+        <div class="clippy-actions">
+          <a class="clippy-link is-hidden" id="clippyLink" href="/">Read more</a>
+          <a class="clippy-link clippy-link-secondary is-hidden" id="clippySecondaryLink" href="/">Secondary action</a>
+        </div>
+      </div>
+      <div
+        class="clippy-image"
+        id="clippySprite"
+        role="img"
+        aria-label="Paperclip assistant"
+      ></div>
+    </div>
   </div>
 
   <div class="taskbar">

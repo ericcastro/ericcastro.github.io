@@ -24,10 +24,27 @@ const posts = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
+    shortTitle: z.string().optional(),
     date: z.string(),
     author: z.string().optional(),
     category: z.string().optional(),
-    featured: z.boolean().default(false)
+    featured: z.boolean().default(false),
+    clippy: z
+      .union([
+        z.string(),
+        z.object({
+          message: z.string(),
+          href: z.string().optional(),
+          label: z.string().optional(),
+          secondary: z
+            .object({
+              href: z.string(),
+              label: z.string()
+            })
+            .optional()
+        })
+      ])
+      .optional()
   })
 });
 
@@ -50,7 +67,20 @@ const projects = defineCollection({
     x: z.number(),
     y: z.number(),
     width: z.number().optional(),
-    order: z.number().default(0)
+    order: z.number().default(0),
+    clippy: z
+      .object({
+        message: z.string(),
+        href: z.string().optional(),
+        label: z.string().optional(),
+        secondary: z
+          .object({
+            href: z.string(),
+            label: z.string()
+          })
+          .optional()
+      })
+      .optional()
   })
 });
 
