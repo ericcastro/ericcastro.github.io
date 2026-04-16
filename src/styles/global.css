@@ -436,7 +436,7 @@ body.shutdown-mode .taskbar {
   left: 0 !important;
   top: 0 !important;
   width: 100% !important;
-  height: calc(100% - var(--taskbar-h)) !important;
+  height: 100% !important;
 }
 
 .title-bar {
@@ -449,12 +449,15 @@ body.shutdown-mode .taskbar {
   align-items: center;
   gap: 4px;
   flex: 1;
+  min-height: 16px;
   min-width: 0;
   overflow: hidden;
 }
 
 .title-bar-text {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 16px;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;

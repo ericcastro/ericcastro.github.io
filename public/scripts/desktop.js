@@ -8,7 +8,35 @@ const startMenu = document.getElementById("startMenu");
 const startSubmenuToggles = Array.from(
   document.querySelectorAll("[data-start-submenu-toggle]")
 );
+const desktopStateStorageKey = "ericos95-desktop-state";
 let topZ = 40;
+let desktopStatePersistenceReady = false;
+
+function readDesktopStateStorage() {
+  try {
+    const raw = window.localStorage.getItem(desktopStateStorageKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeDesktopStateStorage(payload) {
+  try {
+    window.localStorage.setItem(desktopStateStorageKey, JSON.stringify(payload));
+  } catch {}
+}
+
+function clearDesktopStateStorage() {
+  try {
+    window.localStorage.removeItem(desktopStateStorageKey);
+  } catch {}
+}
+
+window.clearDesktopStateStorage = clearDesktopStateStorage;
 
 function notifyActiveWindowChanged(win) {
   document.dispatchEvent(
@@ -239,6 +267,117 @@ function clampSize(win, width, height) {
   };
 }
 
+function getCurrentActiveWindowId() {
+  return windows.find((win) => win.classList.contains("active") && !state[win.id].closed && !state[win.id].minimized)
+    ?.id ?? null;
+}
+
+function captureDesktopState() {
+  return {
+    windows: Object.fromEntries(
+      windows.map((win) => [
+        win.id,
+        {
+          left: win.style.left || "",
+          top: win.style.top || "",
+          width: win.style.width || "",
+          height: win.style.height || "",
+          minimized: state[win.id]?.minimized ?? win.classList.contains("hidden"),
+          closed: state[win.id]?.closed ?? win.classList.contains("hidden"),
+          maximized: state[win.id]?.maximized ?? false,
+          prev: {
+            left: state[win.id]?.prev?.left || "",
+            top: state[win.id]?.prev?.top || "",
+            width: state[win.id]?.prev?.width || "",
+            height: state[win.id]?.prev?.height || ""
+          }
+        }
+      ])
+    ),
+    activeWindowId: getCurrentActiveWindowId()
+  };
+}
+
+function saveDesktopState() {
+  if (!desktopStatePersistenceReady) return;
+  writeDesktopStateStorage(captureDesktopState());
+}
+
+function applySavedDesktopState(savedState) {
+  if (!savedState || typeof savedState !== "object" || !savedState.windows) return false;
+
+  windows.forEach((win) => {
+    const savedWindow = savedState.windows[win.id];
+    if (!savedWindow) return;
+
+    if (typeof savedWindow.left === "string") win.style.left = savedWindow.left;
+    if (typeof savedWindow.top === "string") win.style.top = savedWindow.top;
+    if (typeof savedWindow.width === "string") win.style.width = savedWindow.width;
+    if (typeof savedWindow.height === "string") win.style.height = savedWindow.height;
+
+    state[win.id].prev = {
+      left: savedWindow.prev?.left || state[win.id].prev.left,
+      top: savedWindow.prev?.top || state[win.id].prev.top,
+      width: savedWindow.prev?.width || state[win.id].prev.width,
+      height: savedWindow.prev?.height || state[win.id].prev.height
+    };
+
+    state[win.id].maximized = Boolean(savedWindow.maximized);
+    win.classList.toggle("maximized", state[win.id].maximized);
+
+    state[win.id].closed = Boolean(savedWindow.closed);
+    state[win.id].minimized = !state[win.id].closed && Boolean(savedWindow.minimized);
+
+    if (!state[win.id].maximized) {
+      const currentWidth = parseInt(win.style.width || "0", 10);
+      const currentHeight = parseInt(win.style.height || "0", 10);
+      if (currentWidth > 0 && currentHeight > 0) {
+        const clamped = clampSize(win, currentWidth, currentHeight);
+        win.style.width = `${Math.round(clamped.width)}px`;
+        win.style.height = `${Math.round(clamped.height)}px`;
+      }
+      clampWindow(win);
+    }
+
+    if (state[win.id].closed || state[win.id].minimized) {
+      hideWindow(win);
+    } else {
+      showWindow(win);
+      dispatchWindowLifecycle(win, "desktop:window-opened");
+    }
+  });
+
+  windows.forEach((candidate) => candidate.classList.remove("active"));
+  const activeWindow =
+    (savedState.activeWindowId && document.getElementById(savedState.activeWindowId)) || null;
+
+  topZ = 40;
+  windows.forEach((win) => {
+    if (!state[win.id].closed && !state[win.id].minimized) {
+      win.style.zIndex = String(++topZ);
+    }
+  });
+
+  if (
+    activeWindow &&
+    !state[activeWindow.id].closed &&
+    !state[activeWindow.id].minimized
+  ) {
+    activateWindow(activeWindow);
+  } else {
+    const next = getTopVisibleWindow();
+    if (next) activateWindow(next);
+    else {
+      syncTitleBars();
+      renderTaskbar();
+      notifyActiveWindowChanged(null);
+    }
+  }
+
+  syncMaxButtons();
+  return true;
+}
+
 function hideWindow(win) {
   win.classList.add("hidden");
 }
@@ -273,6 +412,7 @@ function activateWindow(win) {
   syncTitleBars();
   renderTaskbar();
   notifyActiveWindowChanged(win);
+  saveDesktopState();
 }
 
 function restoreWindow(win) {
@@ -284,6 +424,7 @@ function restoreWindow(win) {
   if (wasClosed) {
     dispatchWindowLifecycle(win, "desktop:window-opened");
   }
+  saveDesktopState();
 }
 
 function openWindowById(id) {
@@ -336,6 +477,7 @@ function minimizeWindow(win) {
     else notifyActiveWindowChanged(null);
   }
   renderTaskbar();
+  saveDesktopState();
 }
 
 function closeWindow(win) {
@@ -350,6 +492,7 @@ function closeWindow(win) {
     else notifyActiveWindowChanged(null);
   }
   renderTaskbar();
+  saveDesktopState();
 }
 
 function maximizeWindow(win) {
@@ -374,6 +517,7 @@ function maximizeWindow(win) {
   }
   syncMaxButtons();
   activateWindow(win);
+  saveDesktopState();
 }
 
 function syncMaxButtons() {
@@ -507,6 +651,7 @@ windows.forEach((win) => {
         document.removeEventListener("pointermove", onMove);
         document.removeEventListener("pointerup", onUp);
         document.removeEventListener("pointercancel", onUp);
+        saveDesktopState();
       }
 
       document.addEventListener("pointermove", onMove);
@@ -598,6 +743,7 @@ windows.forEach((win) => {
         document.removeEventListener("pointermove", onMove);
         document.removeEventListener("pointerup", onUp);
         document.removeEventListener("pointercancel", onUp);
+        saveDesktopState();
       }
 
       document.addEventListener("pointermove", onMove);
@@ -815,5 +961,15 @@ if (isCompactViewport() && browserWindow) {
   topZ = 42;
   activateWindow(browserWindow ?? notesWindow ?? cmdWindow);
 }
+
+const savedDesktopState = readDesktopStateStorage();
+if (savedDesktopState) {
+  applySavedDesktopState(savedDesktopState);
+}
+desktopStatePersistenceReady = true;
+if (savedDesktopState) {
+  saveDesktopState();
+}
+
 updateClock();
 setInterval(updateClock, 30000);
