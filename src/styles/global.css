@@ -166,7 +166,7 @@ body.shutdown-mode .taskbar {
   background-size: 2997px 3094px;
   image-rendering: pixelated;
   flex: 0 0 auto;
-  cursor: move;
+  cursor: pointer;
   touch-action: none;
 }
 
@@ -184,6 +184,7 @@ body.shutdown-mode .taskbar {
   font-family: var(--font-ui);
   font-size: 11px;
   line-height: 1.32;
+  cursor: pointer;
 }
 
 .clippy-balloon::after {
@@ -255,7 +256,7 @@ body.shutdown-mode .taskbar {
 }
 
 .clippy-assistant.is-dragging .clippy-image {
-  cursor: grabbing;
+  cursor: move;
 }
 
 .desktop-icon {
@@ -1413,9 +1414,12 @@ body.theme-dark .infinite-status {
 }
 
 .sidebar-divider {
-  height: 2px;
-  margin: 6px 0 8px;
-  background: linear-gradient(to bottom, #808080 0 1px, #fff 1px 2px);
+  display: block;
+  height: 0;
+  margin: 8px 0 10px;
+  border: 0;
+  border-top: 1px solid var(--shadow);
+  border-bottom: 1px solid var(--light);
 }
 
 .sidebar-badges {

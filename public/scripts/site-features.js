@@ -1064,6 +1064,14 @@ function initializeClippy() {
     hideClippyBalloon();
   });
 
+  bindTapActivation(clippyBalloon, (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest("a, button")) return;
+    dismissedClippyContext = activeClippyContext;
+    hideClippyBalloon();
+  });
+
   function handleClippyAction(linkEl, event) {
     const href = linkEl.getAttribute("href");
     if (!href) return;
