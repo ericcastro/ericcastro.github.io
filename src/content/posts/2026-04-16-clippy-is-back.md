@@ -5,9 +5,9 @@ date: 16 April 2026
 author: Webmaster Eric
 clippy: "It looks like **Clippy** somehow talked his way back into relevance. Hehe."
 ---
-As AI chatbots and tools continue to popularize, Clippy [comebacks](https://news.ycombinator.com/item?id=47063723) are [exploding](https://github.com/felixrieseberg/clippy).
+As AI chatbots and tools continue to popularize, Clippy [comebacks](https://news.ycombinator.com/item?id=47063723) are [exploding](https://github.com/felixrieseberg/clippy) (_lol that's quite the overstatement, I only know those_)
 
-I've been no exception, so it also found a place inside **[EricOS 95](projects/ericos-95/)**. 
+Well guess what, I also gave Clippy a place inside **[EricOS 95](projects/ericos-95/)**. 
 
 I feel my website, blog posts and excessively nostalgia-fueled content may be too niche for some audiences. 
 
@@ -15,6 +15,6 @@ Which is why I felt it was necessary to have a tiny assistant commenting on what
 
 Let's not forget most people wanted to get rid of it back in the old Microsoft Office days. 
 
-In here, you can't (although you can try). Sorry. 
+But in EricOS 95, you can't (although you can try).
 
-Clippy is in a safe space here.
+Sorry. Clippy is in a safe space here.
