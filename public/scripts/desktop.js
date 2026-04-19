@@ -9,6 +9,9 @@ const startSubmenuToggles = Array.from(
   document.querySelectorAll("[data-start-submenu-toggle]")
 );
 const desktopStateStorageKey = "ericos95-desktop-state";
+const externalWindows = new Map();
+let activeExternalWindowId = null;
+let cachedSavedDesktopState = null;
 let topZ = 40;
 let desktopStatePersistenceReady = false;
 
@@ -45,6 +48,16 @@ function notifyActiveWindowChanged(win) {
         id: win?.id ?? null
       }
     })
+  );
+}
+
+function deactivateExternalWindows() {
+  activeExternalWindowId = null;
+}
+
+function getExternalVisibleWindows() {
+  return Array.from(externalWindows.values()).filter(
+    (entry) => !entry.state.closed && !entry.state.minimized
   );
 }
 
@@ -166,6 +179,27 @@ function setInitialRetrucoFrame() {
   }
 }
 
+function setInitialWinampFrame() {
+  const winamp = document.getElementById("winamp");
+  if (!winamp || !desktopEl) return;
+
+  const width = Math.max(parseInt(getComputedStyle(winamp).minWidth, 10) || 275, 275);
+  const height = Math.max(parseInt(getComputedStyle(winamp).minHeight, 10) || 348, 348);
+
+  if (isCompactViewport()) {
+    winamp.style.left = `${Math.max(0, desktopEl.clientWidth - width - 8)}px`;
+    winamp.style.top = "36px";
+    winamp.style.width = `${width}px`;
+    winamp.style.height = `${height}px`;
+    return;
+  }
+
+  winamp.style.left = "680px";
+  winamp.style.top = "56px";
+  winamp.style.width = `${width}px`;
+  winamp.style.height = `${height}px`;
+}
+
 function setInitialCmdFrame() {
   const cmd = document.getElementById("cmd");
   if (!cmd || !desktopEl) return;
@@ -268,6 +302,12 @@ function clampSize(win, width, height) {
 }
 
 function getCurrentActiveWindowId() {
+  if (activeExternalWindowId) {
+    const externalEntry = externalWindows.get(activeExternalWindowId);
+    if (externalEntry && !externalEntry.state.closed && !externalEntry.state.minimized) {
+      return activeExternalWindowId;
+    }
+  }
   return windows.find((win) => win.classList.contains("active") && !state[win.id].closed && !state[win.id].minimized)
     ?.id ?? null;
 }
@@ -294,6 +334,19 @@ function captureDesktopState() {
         }
       ])
     ),
+    externalWindows: Object.fromEntries(
+      Array.from(externalWindows.entries()).map(([id, entry]) => [
+        id,
+        {
+          minimized: entry.state.minimized,
+          closed: entry.state.closed,
+          left: entry.element?.style.left || entry.savedRect?.left || "",
+          top: entry.element?.style.top || entry.savedRect?.top || "",
+          width: entry.element?.style.width || entry.savedRect?.width || "",
+          height: entry.element?.style.height || entry.savedRect?.height || ""
+        }
+      ])
+    ),
     activeWindowId: getCurrentActiveWindowId()
   };
 }
@@ -301,6 +354,38 @@ function captureDesktopState() {
 function saveDesktopState() {
   if (!desktopStatePersistenceReady) return;
   writeDesktopStateStorage(captureDesktopState());
+}
+
+function applySavedExternalWindowState(id, savedWindow) {
+  const entry = externalWindows.get(id);
+  if (!entry || !savedWindow) return;
+
+  entry.savedRect = {
+    left: typeof savedWindow.left === "string" ? savedWindow.left : "",
+    top: typeof savedWindow.top === "string" ? savedWindow.top : "",
+    width: typeof savedWindow.width === "string" ? savedWindow.width : "",
+    height: typeof savedWindow.height === "string" ? savedWindow.height : ""
+  };
+
+  entry.state.closed = Boolean(savedWindow.closed);
+  entry.state.minimized = !entry.state.closed && Boolean(savedWindow.minimized);
+
+  if (entry.element) {
+    if (entry.savedRect.left) entry.element.style.left = entry.savedRect.left;
+    if (entry.savedRect.top) entry.element.style.top = entry.savedRect.top;
+    if (entry.savedRect.width) entry.element.style.width = entry.savedRect.width;
+    if (entry.savedRect.height) entry.element.style.height = entry.savedRect.height;
+
+    if (entry.state.closed || entry.state.minimized) {
+      hideWindow(entry.element);
+    } else {
+      showWindow(entry.element);
+    }
+
+    if (!entry.state.closed && !entry.state.minimized) {
+      entry.element.style.zIndex = String(++topZ);
+    }
+  }
 }
 
 function applySavedDesktopState(savedState) {
@@ -360,13 +445,19 @@ function applySavedDesktopState(savedState) {
 
   if (
     activeWindow &&
-    !state[activeWindow.id].closed &&
-    !state[activeWindow.id].minimized
+    (
+      (state[activeWindow.id] &&
+        !state[activeWindow.id].closed &&
+        !state[activeWindow.id].minimized) ||
+      (externalWindows.has(activeWindow.id) &&
+        !externalWindows.get(activeWindow.id).state.closed &&
+        !externalWindows.get(activeWindow.id).state.minimized)
+    )
   ) {
-    activateWindow(activeWindow);
+    activateWindowById(activeWindow.id);
   } else {
     const next = getTopVisibleWindow();
-    if (next) activateWindow(next);
+    if (next) activateWindowById(next.id);
     else {
       syncTitleBars();
       renderTaskbar();
@@ -375,6 +466,7 @@ function applySavedDesktopState(savedState) {
   }
 
   syncMaxButtons();
+  cachedSavedDesktopState = savedState;
   return true;
 }
 
@@ -399,13 +491,23 @@ function getVisibleWindows() {
 }
 
 function getTopVisibleWindow() {
-  return getVisibleWindows().sort(
+  const nativeTop = getVisibleWindows().sort(
     (a, b) => Number(b.style.zIndex || 0) - Number(a.style.zIndex || 0)
   )[0];
+  const externalTop = getExternalVisibleWindows().sort(
+    (a, b) => Number(b.element.style.zIndex || 0) - Number(a.element.style.zIndex || 0)
+  )[0]?.element;
+
+  if (!nativeTop) return externalTop;
+  if (!externalTop) return nativeTop;
+  return Number(nativeTop.style.zIndex || 0) >= Number(externalTop.style.zIndex || 0)
+    ? nativeTop
+    : externalTop;
 }
 
 function activateWindow(win) {
   if (!win || state[win.id].closed) return;
+  deactivateExternalWindows();
   windows.forEach((candidate) => candidate.classList.remove("active"));
   win.classList.add("active");
   win.style.zIndex = String(++topZ);
@@ -417,17 +519,58 @@ function activateWindow(win) {
 
 function restoreWindow(win) {
   const wasClosed = state[win.id].closed;
+  const wasMinimized = state[win.id].minimized;
   state[win.id].closed = false;
   state[win.id].minimized = false;
   showWindow(win);
   activateWindow(win);
   if (wasClosed) {
     dispatchWindowLifecycle(win, "desktop:window-opened");
+  } else if (wasMinimized) {
+    dispatchWindowLifecycle(win, "desktop:window-restored");
+  }
+  saveDesktopState();
+}
+
+function activateExternalWindow(id) {
+  const entry = externalWindows.get(id);
+  if (!entry || entry.state.closed) return;
+  windows.forEach((candidate) => candidate.classList.remove("active"));
+  activeExternalWindowId = id;
+  if (entry.element) {
+    entry.element.style.zIndex = String(++topZ);
+  }
+  entry.onFocus?.();
+  renderTaskbar();
+  notifyActiveWindowChanged(entry.element ?? { id });
+  saveDesktopState();
+}
+
+function restoreExternalWindow(id) {
+  const entry = externalWindows.get(id);
+  if (!entry) return;
+  const wasClosed = entry.state.closed;
+  const wasMinimized = entry.state.minimized;
+  entry.state.closed = false;
+  entry.state.minimized = false;
+  if (entry.element) {
+    showWindow(entry.element);
+  }
+  entry.onRestore?.();
+  activateExternalWindow(id);
+  if (wasClosed) {
+    if (entry.element) dispatchWindowLifecycle(entry.element, "desktop:window-opened");
+  } else if (wasMinimized) {
+    if (entry.element) dispatchWindowLifecycle(entry.element, "desktop:window-restored");
   }
   saveDesktopState();
 }
 
 function openWindowById(id) {
+  if (externalWindows.has(id)) {
+    restoreExternalWindow(id);
+    return;
+  }
   const win = document.getElementById(id);
   if (!win) return;
   restoreWindow(win);
@@ -436,6 +579,10 @@ function openWindowById(id) {
 window.openWindowById = openWindowById;
 
 function focusWindowById(id) {
+  if (externalWindows.has(id)) {
+    restoreExternalWindow(id);
+    return;
+  }
   const win = document.getElementById(id);
   if (!win) return;
   state[win.id].closed = false;
@@ -445,6 +592,140 @@ function focusWindowById(id) {
 }
 
 window.focusWindowById = focusWindowById;
+
+function activateWindowById(id) {
+  if (externalWindows.has(id)) {
+    activateExternalWindow(id);
+    return;
+  }
+  const win = document.getElementById(id);
+  if (!win) return;
+  activateWindow(win);
+}
+
+function minimizeWindowById(id) {
+  if (externalWindows.has(id)) {
+    const entry = externalWindows.get(id);
+    entry.state.minimized = true;
+    entry.state.closed = false;
+    if (entry.element) hideWindow(entry.element);
+    entry.onMinimize?.();
+    if (entry.element) dispatchWindowLifecycle(entry.element, "desktop:window-minimized");
+    if (activeExternalWindowId === id) activeExternalWindowId = null;
+    renderTaskbar();
+    saveDesktopState();
+    return;
+  }
+  const win = document.getElementById(id);
+  if (!win) return;
+  state[win.id].closed = false;
+  minimizeWindow(win);
+}
+
+function closeWindowById(id) {
+  if (externalWindows.has(id)) {
+    const entry = externalWindows.get(id);
+    entry.state.closed = true;
+    entry.state.minimized = false;
+    if (entry.element) hideWindow(entry.element);
+    entry.onClose?.();
+    if (entry.element) dispatchWindowLifecycle(entry.element, "desktop:window-closed");
+    if (activeExternalWindowId === id) activeExternalWindowId = null;
+    renderTaskbar();
+    saveDesktopState();
+    return;
+  }
+  const win = document.getElementById(id);
+  if (!win) return;
+  closeWindow(win);
+}
+
+function saveWindowStateById(id) {
+  if (externalWindows.has(id)) {
+    const entry = externalWindows.get(id);
+    if (entry.element) clampWindow(entry.element);
+    saveDesktopState();
+    return;
+  }
+  const win = document.getElementById(id);
+  if (!win) return;
+  clampWindow(win);
+  saveDesktopState();
+}
+
+window.EricOSDesktop = {
+  openWindowById,
+  focusWindowById,
+  activateWindowById,
+  minimizeWindowById,
+  closeWindowById,
+  saveWindowStateById,
+  registerExternalWindow(config) {
+    const entry = {
+      id: config.id,
+      title: config.title ?? config.id,
+      iconClass: config.iconClass ?? "",
+      element: null,
+      onRestore: config.onRestore,
+      onClose: config.onClose,
+      onMinimize: config.onMinimize,
+      onFocus: config.onFocus,
+      savedRect: {
+        left: config.initialRect?.left ?? "",
+        top: config.initialRect?.top ?? "",
+        width: config.initialRect?.width ?? "",
+        height: config.initialRect?.height ?? ""
+      },
+      state: {
+        closed: config.initialClosed ?? true,
+        minimized: false
+      }
+    };
+
+    externalWindows.set(config.id, entry);
+    const savedWindow = cachedSavedDesktopState?.externalWindows?.[config.id];
+    if (savedWindow) {
+      applySavedExternalWindowState(config.id, savedWindow);
+    }
+
+    renderTaskbar();
+    return entry;
+  },
+  setExternalWindowElement(id, element) {
+    const entry = externalWindows.get(id);
+    if (!entry || !(element instanceof HTMLElement)) return null;
+    entry.element = element;
+
+    if (entry.savedRect.left) element.style.left = entry.savedRect.left;
+    if (entry.savedRect.top) element.style.top = entry.savedRect.top;
+    if (entry.savedRect.width) element.style.width = entry.savedRect.width;
+    if (entry.savedRect.height) element.style.height = entry.savedRect.height;
+
+    if (entry.state.closed || entry.state.minimized) {
+      hideWindow(element);
+    } else {
+      showWindow(element);
+      element.style.zIndex = String(++topZ);
+    }
+
+    const activateExternal = (event) => {
+      if (!entry.state.closed && !entry.state.minimized) {
+        activateExternalWindow(id);
+      }
+    };
+
+    element.addEventListener("pointerdown", (event) => {
+      if (!isPrimaryPointer(event)) return;
+      activateExternal(event);
+    }, true);
+    element.addEventListener("mousedown", activateExternal, true);
+    element.addEventListener("touchstart", activateExternal, { capture: true, passive: true });
+
+    renderTaskbar();
+    saveDesktopState();
+    return entry;
+  }
+};
 
 function setStartMenuOpen(isOpen) {
   if (!startButton || !startMenu) return;
@@ -470,10 +751,11 @@ window.setStartMenuOpen = setStartMenuOpen;
 function minimizeWindow(win) {
   state[win.id].minimized = true;
   hideWindow(win);
+  dispatchWindowLifecycle(win, "desktop:window-minimized");
   if (win.classList.contains("active")) {
     windows.forEach((candidate) => candidate.classList.remove("active"));
     const next = getTopVisibleWindow();
-    if (next) activateWindow(next);
+    if (next) activateWindowById(next.id);
     else notifyActiveWindowChanged(null);
   }
   renderTaskbar();
@@ -488,7 +770,7 @@ function closeWindow(win) {
   if (win.classList.contains("active")) {
     windows.forEach((candidate) => candidate.classList.remove("active"));
     const next = getTopVisibleWindow();
-    if (next) activateWindow(next);
+    if (next) activateWindowById(next.id);
     else notifyActiveWindowChanged(null);
   }
   renderTaskbar();
@@ -577,6 +859,57 @@ function renderTaskbar() {
         state[win.id].minimized = false;
         showWindow(win);
         activateWindow(win);
+      }
+    }
+
+    if (isCompactViewport()) {
+      bindTapActivation(btn, handleTaskbarButtonActivation);
+    } else {
+      let desktopActivatedAt = 0;
+
+      btn.addEventListener("pointerup", (event) => {
+        if (event.pointerType === "touch" || event.button !== 0) return;
+        desktopActivatedAt = Date.now();
+        handleTaskbarButtonActivation();
+      });
+
+      btn.addEventListener("click", () => {
+        if (Date.now() - desktopActivatedAt < 250) return;
+        handleTaskbarButtonActivation();
+      });
+    }
+    taskbarTasks.appendChild(btn);
+  });
+
+  externalWindows.forEach((entry, id) => {
+    if (entry.state.closed) return;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "task-btn";
+    const isActive =
+      activeExternalWindowId === id && !entry.state.minimized && !startMenuIsOpen;
+    btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+    if (isActive) {
+      btn.classList.add("active");
+    }
+
+    const icon = document.createElement("span");
+    icon.className = `title-icon ${entry.iconClass} task-icon`;
+    icon.setAttribute("aria-hidden", "true");
+    btn.appendChild(icon);
+
+    const label = document.createElement("span");
+    label.className = "task-label";
+    label.textContent = entry.title;
+    btn.appendChild(label);
+
+    function handleTaskbarButtonActivation() {
+      if (entry.state.minimized) {
+        restoreExternalWindow(id);
+      } else if (activeExternalWindowId === id) {
+        minimizeWindowById(id);
+      } else {
+        restoreExternalWindow(id);
       }
     }
 
@@ -940,6 +1273,7 @@ setInitialBrowserFrame();
 setInitialNotesFrame();
 setInitialProjectsFrame();
 setInitialRetrucoFrame();
+setInitialWinampFrame();
 setInitialCmdFrame();
 const browserWindow = document.getElementById("browser");
 const notesWindow = document.getElementById("notes");
@@ -963,6 +1297,7 @@ if (isCompactViewport() && browserWindow) {
 }
 
 const savedDesktopState = readDesktopStateStorage();
+cachedSavedDesktopState = savedDesktopState;
 if (savedDesktopState) {
   applySavedDesktopState(savedDesktopState);
 }

@@ -332,6 +332,15 @@ body.shutdown-mode .taskbar {
   content: none;
 }
 
+.icon-winamp {
+  background: url("/images/icons/winamp.png") center / contain no-repeat;
+}
+
+.icon-winamp::before,
+.icon-winamp::after {
+  content: none;
+}
+
 .icon-cmd {
   background: url("/images/icons/prompt-desktop.png") center / contain no-repeat;
 }
@@ -538,6 +547,18 @@ body.shutdown-mode .taskbar {
   content: none;
 }
 
+.title-icon.winamp {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background: transparent url("/images/icons/winamp.png") center / contain no-repeat;
+}
+
+.title-icon.winamp::before,
+.title-icon.winamp::after {
+  content: none;
+}
+
 .title-icon.cmd {
   width: 16px;
   height: 16px;
@@ -714,6 +735,57 @@ body.shutdown-mode .taskbar {
   height: 100%;
   border: 0;
   overflow: hidden;
+}
+
+.winamp-mount-bridge {
+  display: contents;
+}
+
+#winamp.window,
+#winamp.window.maximized,
+#winamp .window,
+#winamp .window.maximized,
+#winamp .window-body,
+.webamp-desktop.window,
+.webamp-desktop.window.maximized,
+.webamp-desktop .window,
+.webamp-desktop .window.maximized,
+.webamp-desktop .window-body,
+body.theme-dark #winamp.window,
+body.theme-dark #winamp.window.maximized,
+body.theme-dark #winamp .window,
+body.theme-dark #winamp .window.maximized,
+body.theme-dark #winamp .window-body,
+body.theme-dark .webamp-desktop.window,
+body.theme-dark .webamp-desktop.window.maximized,
+body.theme-dark .webamp-desktop .window,
+body.theme-dark .webamp-desktop .window.maximized,
+body.theme-dark .webamp-desktop .window-body {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+#winamp.window.maximized,
+#winamp .window.maximized,
+.webamp-desktop.window.maximized,
+.webamp-desktop .window.maximized,
+body.theme-dark #winamp.window.maximized,
+body.theme-dark #winamp .window.maximized,
+body.theme-dark .webamp-desktop.window.maximized,
+body.theme-dark .webamp-desktop .window.maximized {
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .status-bar {
@@ -2642,7 +2714,17 @@ body.theme-dark .task-btn[aria-pressed="true"] {
   }
 }
 
-
-
-
-
+#webamp {
+  z-index: 100 !important;
+}
+#webamp .window {
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+#webamp #main-window {
+  min-height: 116px;
+}
+#webamp-context-menu {
+  z-index: 101 !important;
+}
