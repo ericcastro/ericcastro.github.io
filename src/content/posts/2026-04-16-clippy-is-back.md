@@ -5,7 +5,7 @@ date: 16 April 2026
 author: Webmaster Eric
 clippy: "It looks like **Clippy** somehow talked his way back into relevance. Hehe."
 ---
-As AI chatbots and tools continue to popularize, Clippy [comebacks](https://news.ycombinator.com/item?id=47063723) are [exploding](https://github.com/felixrieseberg/clippy) (_lol that's quite the overstatement, I only know those_)
+As AI chatbots and tools continue to popularize, Clippy [comebacks](https://news.ycombinator.com/item?id=47063723) are [exploding](https://github.com/felixrieseberg/clippy). There's even a [3D printed Clippy](https://www.instagram.com/reel/DYZBsPgtTHm/?utm_source=ig_web_button_share_sheet&igsh=MzRlODBiNWFlZA==) AI assistant now.
 
 Well guess what, I also gave Clippy a place inside **[EricOS 95](projects/ericos-95/)**. 
 
