@@ -23,8 +23,9 @@ I naively tried contacting Rolando using the e-mail addresses found in the READM
 
 <strong>Back to the game  JavaScript reimplementation</strong>: some bits are still missing from the original, but it's fully playable, supports the original voices and even the MIDI tango background music, using [webaudio-tinysynth](https://github.com/g200kg/webaudio-tinysynth) since no modern browsers support MIDI playback natively anymore.
 
-<p style="text-align: center; font-size: 110%;"><a href="javascript:void(0)" data-open-window="retruco">Click here to play RETRUCO in your browser</a></p>
+<p class="post-cta-button"><a href="javascript:void(0)" data-open-window="retruco">Play RETRUCO in your browser</a></p>
 
 Thank you, Rolando, for making such a bizarre, heart-warming little masterpiece. I hope someday you will stumble upon this post and let me know you saw it.
 
 <span style="font-size: 90%">_Hopefully it won't be for a copyright infringement notice._ (ಥ﹏ಥ)</span>
+

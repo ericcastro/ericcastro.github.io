@@ -1614,6 +1614,35 @@ body.theme-dark .cookie-window .window-content {
   font-weight: 400;
 }
 
+.post-image-frame {
+  max-width: 520px;
+  margin: 14px auto 18px;
+}
+
+.post-image-frame img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.post-cta-button {
+  margin: 20px 0 18px;
+  text-align: center;
+}
+
+.post-cta-button a {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 2px outset #dfdfdf;
+  background: #dfdfdf;
+  color: #000;
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.post-cta-button a:active {
+  border-style: inset;
+}
 .markdown-body p:last-child {
   margin-bottom: 0;
 }
@@ -2612,3 +2641,8 @@ body.theme-dark .task-btn[aria-pressed="true"] {
     font-size: 14px;
   }
 }
+
+
+
+
+
