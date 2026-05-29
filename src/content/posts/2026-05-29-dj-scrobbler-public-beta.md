@@ -18,7 +18,7 @@ If I listen to an Amelie Lens set for two hours, Last.fm only knows I listened t
 
 So I built **DJ Scrobbler**.
 
-It lets me search for DJ sets, pulls tracklists from places like 1001Tracklists when available, plays the set, and **scrobbles the individual tracks to Last.fm** as they come in. But forget Last.fm if you don't even know what it is: It also packs favorites, history, playback progress, visual themes, and more, in a desktop-app experience that makes it feel like something I actually want to keep open, at the same level (but not competing) as the Tidal app _(I quit Spotify a few months ago)_.
+It lets me search for DJ sets, pulls tracklists from places like 1001Tracklists when available, plays the set, and **scrobbles the individual tracks to Last.fm** as they come in. But forget Last.fm if you don't even know what it is: It also packs favorites, history, playback progress, visual themes, and more, in a desktop-app experience that makes it feel like something I actually want to keep open, at the same level as (but not competing with) your Spotify app _(I use Tidal myself though)_.
 
 <p class="post-image-frame"><img src="/images/projects/dj-scrobbler-neon-night.png" alt="DJ Scrobbler desktop app showing a YouTube DJ set, tracklist, and Last.fm scrobbling controls." /></p>
 
