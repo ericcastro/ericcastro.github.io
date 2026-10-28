@@ -79,6 +79,10 @@ const personSchema = {
         <div class="icon icon-retruco"></div>
         <div class="icon-label">RETRUCO.EXE</div>
       </div>
+      <div class="desktop-icon" data-icon="winamp" tabindex="0">
+        <div class="icon icon-winamp"></div>
+        <div class="icon-label">WINAMP.EXE</div>
+      </div>
     </div>
 
     <section
@@ -170,7 +174,7 @@ const personSchema = {
                   <ul>
                     {
                       latestPosts.map((entry) => (
-                        <li><a href={`/posts/${entry.slug}/`}>{entry.data.shortTitle ?? entry.data.title}</a></li>
+                        <li><a href={`/posts/${entry.id}/`}>{entry.data.shortTitle ?? entry.data.title}</a></li>
                       ))
                     }
                     <li><a href="/blog/">All posts</a></li>
@@ -368,7 +372,7 @@ const personSchema = {
                       class:list={["pixel-card", project.data.color !== "yellow" && project.data.color]}
                       style={`left: ${project.data.x}px; top: ${project.data.y}px;${project.data.width ? ` width: ${project.data.width}px;` : ""}`}
                     >
-                      <a href={`/projects/${project.slug}/`} class="pixel-card-link">
+                      <a href={`/projects/${project.id}/`} class="pixel-card-link">
                         <strong>{project.data.title}</strong>
                         {project.data.summary}
                         <span class="pixel-card-period">{project.data.period}</span>
@@ -401,7 +405,7 @@ const personSchema = {
       data-window
       data-title="RETRUCO.EXE"
       data-clippy-topic="retruco"
-      data-clippy-message="It looks like you're opening **RETRUCO.EXE**.\n\nThis old truco relic was reverse engineered from its original EXE into JavaScript."
+      data-clippy-message="**Did you know?**\n\nThis old truco relic was reverse engineered from its original  executable **RETRUCO.EXE** for Windows 95, and then re-implemented JavaScript."
       data-clippy-href="/posts/2026-04-09-30-years-of-retruco-exe/"
       data-clippy-label="Read the full story."
       style="left: 300px; top: 88px; width: 656px; height: 627px; z-index: 24;"
@@ -792,6 +796,10 @@ const personSchema = {
               <span class="title-icon retruco start-menu-icon"></span>
               <span>RETRUCO.exe</span>
             </button>
+            <button class="start-menu-item" type="button" data-start-open="winamp">
+              <span class="title-icon winamp start-menu-icon"></span>
+              <span>Winamp</span>
+            </button>
             <button class="start-menu-item" type="button" data-start-open="cmd">
               <span class="title-icon cmd start-menu-icon"></span>
               <span>Command Prompt</span>
@@ -812,7 +820,7 @@ const personSchema = {
           <div class="start-submenu" data-start-submenu="projects">
             {
               projectEntries.map((project) => (
-                <a class="start-menu-item" href={`/projects/${project.slug}/`}>
+                <a class="start-menu-item" href={`/projects/${project.id}/`}>
                   <span class="title-icon paint start-menu-icon"></span>
                   <span>{project.data.title}</span>
                 </a>
@@ -836,6 +844,840 @@ const personSchema = {
   </div>
 
   <script is:inline src="/scripts/desktop.js"></script>
+  <script>
+    const desktopApi = window.EricOSDesktop;
+    const desktop = document.querySelector(".desktop");
+
+    if (desktop instanceof HTMLElement) {
+      let webampBundlePromise;
+      let winampPromise;
+      let suppressBridgeClose = false;
+      let suppressBridgeMinimize = false;
+      let bridgeRegistered = false;
+      let mountBridge;
+
+      const ensureWebampBundle = () => {
+        if (window.Webamp) return Promise.resolve(window.Webamp);
+        if (webampBundlePromise) return webampBundlePromise;
+
+        webampBundlePromise = new Promise((resolve, reject) => {
+          const existing = document.querySelector('script[data-webamp-bundle="true"]');
+          if (existing instanceof HTMLScriptElement) {
+            existing.addEventListener("load", () => resolve(window.Webamp), { once: true });
+            existing.addEventListener("error", reject, { once: true });
+            return;
+          }
+
+          const script = document.createElement("script");
+          script.src = "/vendor/webamp.bundle.min.js";
+          script.async = true;
+          script.dataset.webampBundle = "true";
+          script.addEventListener("load", () => resolve(window.Webamp), { once: true });
+          script.addEventListener("error", reject, { once: true });
+          document.head.appendChild(script);
+        });
+
+        return webampBundlePromise;
+      };
+
+      const winampClippyHint = {
+        topic: "winamp",
+        message:
+          "**Did you know?**\n\nThe playlist is populated directly with Eric's most listened tracks, thanks to his **Last.fm account** he has maintained for over 20 years.\n\nThat's right, this is what he's been listening to.",
+        href: "https://www.last.fm/user/eric_castro",
+        label: "Check Eric's Last.fm.",
+        once: false,
+        delayMs: 750
+      };
+
+      desktopApi?.registerExternalWindow?.({
+        id: "winamp",
+        title: "Winamp",
+        iconClass: "winamp",
+        initialClosed: true,
+        initialRect: {
+          left: "0px",
+          top: "0px"
+        },
+        onRestore: () => {
+          ensureWinamp()
+            .then((webamp) => {
+              webamp.reopen();
+              if (mountBridge?.classList.contains("hidden")) return;
+              // The first open happens before the external DOM is attached.
+              // Announce the mounted window, then explain it on every reopen,
+              // including after the visitor dismissed an earlier explanation.
+              desktopApi?.activateWindowById?.("winamp");
+              document.dispatchEvent(new CustomEvent("ericos95:clippy", {
+                detail: { ...winampClippyHint, forceShow: true }
+              }));
+            })
+            .catch(() => {});
+        },
+        onFocus: () => {},
+        onMinimize: () => {
+          if (suppressBridgeMinimize) {
+            suppressBridgeMinimize = false;
+            return;
+          }
+          pauseAndHideYouTubeWindow();
+          ensureWinamp()
+            .then((webamp) => {
+              webamp.close();
+            })
+            .catch(() => {});
+        },
+        onClose: () => {
+          if (suppressBridgeClose) {
+            suppressBridgeClose = false;
+            return;
+          }
+          pauseAndHideYouTubeWindow();
+          ensureWinamp()
+            .then((webamp) => {
+              webamp.close();
+            })
+            .catch(() => {});
+        }
+      });
+
+      const WINAMP_TRACK_URL_PREFIX = "ericos-recent-track:";
+      const createWinampTrackUrl = (index) => `${WINAMP_TRACK_URL_PREFIX}${index}`;
+      const getWinampTrackIndexFromUrl = (url) => {
+        if (typeof url !== "string" || !url.startsWith(WINAMP_TRACK_URL_PREFIX)) {
+          return null;
+        }
+
+        const parsed = Number.parseInt(url.slice(WINAMP_TRACK_URL_PREFIX.length), 10);
+        return Number.isFinite(parsed) ? parsed : null;
+      };
+
+      const createFallbackWinampTracks = () =>
+        [
+          ["EricOS FM", "Boot Sequence"],
+          ["EricOS FM", "Dial-Up Mirage"],
+          ["EricOS FM", "Taskbar Bounce"],
+          ["Clippy & The Widgets", "Office Riff"],
+          ["Clippy & The Widgets", "Foreground Fever"],
+          ["Clippy & The Widgets", "After Hours in EricOS"]
+        ].map(([artist, title], index) => ({
+          metaData: {
+            artist,
+            title,
+            album: "Winamp Test Tape"
+          },
+          defaultName: `${artist} - ${title}`,
+          duration: 180,
+          url: createWinampTrackUrl(index),
+          youtubeUrl: ""
+        }));
+
+      const getWinampRecentTrackStore = () => {
+        const recentTracks = window.__ERICOS_WINAMP_RECENT_TRACKS__;
+        return Array.isArray(recentTracks?.tracks) ? recentTracks.tracks : [];
+      };
+
+      const getWinampRecentTrackByIndex = (index) => {
+        if (!Number.isInteger(index) || index < 0) return null;
+        return getWinampRecentTrackStore()[index] ?? null;
+      };
+
+      const clampWinampValue = (value, min, max) => Math.min(Math.max(value, min), max);
+
+      const extractYouTubeVideoId = (urlValue) => {
+        if (typeof urlValue !== "string" || !urlValue.trim()) return "";
+
+        try {
+          const parsedUrl = new URL(urlValue);
+          const hostname = parsedUrl.hostname.replace(/^www\./, "");
+
+          if (hostname === "youtu.be") {
+            return parsedUrl.pathname.replace(/\//g, "").trim();
+          }
+
+          if (hostname === "youtube.com" || hostname === "m.youtube.com") {
+            if (parsedUrl.pathname === "/watch") {
+              return parsedUrl.searchParams.get("v")?.trim() ?? "";
+            }
+
+            const pathMatch = parsedUrl.pathname.match(/^\/(?:embed|shorts|live)\/([^/?#]+)/);
+            return pathMatch?.[1]?.trim() ?? "";
+          }
+        } catch (error) {
+          console.warn("Could not parse YouTube URL for Winamp bridge.", error);
+        }
+
+        return "";
+      };
+
+      let activeWebamp = null;
+      let youtubeIframeApiPromise = null;
+      let youtubePlayerMount = null;
+      let youtubePlayer = null;
+      let youtubePlayerReady = false;
+      let youtubePlayerPromise = null;
+      let activeYouTubeMediaBridge = null;
+      let youtubeMessage = null;
+
+      const setYouTubeMessage = (message) => {
+        if (!youtubeMessage) return;
+        youtubeMessage.textContent = message;
+        youtubeMessage.hidden = !message;
+      };
+
+      // Webamp owns the window's geometry, chrome, focus, dragging and snapping.
+      // Only its content mount and open/closed state belong to this bridge.
+      const showYouTubeWindow = () => {
+        if (!activeWebamp) return;
+        if (!activeWebamp.store.getState().windows.genWindows.milkdrop.open) {
+          activeWebamp.store.dispatch({ type: "TOGGLE_WINDOW", windowId: "milkdrop" });
+        }
+        activeWebamp.store.dispatch({ type: "SET_FOCUSED_WINDOW", window: "milkdrop" });
+        desktopApi?.activateWindowById?.("winamp");
+      };
+
+      const hideYouTubeWindow = () => {
+        activeWebamp?.store.dispatch({ type: "CLOSE_WINDOW", windowId: "milkdrop" });
+      };
+
+      const isYouTubeWindowVisible = () =>
+        Boolean(activeWebamp?.store.getState().windows.genWindows.milkdrop.open);
+
+      const pauseAndHideYouTubeWindow = () => {
+        activeYouTubeMediaBridge?.pause();
+        hideYouTubeWindow();
+      };
+
+      const ensureYouTubeIframeApi = () => {
+        if (window.YT?.Player) return Promise.resolve(window.YT);
+        if (youtubeIframeApiPromise) return youtubeIframeApiPromise;
+
+        youtubeIframeApiPromise = new Promise((resolve, reject) => {
+          const existing = document.querySelector('script[data-youtube-iframe-api="true"]');
+          const previousReady = window.onYouTubeIframeAPIReady;
+
+          window.onYouTubeIframeAPIReady = () => {
+            if (typeof previousReady === "function") {
+              previousReady();
+            }
+            resolve(window.YT);
+          };
+
+          if (existing instanceof HTMLScriptElement) {
+            existing.addEventListener("error", reject, { once: true });
+            return;
+          }
+
+          const script = document.createElement("script");
+          script.src = "https://www.youtube.com/iframe_api";
+          script.async = true;
+          script.dataset.youtubeIframeApi = "true";
+          script.addEventListener("error", reject, { once: true });
+          document.head.appendChild(script);
+        });
+
+        return youtubeIframeApiPromise;
+      };
+
+      const ensureYouTubePlayer = async (initialVideoId = "") => {
+        if (youtubePlayerPromise) return youtubePlayerPromise;
+
+        youtubePlayerPromise = ensureYouTubeIframeApi().then(
+          (YT) =>
+            new Promise((resolve) => {
+              youtubePlayer = new YT.Player(youtubePlayerMount, {
+                width: "100%",
+                height: "100%",
+                videoId: initialVideoId || undefined,
+                playerVars: {
+                  autoplay: 0,
+                  controls: 0,
+                  disablekb: 1,
+                  fs: 0,
+                  modestbranding: 1,
+                  playsinline: 1,
+                  rel: 0
+                },
+                events: {
+                  onReady: () => {
+                    youtubePlayerReady = true;
+                    const iframe = youtubePlayer?.getIframe?.();
+                    if (iframe instanceof HTMLIFrameElement) {
+                      iframe.tabIndex = -1;
+                      iframe.setAttribute("aria-hidden", "true");
+                      iframe.setAttribute("inert", "");
+                      iframe.setAttribute(
+                        "allow",
+                        "autoplay; encrypted-media; picture-in-picture; fullscreen"
+                      );
+                      iframe.style.display = "block";
+                      iframe.style.width = "100%";
+                      iframe.style.height = "100%";
+                      iframe.style.border = "0";
+                    }
+                    activeYouTubeMediaBridge?.handleYouTubeReady?.();
+                    resolve(youtubePlayer);
+                  },
+                  onStateChange: (event) => {
+                    activeYouTubeMediaBridge?.handleYouTubeStateChange?.(event);
+                  },
+                  onError: (event) => {
+                    activeYouTubeMediaBridge?.handleYouTubeError?.(event);
+                  }
+                }
+              });
+            })
+        );
+
+        return youtubePlayerPromise;
+      };
+
+      class YouTubeWinampMedia {
+        constructor() {
+          this._listeners = new Map();
+          this._volume = 50;
+          this._elapsed = 0;
+          this._duration = 0;
+          this._fakePlaybackInterval = null;
+          this._currentTrack = null;
+          this._currentVideoId = "";
+          this._loadedVideoId = "";
+          this._isWaiting = false;
+          this._hasPrimedInitialTrack = false;
+          this._audioContext = null;
+          this._analyser = null;
+
+          activeYouTubeMediaBridge = this;
+
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this._audioContext = new AudioContextClass();
+            this._analyser = this._audioContext.createAnalyser();
+            const silentGain = this._audioContext.createGain();
+            silentGain.gain.value = 0;
+            silentGain.connect(this._analyser);
+            this._analyser.connect(this._audioContext.destination);
+          }
+        }
+
+        // Called by the small Webamp extension, not by DOM observers. The
+        // content survives closing/reopening the video window and skin updates.
+        mountVideoWindow(container) {
+          if (!container) {
+            youtubePlayer?.destroy?.();
+            youtubePlayer = null;
+            youtubePlayerPromise = null;
+            youtubePlayerReady = false;
+            youtubePlayerMount = null;
+            this._loadedVideoId = "";
+            return;
+          }
+          youtubePlayerMount = document.createElement("div");
+          youtubePlayerMount.id = "winamp-youtube-player-mount";
+          container.appendChild(youtubePlayerMount);
+          youtubeMessage = document.createElement("div");
+          youtubeMessage.className = "ericos-video-message";
+          youtubeMessage.setAttribute("role", "status");
+          container.appendChild(youtubeMessage);
+          setYouTubeMessage("Play a track from the playlist to watch its YouTube match.");
+        }
+
+        _emit(event, ...args) {
+          const listeners = this._listeners.get(event);
+          if (!listeners) return;
+          listeners.forEach((listener) => {
+            try {
+              listener(...args);
+            } catch (error) {
+              console.error(`Winamp media bridge listener failed for ${event}.`, error);
+            }
+          });
+        }
+
+        _setWaiting(nextValue) {
+          if (this._isWaiting === nextValue) return;
+          this._isWaiting = nextValue;
+          this._emit(nextValue ? "waiting" : "stopWaiting");
+        }
+
+        _stopFakePlayback() {
+          if (this._fakePlaybackInterval) {
+            window.clearInterval(this._fakePlaybackInterval);
+            this._fakePlaybackInterval = null;
+          }
+        }
+
+        _tickYouTubeTime() {
+          if (!youtubePlayer || typeof youtubePlayer.getCurrentTime !== "function") return;
+
+          const currentTime = youtubePlayer.getCurrentTime();
+          const currentDuration = youtubePlayer.getDuration?.();
+          if (Number.isFinite(currentTime)) {
+            this._elapsed = currentTime;
+          }
+          if (Number.isFinite(currentDuration) && currentDuration > 0) {
+            this._duration = currentDuration;
+          }
+          this._emit("timeupdate");
+        }
+
+        _startFakePlayback() {
+          this._stopFakePlayback();
+          this._emit("playing");
+          this._fakePlaybackInterval = window.setInterval(() => {
+            this._elapsed = Math.min(this._elapsed + 0.25, this.duration());
+            this._emit("timeupdate");
+            if (this._elapsed >= this.duration() && this.duration() > 0) {
+              this._stopFakePlayback();
+              this._emit("ended");
+            }
+          }, 250);
+        }
+
+        _syncTrackFromUrl(url) {
+          const trackIndex = getWinampTrackIndexFromUrl(url);
+          const recentTrack = getWinampRecentTrackByIndex(trackIndex);
+
+          this._currentTrack = recentTrack;
+          this._currentVideoId = extractYouTubeVideoId(recentTrack?.youtubeUrl);
+          this._loadedVideoId = this._currentVideoId === this._loadedVideoId ? this._loadedVideoId : "";
+          this._elapsed = 0;
+          this._duration =
+            Number.isFinite(recentTrack?.duration) && recentTrack.duration > 0 ? recentTrack.duration : 0;
+        }
+
+        async _loadCurrentYouTubeTrack(autoPlay) {
+          if (!this._currentVideoId) return;
+
+          showYouTubeWindow();
+          setYouTubeMessage("");
+          this._setWaiting(true);
+
+          const player = await ensureYouTubePlayer(this._currentVideoId);
+          if (typeof player.setVolume === "function") {
+            player.setVolume(this._volume);
+          }
+
+          if (this._loadedVideoId !== this._currentVideoId) {
+            if (autoPlay) {
+              player.loadVideoById(this._currentVideoId, 0);
+            } else {
+              player.cueVideoById(this._currentVideoId, 0);
+            }
+            this._loadedVideoId = this._currentVideoId;
+          } else if (autoPlay) {
+            player.playVideo();
+          } else {
+            player.pauseVideo();
+          }
+
+          this._setWaiting(false);
+          this._emit("fileLoaded");
+          this._emit("timeupdate");
+        }
+
+        setVolume(volume) {
+          this._volume = clampWinampValue(volume, 0, 100);
+          if (youtubePlayer && typeof youtubePlayer.setVolume === "function") {
+            youtubePlayer.setVolume(this._volume);
+          }
+        }
+
+        setBalance() {}
+
+        setPreamp() {}
+
+        on(event, callback) {
+          const listeners = this._listeners.get(event) ?? new Set();
+          listeners.add(callback);
+          this._listeners.set(event, listeners);
+        }
+
+        timeElapsed() {
+          return this._elapsed;
+        }
+
+        duration() {
+          return this._duration;
+        }
+
+        async play() {
+          if (this._currentVideoId) {
+            if (this._audioContext?.state === "suspended") {
+              this._audioContext.resume().catch(() => {});
+            }
+
+            if (this._loadedVideoId !== this._currentVideoId || !youtubePlayerReady) {
+              await this._loadCurrentYouTubeTrack(true);
+              return;
+            }
+
+            showYouTubeWindow();
+            youtubePlayer?.playVideo?.();
+            return;
+          }
+
+          if (this._audioContext?.state === "suspended") {
+            this._audioContext.resume().catch(() => {});
+          }
+          youtubePlayer?.pauseVideo?.();
+          showYouTubeWindow();
+          setYouTubeMessage("No YouTube match for this track. Try another track in the playlist.");
+        }
+
+        pause() {
+          if (this._currentVideoId && youtubePlayer?.pauseVideo) {
+            youtubePlayer.pauseVideo();
+          }
+          this._stopFakePlayback();
+        }
+
+        stop() {
+          this._stopFakePlayback();
+          this._elapsed = 0;
+
+          if (this._currentVideoId && youtubePlayer) {
+            youtubePlayer.pauseVideo?.();
+            youtubePlayer.seekTo?.(0, true);
+          }
+
+          this._emit("timeupdate");
+        }
+
+        seekToPercentComplete(percent) {
+          const safePercent = clampWinampValue(percent, 0, 100);
+          const nextTime = this.duration() * (safePercent / 100);
+          this._elapsed = nextTime;
+
+          if (this._currentVideoId && youtubePlayer?.seekTo) {
+            youtubePlayer.seekTo(nextTime, true);
+          }
+
+          this._emit("timeupdate");
+        }
+
+        async loadFromUrl(url, autoPlay) {
+          this._stopFakePlayback();
+          this._syncTrackFromUrl(url);
+          this._setWaiting(true);
+
+          if (this._currentVideoId) {
+            const shouldOpenPlayer =
+              autoPlay ||
+              isYouTubeWindowVisible() ||
+              youtubePlayerPromise ||
+              this._hasPrimedInitialTrack;
+
+            this._hasPrimedInitialTrack = true;
+
+            if (shouldOpenPlayer) {
+              await this._loadCurrentYouTubeTrack(autoPlay);
+              return;
+            }
+
+            this._setWaiting(false);
+            this._emit("fileLoaded");
+            this._emit("timeupdate");
+            return;
+          }
+
+          this._loadedVideoId = "";
+          youtubePlayer?.pauseVideo?.();
+          setYouTubeMessage("No YouTube match for this track. Try another track in the playlist.");
+          this._setWaiting(false);
+          this._emit("fileLoaded");
+          this._emit("timeupdate");
+
+          if (autoPlay) {
+            await this.play();
+          }
+        }
+
+        setEqBand() {}
+
+        disableEq() {}
+
+        enableEq() {}
+
+        getAnalyser() {
+          return this._analyser;
+        }
+
+        handleYouTubeReady() {
+          if (youtubePlayer?.setVolume) {
+            youtubePlayer.setVolume(this._volume);
+          }
+        }
+
+        handleYouTubeStateChange(event) {
+          const YT = window.YT;
+          if (!YT?.PlayerState) return;
+
+          switch (event.data) {
+            case YT.PlayerState.PLAYING:
+              this._tickYouTubeTime();
+              this._setWaiting(false);
+              this._emit("playing");
+              this._stopFakePlayback();
+              this._fakePlaybackInterval = window.setInterval(() => {
+                this._tickYouTubeTime();
+              }, 250);
+              break;
+            case YT.PlayerState.PAUSED:
+            case YT.PlayerState.CUED:
+              this._tickYouTubeTime();
+              this._setWaiting(false);
+              this._stopFakePlayback();
+              break;
+            case YT.PlayerState.BUFFERING:
+              this._setWaiting(true);
+              break;
+            case YT.PlayerState.ENDED:
+              this._tickYouTubeTime();
+              this._setWaiting(false);
+              this._stopFakePlayback();
+              this._emit("ended");
+              break;
+          }
+        }
+
+        handleYouTubeError(event) {
+          console.warn("Winamp YouTube player reported an error.", event);
+          this._setWaiting(false);
+          this._stopFakePlayback();
+          setYouTubeMessage("YouTube could not play this match. Try another track in the playlist.");
+        }
+
+        dispose() {
+          this._stopFakePlayback();
+        }
+      }
+
+      const sanitizeRecentTrackText = (value, fallback) =>
+        typeof value === "string" && value.trim() ? value.trim() : fallback;
+
+      let recentWinampTracksPromise = null;
+      const getRecentWinampTracks = async () => {
+        if (recentWinampTracksPromise) return recentWinampTracksPromise;
+
+        recentWinampTracksPromise = fetch("https://api.eric.cast.ro/recent-tracks", {
+          headers: {
+            Accept: "application/json"
+          }
+        })
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error(`Recent tracks request failed with ${response.status}`);
+            }
+
+            const payload = await response.json();
+            const apiTracks = Array.isArray(payload?.tracks) ? payload.tracks : [];
+            if (!apiTracks.length) {
+              throw new Error("Recent tracks payload was empty");
+            }
+
+            const mappedTracks = apiTracks.map((track, index) => {
+              const artist = sanitizeRecentTrackText(track?.artist, "Unknown Artist");
+              const title = sanitizeRecentTrackText(track?.track, `Recent Track ${index + 1}`);
+              const duration =
+                Number.isFinite(track?.duration) && track.duration > 0 ? track.duration : undefined;
+
+              return {
+                metaData: {
+                  artist,
+                  title,
+                  album: "Recently Played"
+                },
+                defaultName: `${artist} - ${title}`,
+                duration,
+                url: createWinampTrackUrl(index),
+                youtubeUrl:
+                  typeof track?.youtubeUrl === "string" && track.youtubeUrl.trim()
+                    ? track.youtubeUrl.trim()
+                    : ""
+              };
+            });
+
+            window.__ERICOS_WINAMP_RECENT_TRACKS__ = {
+              fetchedAt: typeof payload?.fetchedAt === "string" ? payload.fetchedAt : null,
+              source: typeof payload?.source === "string" ? payload.source : null,
+              user: typeof payload?.user === "string" ? payload.user : null,
+              tracks: mappedTracks.map((track, index) => ({
+                artist: track.metaData.artist,
+                title: track.metaData.title,
+                album: track.metaData.album,
+                duration: track.duration ?? null,
+                trackUrl: track.url,
+                youtubeUrl: track.youtubeUrl,
+                playlistIndex: index
+              }))
+            };
+
+            return mappedTracks;
+          })
+          .catch((error) => {
+            console.warn("Falling back to local Winamp test playlist.", error);
+            const fallbackTracks = createFallbackWinampTracks();
+            window.__ERICOS_WINAMP_RECENT_TRACKS__ = {
+              fetchedAt: null,
+              source: "fallback",
+              user: null,
+              tracks: fallbackTracks.map((track, index) => ({
+                artist: track.metaData.artist,
+                title: track.metaData.title,
+                album: track.metaData.album,
+                duration: track.duration ?? null,
+                trackUrl: track.url,
+                youtubeUrl: "",
+                playlistIndex: index
+              }))
+            };
+            return fallbackTracks;
+          });
+
+        return recentWinampTracksPromise;
+      };
+
+      const ensureWinamp = async () => {
+        if (winampPromise) return winampPromise;
+
+        winampPromise = ensureWebampBundle()
+          .then(async (Webamp) => {
+            if (!(mountBridge instanceof HTMLElement)) {
+              mountBridge = document.createElement("div");
+              mountBridge.id = "winamp";
+              mountBridge.className = "webamp-desktop";
+              desktop.appendChild(mountBridge);
+            }
+            const initialTracks = await getRecentWinampTracks();
+            const sideBySide = desktop.clientWidth >= 650;
+            const left = sideBySide ? Math.min(680, desktop.clientWidth - 650) : 0;
+            const top = 36;
+            const webamp = new Webamp({
+              enableHotkeys: false,
+              initialTracks,
+              __customMediaClass: YouTubeWinampMedia,
+              zIndex: 1,
+              windowLayout: {
+                main: {
+                  position: { top, left }
+                },
+                playlist: {
+                  position: { top: top + 116, left }
+                },
+                equalizer: {
+                  position: { top: top + 116, left },
+                  closed: true
+                },
+                milkdrop: {
+                  position: sideBySide
+                    ? { top, left: left + 275 }
+                    : { top: top + 232, left },
+                  size: { extraWidth: 4, extraHeight: 5 },
+                  closed: true
+                }
+              }
+            });
+
+            activeWebamp = webamp;
+            // The supplied layout already uses desktop coordinates. Do not let
+            // renderInto recenter it inside the desktop bridge.
+            webamp.store.dispatch({ type: "UPDATE_WINDOW_POSITIONS", positions: {}, absolute: true });
+
+            webamp.onClose(() => {
+              pauseAndHideYouTubeWindow();
+              if (suppressBridgeClose) {
+                suppressBridgeClose = false;
+                return;
+              }
+              suppressBridgeClose = true;
+              desktopApi?.closeWindowById?.("winamp");
+            });
+
+            webamp.onMinimize(() => {
+              pauseAndHideYouTubeWindow();
+              if (suppressBridgeMinimize) {
+                suppressBridgeMinimize = false;
+                return;
+              }
+              suppressBridgeMinimize = true;
+              desktopApi?.minimizeWindowById?.("winamp");
+            });
+
+            Object.assign(mountBridge.style, {
+              position: "absolute", left: "0px", top: "0px", width: "100%", height: "100%"
+            });
+            await webamp.renderInto(mountBridge);
+
+            const webampDesktop = mountBridge;
+            if (webampDesktop instanceof HTMLElement) {
+              webampDesktop.id = "winamp";
+              webampDesktop.dataset.clippyTopic = winampClippyHint.topic;
+              webampDesktop.dataset.clippyMessage = winampClippyHint.message;
+              webampDesktop.dataset.clippyHref = winampClippyHint.href;
+              webampDesktop.dataset.clippyLabel = winampClippyHint.label;
+              webampDesktop.style.position = "absolute";
+              webampDesktop.style.background = "transparent";
+
+              if (!bridgeRegistered) {
+                desktopApi?.setExternalWindowElement?.("winamp", webampDesktop);
+                bridgeRegistered = true;
+              }
+              // Old desktop caches stored a second offset outside Webamp.
+              // Native window positions must be the only geometry source.
+              Object.assign(webampDesktop.style, {
+                left: "0px", top: "0px", width: "100%", height: "100%"
+              });
+
+              // The spectrum has no useful audio input for YouTube playback.
+              // Give its existing area an explicit video-window launcher, even
+              // while stopped (Webamp removes its visualizer canvas then).
+              const spectrumLauncher = document.createElement("div");
+              spectrumLauncher.className = "winamp-video-launcher";
+              spectrumLauncher.setAttribute("role", "button");
+              spectrumLauncher.setAttribute("aria-label", "Open YouTube player");
+              spectrumLauncher.setAttribute("title", "Double-click to open YouTube player");
+              spectrumLauncher.tabIndex = 0;
+              spectrumLauncher.addEventListener("dblclick", showYouTubeWindow);
+              spectrumLauncher.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  showYouTubeWindow();
+                }
+              });
+              webampDesktop.querySelector("#main-window")?.appendChild(spectrumLauncher);
+
+              document.addEventListener(
+                "pointerdown",
+                (event) => {
+                  if (webampDesktop.contains(event.target)) {
+                    desktopApi?.activateWindowById?.("winamp");
+                  }
+                },
+                true
+              );
+
+            }
+
+            return webamp;
+          })
+          .catch((error) => {
+            console.error("Failed to initialize Winamp", error);
+            throw error;
+          });
+
+        return winampPromise;
+      };
+
+      const awakenWinamp = () => {
+        ensureWinamp()
+          .then((webamp) => {
+            webamp.reopen();
+          })
+          .catch(() => {});
+      };
+    }
+  </script>
   <script is:inline src="/scripts/site-features.js"></script>
   <script is:inline src="/scripts/win-scroll.js"></script>
 </BaseLayout>

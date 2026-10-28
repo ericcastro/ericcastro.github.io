@@ -332,6 +332,15 @@ body.shutdown-mode .taskbar {
   content: none;
 }
 
+.icon-winamp {
+  background: url("/images/icons/winamp.png") center / contain no-repeat;
+}
+
+.icon-winamp::before,
+.icon-winamp::after {
+  content: none;
+}
+
 .icon-cmd {
   background: url("/images/icons/prompt-desktop.png") center / contain no-repeat;
 }
@@ -423,7 +432,8 @@ body.shutdown-mode .taskbar {
   cursor: nesw-resize;
 }
 
-.window.hidden {
+.window.hidden,
+.webamp-desktop.hidden {
   display: none;
 }
 
@@ -535,6 +545,18 @@ body.shutdown-mode .taskbar {
 
 .title-icon.retruco::before,
 .title-icon.retruco::after {
+  content: none;
+}
+
+.title-icon.winamp {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  background: transparent url("/images/icons/winamp.png") center / contain no-repeat;
+}
+
+.title-icon.winamp::before,
+.title-icon.winamp::after {
   content: none;
 }
 
@@ -714,6 +736,56 @@ body.shutdown-mode .taskbar {
   height: 100%;
   border: 0;
   overflow: hidden;
+}
+
+.winamp-mount-bridge {
+  display: contents;
+}
+
+#winamp.window,
+#winamp.window.maximized,
+#winamp .window,
+#winamp .window.maximized,
+#winamp .window-body,
+.webamp-desktop.window,
+.webamp-desktop.window.maximized,
+.webamp-desktop .window,
+.webamp-desktop .window.maximized,
+.webamp-desktop .window-body,
+body.theme-dark #winamp.window,
+body.theme-dark #winamp.window.maximized,
+body.theme-dark #winamp .window,
+body.theme-dark #winamp .window.maximized,
+body.theme-dark #winamp .window-body,
+body.theme-dark .webamp-desktop.window,
+body.theme-dark .webamp-desktop.window.maximized,
+body.theme-dark .webamp-desktop .window,
+body.theme-dark .webamp-desktop .window.maximized,
+body.theme-dark .webamp-desktop .window-body {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 0 !important;
+  border-left: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+#winamp.window.maximized,
+#winamp .window.maximized,
+.webamp-desktop.window.maximized,
+.webamp-desktop .window.maximized,
+body.theme-dark #winamp.window.maximized,
+body.theme-dark #winamp .window.maximized,
+body.theme-dark .webamp-desktop.window.maximized,
+body.theme-dark .webamp-desktop .window.maximized {
+  left: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .status-bar {
@@ -2642,7 +2714,88 @@ body.theme-dark .task-btn[aria-pressed="true"] {
   }
 }
 
+.webamp-desktop {
+  pointer-events: none;
+}
 
+#webamp {
+  pointer-events: auto;
+  z-index: 100 !important;
+}
+#webamp .window {
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+#webamp #main-window {
+  min-height: 116px;
+}
+#webamp-context-menu {
+  z-index: 101 !important;
+}
 
+#webamp .ericos-video-content,
+#webamp .ericos-video-content > div,
+#webamp .ericos-video-content iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 
+#webamp .winamp-video-launcher {
+  position: absolute;
+  left: 24px;
+  top: 43px;
+  width: 76px;
+  height: 16px;
+  cursor: pointer;
+}
 
+#webamp .ericos-video-content {
+  /* An iframe's intrinsic 300x150 size must not size Webamp's flex chrome.
+     At small window sizes it otherwise collapses the bottom fill to zero. */
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+#webamp .ericos-video-player,
+#webamp .ericos-video-drag-surface {
+  position: absolute;
+  inset: 0;
+}
+
+#webamp .ericos-video-drag-surface {
+  z-index: 1;
+  background: transparent;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+#webamp .ericos-video-content iframe {
+  /* The native drag surface owns pointer input; Winamp owns playback. */
+  pointer-events: none;
+}
+
+#webamp .ericos-video-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 20px;
+  color: #ccc;
+  background: #000;
+  font: 12px Arial, sans-serif;
+  text-align: center;
+}
+
+#webamp .ericos-video-message[hidden] {
+  display: none;
+}
+
+#webamp #main-window.shade .winamp-video-launcher {
+  display: none;
+}

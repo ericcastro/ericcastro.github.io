@@ -16,7 +16,7 @@ const Content = rendered.Content;
     Posted on {entry.data.date}
     {entry.data.author ? ` by ${entry.data.author}` : ""}
     {" "}
-    <a href={`/posts/${entry.slug}/`} class="post-permalink">(permalink)</a>
+    <a href={`/posts/${entry.id}/`} class="post-permalink">(permalink)</a>
     {entry.data.category ? (
       <>
         {" "}

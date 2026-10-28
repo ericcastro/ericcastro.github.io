@@ -5,7 +5,7 @@ import ProjectDetail from "../../components/ProjectDetail.astro";
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
   return projects.map((project) => ({
-    params: { slug: project.slug },
+    params: { slug: project.id },
     props: { project }
   }));
 }
@@ -15,9 +15,9 @@ const { project } = Astro.props;
 
 <div
   data-browser-fragment="project"
-  data-browser-url={`/projects/${project.slug}/`}
+  data-browser-url={`/projects/${project.id}/`}
   data-browser-title={`${project.data.title} | Eric Castro`}
-  data-clippy-topic={`project-${project.slug}`}
+  data-clippy-topic={`project-${project.id}`}
   data-clippy-message={project.data.clippy?.message}
   data-clippy-href={project.data.clippy?.href}
   data-clippy-label={project.data.clippy?.label}

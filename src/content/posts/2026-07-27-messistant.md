@@ -25,7 +25,7 @@ It originally started with this:
 
     !!!
 
-Reply with `!!!` to a message and Messistant explains it — particularly useful for Argentine Spanish, where technically knowing Spanish does not necessarily prepare you for whatever nonsense we just said.
+Reply with `!!!` to a message and Messistant explains it - particularly useful for Argentine Spanish, where technically knowing Spanish does not necessarily prepare you for whatever nonsense we just said.
 
 There is also:
 

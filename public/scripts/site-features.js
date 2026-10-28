@@ -64,6 +64,7 @@ let retrucoWidgetPromise = null;
 const shownClippyTopics = new Set();
 const dismissedClippyContexts = new Set();
 let activeClippyContext = "";
+let activeDesktopWindowId = null;
 let visibleClippyContext = "";
 const CLIPPY_SPRITE_COLUMNS = 27;
 const CLIPPY_SPRITE_ROWS = 34;
@@ -594,8 +595,10 @@ function getClippyContextKey(descriptor) {
 }
 
 function getActiveClippyDescriptor() {
-  const activeWindow = document.querySelector("[data-window].active:not(.hidden)");
-  if (!(activeWindow instanceof HTMLElement)) return null;
+  const activeWindow = activeDesktopWindowId
+    ? document.getElementById(activeDesktopWindowId)
+    : document.querySelector("[data-window].active:not(.hidden)");
+  if (!(activeWindow instanceof HTMLElement) || activeWindow.classList.contains("hidden")) return null;
 
   if (activeWindow.id === "browser") {
     return getClippyDescriptorFromElement(browserContent);
@@ -606,7 +609,7 @@ function getActiveClippyDescriptor() {
 
 function getNoWindowsClippyDescriptor() {
   if (document.body.classList.contains("shutdown-mode")) return null;
-  const visibleWindow = document.querySelector("[data-window]:not(.hidden)");
+  const visibleWindow = document.querySelector("[data-window]:not(.hidden), #winamp:not(.hidden)");
   if (visibleWindow) return null;
   return {
     topic: "no-windows-open",
@@ -624,6 +627,9 @@ function syncContextualClippy() {
   const descriptor = getActiveClippyDescriptor() ?? getNoWindowsClippyDescriptor();
   const nextContext = getClippyContextKey(descriptor);
 
+  // Focusing another part of the same widget must not cancel a queued launch
+  // explanation or keep replaying it while the visitor drags its windows.
+  if (nextContext === activeClippyContext) return;
   activeClippyContext = nextContext;
 
   if (!descriptor) {
@@ -1313,7 +1319,10 @@ function initializeClippy() {
     handleClippyAction(clippySecondaryLink, event);
   });
 
-  document.addEventListener("desktop:active-window-changed", syncContextualClippy);
+  document.addEventListener("desktop:active-window-changed", (event) => {
+    activeDesktopWindowId = event instanceof CustomEvent ? event.detail?.id ?? null : null;
+    syncContextualClippy();
+  });
   syncContextualClippy();
 }
 

@@ -5,19 +5,19 @@ import { getCollection } from "astro:content";
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   return posts.map((entry) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: { entry }
   }));
 }
 
 const { entry } = Astro.props;
-const redirectPath = `/?post=${entry.slug}`;
+const redirectPath = `/?post=${entry.id}`;
 ---
 
 <BaseLayout
   title={`${entry.data.title} | Eric Castro`}
   description={entry.body.slice(0, 160).replace(/\s+/g, " ").trim()}
-  canonicalPath={`/posts/${entry.slug}/`}
+  canonicalPath={`/posts/${entry.id}/`}
   type="article"
 >
   <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
