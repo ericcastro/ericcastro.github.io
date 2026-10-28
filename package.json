@@ -8,8 +8,7 @@
     "build": "npm run vendor:webamp && astro build",
     "vendor:webamp": "node scripts/build-webamp.mjs",
     "clean": "rm -rf .astro dist",
-    "preview": "astro preview",
-    "pages:dev": "npx wrangler pages dev dist"
+    "preview": "astro preview"
   },
   "dependencies": {
     "astro": "^7.4.4",
@@ -19,8 +18,7 @@
     "esbuild": "^0.28.2",
     "jszip": "^3.10.2",
     "lodash": "^4.18.1",
-    "music-metadata": "^11.16.1",
-    "wrangler": "^4.155.0"
+    "music-metadata": "^11.16.1"
   },
   "engines": {
     "node": ">=22.23.4"

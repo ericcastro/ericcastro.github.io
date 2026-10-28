@@ -1,74 +1,33 @@
 # EricOS 95
 
-Personal site.
+[EricOS 95](https://eric.cast.ro/) is my personal website, disguised as a tiny Windows 95 desktop. It is both a project in its own right and a home for the things I build, think about and enjoy, with plenty of retro computing nostalgia and old-web jokes.
 
-Built with Astro. Use Node.js 24 (`nvm use`) and install with `npm ci`.
+## On the site
 
-The desktop Winamp widget uses Webamp 2.3.1's native Milkdrop `GenWindow` for
-YouTube playback. Dragging, snapping, resizing and window focus stay in Webamp.
-The YouTube media bridge supplies only the content and playback controls.
+- **About me:** my background, interests and life outside work.
+- **Projects:** software, electronics and other experiments, finished or otherwise.
+- **Blog:** project updates, personal stories and occasional observations.
+- **Links:** places to find me and things worth visiting elsewhere on the web.
 
-`scripts/build-webamp.mjs` applies a small extension to the installed Webamp
-bundle. It keeps the video content mounted when its window is closed and keeps
-window DOM order stable, using z-index for stacking instead. Moving an iframe's
-ancestor in the DOM otherwise reloads its original video on focus changes.
-The desktop bridge fills the desktop at `0,0` and passes pointer input through
-its empty space; Webamp owns all window coordinates.
+## On the desktop
 
-The bundle uses Webamp's lazy distribution and builds its metadata parser, ZIP
-library and Lodash helpers from the audited npm lockfile. The accompanying
-`public/vendor/webamp.cdx.json` inventories the remaining embedded libraries.
+- **Internet Ersplorer:** a browser inside the browser, with an address bar and navigation history.
+- **Clippy:** contextual explanations and commentary as you explore.
+- **RETRUCO.EXE:** a playable JavaScript reimplementation of a 1996 Argentine Truco card game.
+- **WINAMP.EXE:** a Webamp player whose playlist comes from my recent [Last.fm listening history](https://www.last.fm/user/eric_castro), with YouTube playback when a match is available.
+- **The surrounding OS:** draggable windows, a Start menu, taskbar, command prompt, editable notepad and dark mode.
 
-Regenerate the checked-in bundle after changing the extension:
+## Development
 
-```bash
-npm run vendor:webamp
-```
+Built with Astro and deployed as a static site on GitHub Pages. Personal content lives in `src/content/` as Markdown; the desktop interface lives in `src/pages/`, `src/styles/` and `public/scripts/`.
 
-`npm run build` also regenerates it. Check dependencies, including embedded
-libraries, with `osv-scanner scan -r .` and `npm audit`.
-
-Double-click the spectrum analyzer (or focus it and press Enter) to reopen the
-YouTube window. Closing that window keeps audio playing. Closing or minimizing
-Winamp pauses playback.
-
-Playback controls are provided by Winamp. The video has a transparent native
-drag surface, so dragging the picture detaches or moves the YouTube window.
-Resizing uses Webamp's existing attachment graph to move snapped windows with
-the resized edge. Closed/hidden windows are excluded from that graph.
-
-The website disables YouTube's standard controls with `controls=0`. Removing
-its remaining transient overlays in DJ Scrobbler requires Electron to inject
-CSS inside the YouTube frame; that approach is unavailable to this site's
-cross-origin browser embed.
-
-The `public/mewamp/` player also uses Cloudflare Pages Functions for:
-
-- proxying Last.fm recent tracks without exposing the API key
-- short-lived edge caching of Last.fm responses
-- server-side YouTube search fallback
-
-Content lives mostly in:
-
-- `src/content/about/`
-- `src/content/posts/`
-- `src/content/projects/`
-
-Useful commands:
+Use Node.js 24 (`nvm use` if you use nvm):
 
 ```bash
+npm ci
 npm run dev
-npm run build
 ```
 
-Cloudflare Pages local function testing:
+Run `npm run build` to generate the site in `dist/`. The build also regenerates the customized Webamp bundle using [scripts/build-webamp.mjs](scripts/build-webamp.mjs).
 
-1. Create a local secrets file from `.dev.vars.example`.
-2. Run `npm run build`.
-3. Run `npm run pages:dev`.
-4. Open `http://localhost:8788/mewamp/`.
-
-Notes:
-
-- `wrangler pages dev dist` serves the built static assets and runs the `/functions` routes locally.
-- `astro dev` alone will not execute the Pages Functions.
+Check dependencies with `npm audit` and `osv-scanner scan -r .`; the latter also checks the inventory of libraries embedded in Webamp.
