@@ -432,7 +432,8 @@ body.shutdown-mode .taskbar {
   cursor: nesw-resize;
 }
 
-.window.hidden {
+.window.hidden,
+.webamp-desktop.hidden {
   display: none;
 }
 
@@ -771,7 +772,6 @@ body.theme-dark .webamp-desktop .window-body {
   border-left: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
-  background: transparent !important;
 }
 
 #winamp.window.maximized,
@@ -2714,7 +2714,12 @@ body.theme-dark .task-btn[aria-pressed="true"] {
   }
 }
 
+.webamp-desktop {
+  pointer-events: none;
+}
+
 #webamp {
+  pointer-events: auto;
   z-index: 100 !important;
 }
 #webamp .window {
@@ -2727,4 +2732,70 @@ body.theme-dark .task-btn[aria-pressed="true"] {
 }
 #webamp-context-menu {
   z-index: 101 !important;
+}
+
+#webamp .ericos-video-content,
+#webamp .ericos-video-content > div,
+#webamp .ericos-video-content iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#webamp .winamp-video-launcher {
+  position: absolute;
+  left: 24px;
+  top: 43px;
+  width: 76px;
+  height: 16px;
+  cursor: pointer;
+}
+
+#webamp .ericos-video-content {
+  /* An iframe's intrinsic 300x150 size must not size Webamp's flex chrome.
+     At small window sizes it otherwise collapses the bottom fill to zero. */
+  position: absolute;
+  inset: 0;
+  background: #000;
+}
+
+#webamp .ericos-video-player,
+#webamp .ericos-video-drag-surface {
+  position: absolute;
+  inset: 0;
+}
+
+#webamp .ericos-video-drag-surface {
+  z-index: 1;
+  background: transparent;
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+#webamp .ericos-video-content iframe {
+  /* The native drag surface owns pointer input; Winamp owns playback. */
+  pointer-events: none;
+}
+
+#webamp .ericos-video-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 20px;
+  color: #ccc;
+  background: #000;
+  font: 12px Arial, sans-serif;
+  text-align: center;
+}
+
+#webamp .ericos-video-message[hidden] {
+  display: none;
+}
+
+#webamp #main-window.shade .winamp-video-launcher {
+  display: none;
 }

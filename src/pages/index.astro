@@ -81,7 +81,7 @@ const personSchema = {
       </div>
       <div class="desktop-icon" data-icon="winamp" tabindex="0">
         <div class="icon icon-winamp"></div>
-        <div class="icon-label">Winamp</div>
+        <div class="icon-label">WINAMP.EXE</div>
       </div>
     </div>
 
@@ -174,7 +174,7 @@ const personSchema = {
                   <ul>
                     {
                       latestPosts.map((entry) => (
-                        <li><a href={`/posts/${entry.slug}/`}>{entry.data.shortTitle ?? entry.data.title}</a></li>
+                        <li><a href={`/posts/${entry.id}/`}>{entry.data.shortTitle ?? entry.data.title}</a></li>
                       ))
                     }
                     <li><a href="/blog/">All posts</a></li>
@@ -372,7 +372,7 @@ const personSchema = {
                       class:list={["pixel-card", project.data.color !== "yellow" && project.data.color]}
                       style={`left: ${project.data.x}px; top: ${project.data.y}px;${project.data.width ? ` width: ${project.data.width}px;` : ""}`}
                     >
-                      <a href={`/projects/${project.slug}/`} class="pixel-card-link">
+                      <a href={`/projects/${project.id}/`} class="pixel-card-link">
                         <strong>{project.data.title}</strong>
                         {project.data.summary}
                         <span class="pixel-card-period">{project.data.period}</span>
@@ -405,7 +405,7 @@ const personSchema = {
       data-window
       data-title="RETRUCO.EXE"
       data-clippy-topic="retruco"
-      data-clippy-message="It looks like you're opening **RETRUCO.EXE**.\n\nThis old truco relic was reverse engineered from its original EXE into JavaScript."
+      data-clippy-message="**Did you know?**\n\nThis old truco relic was reverse engineered from its original  executable **RETRUCO.EXE** for Windows 95, and then re-implemented JavaScript."
       data-clippy-href="/posts/2026-04-09-30-years-of-retruco-exe/"
       data-clippy-label="Read the full story."
       style="left: 300px; top: 88px; width: 656px; height: 627px; z-index: 24;"
@@ -820,7 +820,7 @@ const personSchema = {
           <div class="start-submenu" data-start-submenu="projects">
             {
               projectEntries.map((project) => (
-                <a class="start-menu-item" href={`/projects/${project.slug}/`}>
+                <a class="start-menu-item" href={`/projects/${project.id}/`}>
                   <span class="title-icon paint start-menu-icon"></span>
                   <span>{project.data.title}</span>
                 </a>
@@ -880,19 +880,37 @@ const personSchema = {
         return webampBundlePromise;
       };
 
+      const winampClippyHint = {
+        topic: "winamp",
+        message:
+          "**Did you know?**\n\nThe playlist is populated directly with Eric's most listened tracks, thanks to his **Last.fm account** he has maintained for over 20 years.\n\nThat's right, this is what he's been listening to.",
+        href: "https://www.last.fm/user/eric_castro",
+        label: "Check Eric's Last.fm.",
+        once: false,
+        delayMs: 750
+      };
+
       desktopApi?.registerExternalWindow?.({
         id: "winamp",
         title: "Winamp",
         iconClass: "winamp",
         initialClosed: true,
         initialRect: {
-          left: "680px",
-          top: "56px"
+          left: "0px",
+          top: "0px"
         },
         onRestore: () => {
           ensureWinamp()
             .then((webamp) => {
               webamp.reopen();
+              if (mountBridge?.classList.contains("hidden")) return;
+              // The first open happens before the external DOM is attached.
+              // Announce the mounted window, then explain it on every reopen,
+              // including after the visitor dismissed an earlier explanation.
+              desktopApi?.activateWindowById?.("winamp");
+              document.dispatchEvent(new CustomEvent("ericos95:clippy", {
+                detail: { ...winampClippyHint, forceShow: true }
+              }));
             })
             .catch(() => {});
         },
@@ -992,118 +1010,42 @@ const personSchema = {
         return "";
       };
 
+      let activeWebamp = null;
       let youtubeIframeApiPromise = null;
-      let youtubeFloatingWindow = null;
       let youtubePlayerMount = null;
       let youtubePlayer = null;
       let youtubePlayerReady = false;
       let youtubePlayerPromise = null;
       let activeYouTubeMediaBridge = null;
+      let youtubeMessage = null;
 
-      const bringYouTubeWindowToFront = () => {
-        if (!(youtubeFloatingWindow instanceof HTMLElement)) return;
-
-        const winampElement = document.getElementById("winamp");
-        const winampZIndex = Number.parseInt(winampElement?.style.zIndex ?? "40", 10) || 40;
-        youtubeFloatingWindow.style.zIndex = String(winampZIndex + 1);
+      const setYouTubeMessage = (message) => {
+        if (!youtubeMessage) return;
+        youtubeMessage.textContent = message;
+        youtubeMessage.hidden = !message;
       };
 
-      const positionYouTubeWindow = () => {
-        if (!(youtubeFloatingWindow instanceof HTMLElement)) return;
-
-        const width = 420;
-        const height = 236;
-        const desktopWidth = desktop.clientWidth || window.innerWidth || 1280;
-        const desktopHeight = desktop.clientHeight || window.innerHeight || 720;
-        const winampElement = document.getElementById("winamp");
-        const winampLeft = Number.parseFloat(winampElement?.style.left ?? "680") || 680;
-        const winampTop = Number.parseFloat(winampElement?.style.top ?? "56") || 56;
-        const winampWidth = winampElement?.offsetWidth || 275;
-        const margin = 24;
-
-        let left = winampLeft + winampWidth + margin;
-        if (left + width > desktopWidth - margin) {
-          left = Math.max(margin, winampLeft - width - margin);
+      // Webamp owns the window's geometry, chrome, focus, dragging and snapping.
+      // Only its content mount and open/closed state belong to this bridge.
+      const showYouTubeWindow = () => {
+        if (!activeWebamp) return;
+        if (!activeWebamp.store.getState().windows.genWindows.milkdrop.open) {
+          activeWebamp.store.dispatch({ type: "TOGGLE_WINDOW", windowId: "milkdrop" });
         }
-
-        let top = winampTop;
-        if (top + height > desktopHeight - 48) {
-          top = Math.max(margin, desktopHeight - height - 48);
-        }
-
-        youtubeFloatingWindow.style.left = `${Math.round(left)}px`;
-        youtubeFloatingWindow.style.top = `${Math.round(top)}px`;
+        activeWebamp.store.dispatch({ type: "SET_FOCUSED_WINDOW", window: "milkdrop" });
+        desktopApi?.activateWindowById?.("winamp");
       };
 
-      const ensureYouTubeFloatingWindow = () => {
-        if (youtubeFloatingWindow instanceof HTMLElement && youtubePlayerMount instanceof HTMLElement) {
-          return youtubeFloatingWindow;
-        }
-
-        youtubeFloatingWindow = document.createElement("div");
-        youtubeFloatingWindow.id = "winamp-youtube-player";
-        youtubeFloatingWindow.setAttribute("aria-label", "Winamp YouTube player");
-        Object.assign(youtubeFloatingWindow.style, {
-          position: "absolute",
-          display: "none",
-          width: "420px",
-          height: "236px",
-          overflow: "hidden",
-          background: "#000",
-          boxShadow: "0 14px 36px rgba(0, 0, 0, 0.4)",
-          border: "1px solid rgba(255, 255, 255, 0.18)"
-        });
-
-        youtubePlayerMount = document.createElement("div");
-        youtubePlayerMount.id = "winamp-youtube-player-mount";
-        Object.assign(youtubePlayerMount.style, {
-          width: "100%",
-          height: "100%"
-        });
-
-        youtubeFloatingWindow.appendChild(youtubePlayerMount);
-        youtubeFloatingWindow.addEventListener(
-          "pointerdown",
-          () => {
-            bringYouTubeWindowToFront();
-            desktopApi?.activateWindowById?.("winamp");
-          },
-          true
-        );
-
-        desktop.appendChild(youtubeFloatingWindow);
-        positionYouTubeWindow();
-        bringYouTubeWindowToFront();
-
-        return youtubeFloatingWindow;
+      const hideYouTubeWindow = () => {
+        activeWebamp?.store.dispatch({ type: "CLOSE_WINDOW", windowId: "milkdrop" });
       };
 
-      const showYouTubeFloatingWindow = () => {
-        ensureYouTubeFloatingWindow();
-        if (!(youtubeFloatingWindow instanceof HTMLElement)) return;
-        positionYouTubeWindow();
-        bringYouTubeWindowToFront();
-        youtubeFloatingWindow.style.display = "block";
-      };
-
-      const hideYouTubeFloatingWindow = () => {
-        if (!(youtubeFloatingWindow instanceof HTMLElement)) return;
-        youtubeFloatingWindow.style.display = "none";
-      };
-
-      const isYouTubeFloatingWindowVisible = () =>
-        youtubeFloatingWindow instanceof HTMLElement && youtubeFloatingWindow.style.display !== "none";
+      const isYouTubeWindowVisible = () =>
+        Boolean(activeWebamp?.store.getState().windows.genWindows.milkdrop.open);
 
       const pauseAndHideYouTubeWindow = () => {
-        if (youtubePlayer && typeof youtubePlayer.pauseVideo === "function") {
-          try {
-            youtubePlayer.pauseVideo();
-          } catch (error) {
-            console.warn("Could not pause Winamp YouTube player.", error);
-          }
-        }
-
-        hideYouTubeFloatingWindow();
+        activeYouTubeMediaBridge?.pause();
+        hideYouTubeWindow();
       };
 
       const ensureYouTubeIframeApi = () => {
@@ -1138,7 +1080,6 @@ const personSchema = {
       };
 
       const ensureYouTubePlayer = async (initialVideoId = "") => {
-        ensureYouTubeFloatingWindow();
         if (youtubePlayerPromise) return youtubePlayerPromise;
 
         youtubePlayerPromise = ensureYouTubeIframeApi().then(
@@ -1150,7 +1091,9 @@ const personSchema = {
                 videoId: initialVideoId || undefined,
                 playerVars: {
                   autoplay: 0,
-                  controls: 1,
+                  controls: 0,
+                  disablekb: 1,
+                  fs: 0,
                   modestbranding: 1,
                   playsinline: 1,
                   rel: 0
@@ -1160,6 +1103,9 @@ const personSchema = {
                     youtubePlayerReady = true;
                     const iframe = youtubePlayer?.getIframe?.();
                     if (iframe instanceof HTMLIFrameElement) {
+                      iframe.tabIndex = -1;
+                      iframe.setAttribute("aria-hidden", "true");
+                      iframe.setAttribute("inert", "");
                       iframe.setAttribute(
                         "allow",
                         "autoplay; encrypted-media; picture-in-picture; fullscreen"
@@ -1212,6 +1158,28 @@ const personSchema = {
             silentGain.connect(this._analyser);
             this._analyser.connect(this._audioContext.destination);
           }
+        }
+
+        // Called by the small Webamp extension, not by DOM observers. The
+        // content survives closing/reopening the video window and skin updates.
+        mountVideoWindow(container) {
+          if (!container) {
+            youtubePlayer?.destroy?.();
+            youtubePlayer = null;
+            youtubePlayerPromise = null;
+            youtubePlayerReady = false;
+            youtubePlayerMount = null;
+            this._loadedVideoId = "";
+            return;
+          }
+          youtubePlayerMount = document.createElement("div");
+          youtubePlayerMount.id = "winamp-youtube-player-mount";
+          container.appendChild(youtubePlayerMount);
+          youtubeMessage = document.createElement("div");
+          youtubeMessage.className = "ericos-video-message";
+          youtubeMessage.setAttribute("role", "status");
+          container.appendChild(youtubeMessage);
+          setYouTubeMessage("Play a track from the playlist to watch its YouTube match.");
         }
 
         _emit(event, ...args) {
@@ -1281,7 +1249,8 @@ const personSchema = {
         async _loadCurrentYouTubeTrack(autoPlay) {
           if (!this._currentVideoId) return;
 
-          showYouTubeFloatingWindow();
+          showYouTubeWindow();
+          setYouTubeMessage("");
           this._setWaiting(true);
 
           const player = await ensureYouTubePlayer(this._currentVideoId);
@@ -1343,7 +1312,7 @@ const personSchema = {
               return;
             }
 
-            showYouTubeFloatingWindow();
+            showYouTubeWindow();
             youtubePlayer?.playVideo?.();
             return;
           }
@@ -1351,7 +1320,9 @@ const personSchema = {
           if (this._audioContext?.state === "suspended") {
             this._audioContext.resume().catch(() => {});
           }
-          this._startFakePlayback();
+          youtubePlayer?.pauseVideo?.();
+          showYouTubeWindow();
+          setYouTubeMessage("No YouTube match for this track. Try another track in the playlist.");
         }
 
         pause() {
@@ -1393,7 +1364,7 @@ const personSchema = {
           if (this._currentVideoId) {
             const shouldOpenPlayer =
               autoPlay ||
-              isYouTubeFloatingWindowVisible() ||
+              isYouTubeWindowVisible() ||
               youtubePlayerPromise ||
               this._hasPrimedInitialTrack;
 
@@ -1411,6 +1382,8 @@ const personSchema = {
           }
 
           this._loadedVideoId = "";
+          youtubePlayer?.pauseVideo?.();
+          setYouTubeMessage("No YouTube match for this track. Try another track in the playlist.");
           this._setWaiting(false);
           this._emit("fileLoaded");
           this._emit("timeupdate");
@@ -1471,6 +1444,8 @@ const personSchema = {
         handleYouTubeError(event) {
           console.warn("Winamp YouTube player reported an error.", event);
           this._setWaiting(false);
+          this._stopFakePlayback();
+          setYouTubeMessage("YouTube could not play this match. Try another track in the playlist.");
         }
 
         dispose() {
@@ -1568,13 +1543,16 @@ const personSchema = {
 
         winampPromise = ensureWebampBundle()
           .then(async (Webamp) => {
-            const existingCount = desktop.querySelectorAll(".webamp-desktop").length;
             if (!(mountBridge instanceof HTMLElement)) {
               mountBridge = document.createElement("div");
-              mountBridge.className = "winamp-mount-bridge";
+              mountBridge.id = "winamp";
+              mountBridge.className = "webamp-desktop";
               desktop.appendChild(mountBridge);
             }
             const initialTracks = await getRecentWinampTracks();
+            const sideBySide = desktop.clientWidth >= 650;
+            const left = sideBySide ? Math.min(680, desktop.clientWidth - 650) : 0;
+            const top = 36;
             const webamp = new Webamp({
               enableHotkeys: false,
               initialTracks,
@@ -1582,17 +1560,29 @@ const personSchema = {
               zIndex: 1,
               windowLayout: {
                 main: {
-                  position: { top: 0, left: 0 }
+                  position: { top, left }
                 },
                 playlist: {
-                  position: { top: 116, left: 0 }
+                  position: { top: top + 116, left }
                 },
                 equalizer: {
-                  position: { top: 116, left: 0 },
+                  position: { top: top + 116, left },
+                  closed: true
+                },
+                milkdrop: {
+                  position: sideBySide
+                    ? { top, left: left + 275 }
+                    : { top: top + 232, left },
+                  size: { extraWidth: 4, extraHeight: 5 },
                   closed: true
                 }
               }
             });
+
+            activeWebamp = webamp;
+            // The supplied layout already uses desktop coordinates. Do not let
+            // renderInto recenter it inside the desktop bridge.
+            webamp.store.dispatch({ type: "UPDATE_WINDOW_POSITIONS", positions: {}, absolute: true });
 
             webamp.onClose(() => {
               pauseAndHideYouTubeWindow();
@@ -1614,15 +1604,18 @@ const personSchema = {
               desktopApi?.minimizeWindowById?.("winamp");
             });
 
-            await webamp.renderWhenReady(mountBridge);
+            Object.assign(mountBridge.style, {
+              position: "absolute", left: "0px", top: "0px", width: "100%", height: "100%"
+            });
+            await webamp.renderInto(mountBridge);
 
-            const webampDesktops = Array.from(desktop.querySelectorAll(".webamp-desktop"));
-            const webampDesktop = webampDesktops[existingCount];
+            const webampDesktop = mountBridge;
             if (webampDesktop instanceof HTMLElement) {
               webampDesktop.id = "winamp";
-              webampDesktop.dataset.clippyTopic = "winamp";
-              webampDesktop.dataset.clippyMessage =
-                "It looks like you're opening **Winamp**.\n\nThe player shell is live. We can wire in the music stash next.";
+              webampDesktop.dataset.clippyTopic = winampClippyHint.topic;
+              webampDesktop.dataset.clippyMessage = winampClippyHint.message;
+              webampDesktop.dataset.clippyHref = winampClippyHint.href;
+              webampDesktop.dataset.clippyLabel = winampClippyHint.label;
               webampDesktop.style.position = "absolute";
               webampDesktop.style.background = "transparent";
 
@@ -1630,27 +1623,29 @@ const personSchema = {
                 desktopApi?.setExternalWindowElement?.("winamp", webampDesktop);
                 bridgeRegistered = true;
               }
-
-              const syncBounds = () => {
-                webampDesktop.style.width = `${webampDesktop.offsetWidth}px`;
-                webampDesktop.style.height = `${webampDesktop.offsetHeight}px`;
-                desktopApi?.saveWindowStateById?.("winamp");
-              };
-
-              const resizeObserver = new ResizeObserver(() => {
-                requestAnimationFrame(syncBounds);
+              // Old desktop caches stored a second offset outside Webamp.
+              // Native window positions must be the only geometry source.
+              Object.assign(webampDesktop.style, {
+                left: "0px", top: "0px", width: "100%", height: "100%"
               });
-              resizeObserver.observe(webampDesktop);
 
-              const mutationObserver = new MutationObserver(() => {
-                requestAnimationFrame(syncBounds);
+              // The spectrum has no useful audio input for YouTube playback.
+              // Give its existing area an explicit video-window launcher, even
+              // while stopped (Webamp removes its visualizer canvas then).
+              const spectrumLauncher = document.createElement("div");
+              spectrumLauncher.className = "winamp-video-launcher";
+              spectrumLauncher.setAttribute("role", "button");
+              spectrumLauncher.setAttribute("aria-label", "Open YouTube player");
+              spectrumLauncher.setAttribute("title", "Double-click to open YouTube player");
+              spectrumLauncher.tabIndex = 0;
+              spectrumLauncher.addEventListener("dblclick", showYouTubeWindow);
+              spectrumLauncher.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  showYouTubeWindow();
+                }
               });
-              mutationObserver.observe(webampDesktop, {
-                attributes: true,
-                subtree: true,
-                childList: true,
-                attributeFilter: ["style", "class"]
-              });
+              webampDesktop.querySelector("#main-window")?.appendChild(spectrumLauncher);
 
               document.addEventListener(
                 "pointerdown",
@@ -1662,7 +1657,6 @@ const personSchema = {
                 true
               );
 
-              syncBounds();
             }
 
             return webamp;

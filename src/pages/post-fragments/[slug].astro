@@ -5,7 +5,7 @@ import PostDetail from "../../components/PostDetail.astro";
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
   return posts.map((entry) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: { entry }
   }));
 }
@@ -19,9 +19,9 @@ const clippy =
 
 <div
   data-browser-fragment="post"
-  data-browser-url={`/posts/${entry.slug}/`}
+  data-browser-url={`/posts/${entry.id}/`}
   data-browser-title={`${entry.data.title} | Eric Castro`}
-  data-clippy-topic={`post-${entry.slug}`}
+  data-clippy-topic={`post-${entry.id}`}
   data-clippy-message={clippy?.message}
   data-clippy-href={clippy?.href}
   data-clippy-label={clippy?.label}

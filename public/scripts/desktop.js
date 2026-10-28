@@ -729,6 +729,9 @@ window.EricOSDesktop = {
 
 function setStartMenuOpen(isOpen) {
   if (!startButton || !startMenu) return;
+  // Pointerdown outside an already-closed Start menu must not rebuild the
+  // taskbar and remove the button before its click/touch activation finishes.
+  if (startMenu.classList.contains("hidden") === !isOpen) return;
   startButton.classList.toggle("menu-open", isOpen);
   startButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
   startMenu.classList.toggle("hidden", !isOpen);
