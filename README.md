@@ -8,11 +8,13 @@
 - **Projects:** software, electronics and other experiments, finished or otherwise.
 - **Blog:** project updates, personal stories and occasional observations.
 - **Links:** places to find me and things worth visiting elsewhere on the web.
+- **Guestbook:** public signatures from visitors, inside Internet Ersplorer.
 
 ## On the desktop
 
 - **Internet Ersplorer:** a browser inside the browser, with an address bar and navigation history.
 - **Clippy:** contextual explanations and commentary as you explore.
+- **Contact:** a private message form.
 - **RETRUCO.EXE:** a playable JavaScript reimplementation of a 1996 Argentine Truco card game.
 - **WINAMP.EXE:** a Webamp player whose playlist comes from my recent [Last.fm listening history](https://www.last.fm/user/eric_castro), with YouTube playback when a match is available.
 - **The surrounding OS:** draggable windows, a Start menu, taskbar, command prompt, editable notepad and dark mode.

@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import PostCard from "../components/PostCard.astro";
+import Guestbook from "../components/Guestbook.astro";
 import { getSortedPosts, POSTS_PER_PAGE } from "../lib/posts";
 
 const [aboutEntry] = await getCollection("about");
@@ -187,7 +188,7 @@ const personSchema = {
                     <li><a href="https://www.last.fm/user/eric_castro" target="_blank" rel="noreferrer">Last.fm</a></li>
                     <li><a rel="me" href="https://mastodon.social/@ericcastro" target="_blank">Mastodon</a></li>
                     <li><a href="javascript:void(0)" id="emailLink">E-mail</a></li>
-                    <li><a href="javascript:void(0)" id="guestbookLink">Guestbook</a></li>
+                    <li><a href="/guestbook/" id="guestbookLink">Guestbook</a></li>
                   </ul>
 
                 </aside>
@@ -238,7 +239,7 @@ const personSchema = {
                   <div class="post-sentinel" id="postFeedSentinel" aria-hidden="true"></div>
 
                   <div class="guestbook">
-                    <strong>Sign My Guestbook!</strong>
+                    <a href="/guestbook/"><strong>Sign My Guestbook!</strong></a>
                     <p>Tell me your modem speed, your favorite operating system, and whether animated GIFs should make a comeback.</p>
                     <div class="counter90s" aria-label="visitor counter">
                       <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
@@ -265,7 +266,7 @@ const personSchema = {
                   <div class="post-sentinel" id="postFeedSentinel" aria-hidden="true"></div>
 
                   <div class="guestbook">
-                    <strong>Sign My Guestbook!</strong>
+                    <a href="/guestbook/"><strong>Sign My Guestbook!</strong></a>
                     <p>Tell me your modem speed, your favorite operating system, and whether animated GIFs should make a comeback.</p>
                     <div class="counter90s" aria-label="visitor counter">
                       <span>0</span><span>0</span><span>1</span><span>3</span><span>3</span><span>7</span>
@@ -593,52 +594,46 @@ const personSchema = {
     </section>
 
     <section
-      class="window cookie-window is-hidden"
-      id="guestbookWidget"
+      class="window cookie-window contact-window is-hidden"
+      id="emailWidget"
       role="dialog"
-      aria-live="polite"
-      aria-label="Guestbook"
-      style="width: 240px; min-height: 0; z-index: 49;"
+      aria-labelledby="contactTitle"
+      data-api-url={import.meta.env.PUBLIC_CONTACT_API_URL || "https://api.eric.cast.ro/contact"}
+      style="min-height: 0; z-index: 49;"
     >
       <div class="title-bar">
         <div class="title-left">
-          <div class="title-text title-bar-text">EricOS 95</div>
+          <div class="title-text title-bar-text" id="contactTitle">Contact Eric</div>
+        </div>
+        <div class="title-bar-controls">
+          <button type="button" class="win-btn close" id="contactClose" aria-label="Close contact form"></button>
         </div>
       </div>
-      <div class="window-content cookie-body">
-        <div class="alert-row">
-          <div class="alert-symbol info" aria-hidden="true"></div>
-          <p>Under construction. Sorry.</p>
-        </div>
-        <div class="dialog-actions">
-          <button class="default" id="guestbookOk" type="button">OK</button>
-        </div>
+      <div class="window-content contact-body">
+        <p class="contact-intro">Send me a quick private message. Or write me at eric(at)cast(dot)com if you prefer.</p>
+        <form id="contactForm" data-message-form>
+          <label for="contactName">Name</label>
+          <input id="contactName" name="name" type="text" maxlength="60" autocomplete="name" required />
+          <label for="contactEmail">Your email (optional, if you would like a reply)</label>
+          <input id="contactEmail" name="email" type="email" maxlength="254" autocomplete="email" />
+          <label for="contactMessage">Message</label>
+          <textarea id="contactMessage" name="message" maxlength="1000" rows="4" aria-describedby="contactCount" required></textarea>
+          <div class="message-form-note">
+            <span id="contactCount" data-form-count>0 / 1,000</span>
+          </div>
+          <div class="form-honeypot" aria-hidden="true">
+            <label for="contactWebsite">Leave this field empty</label>
+            <input id="contactWebsite" name="website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="message-submit-row contact-actions">
+            <button type="submit" class="default" disabled>Send message</button>
+            <button id="emailOk" type="button">Cancel</button>
+          </div>
+          <p data-form-status role="status"></p>
+        </form>
       </div>
     </section>
 
-    <section
-      class="window cookie-window is-hidden"
-      id="emailWidget"
-      role="dialog"
-      aria-live="polite"
-      aria-label="EricOS 95"
-      style="width: 290px; min-height: 0; z-index: 49;"
-    >
-      <div class="title-bar">
-        <div class="title-left">
-          <div class="title-text title-bar-text">EricOS 95</div>
-        </div>
-      </div>
-      <div class="window-content cookie-body">
-        <div class="alert-row">
-          <div class="alert-symbol info" aria-hidden="true"></div>
-          <p>You can contact me at eric(at)cast.ro</p>
-        </div>
-        <div class="dialog-actions">
-          <button class="default" id="emailOk" type="button">OK</button>
-        </div>
-      </div>
-    </section>
 
     <section
       class="window cookie-window is-hidden"
@@ -843,6 +838,7 @@ const personSchema = {
     <div class="tray-box" id="clock">9:41 PM</div>
   </div>
 
+  <template id="guestbookPageTemplate"><Guestbook /></template>
   <script is:inline src="/scripts/desktop.js"></script>
   <script>
     const desktopApi = window.EricOSDesktop;

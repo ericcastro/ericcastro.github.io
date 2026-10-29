@@ -12,9 +12,6 @@ const computerRequest = document.getElementById("computerRequest");
 const computerCancel = document.getElementById("computerCancel");
 const requestResultWidget = document.getElementById("requestResultWidget");
 const requestResultOk = document.getElementById("requestResultOk");
-const guestbookLink = document.getElementById("guestbookLink");
-const guestbookWidget = document.getElementById("guestbookWidget");
-const guestbookOk = document.getElementById("guestbookOk");
 const emailLink = document.getElementById("emailLink");
 const startMenuEmailLink = document.getElementById("startMenuEmailLink");
 const emailWidget = document.getElementById("emailWidget");
@@ -54,7 +51,6 @@ const dialogs = [
   cookieWidget,
   myComputerWidget,
   requestResultWidget,
-  guestbookWidget,
   emailWidget,
   shutdownConfirmWidget,
   shutdownWidget
@@ -863,37 +859,37 @@ function initializeMyComputerWidget() {
   });
 }
 
-function initializeGuestbookWidget() {
-  if (!guestbookLink || !guestbookWidget || !guestbookOk) return;
-
-  bindTapActivation(guestbookLink, (event) => {
-    event.preventDefault();
-    showDialog(guestbookWidget);
-  });
-
-  bindTapActivation(guestbookOk, () => {
-    hideDialog(guestbookWidget);
-  });
-}
-
 function initializeEmailWidget() {
   if (!emailWidget || !emailOk) return;
-
+  let clientPromise;
+  let opener;
+  emailWidget.querySelector("form").addEventListener("submit", event => event.preventDefault());
+  new ResizeObserver(() => {
+    if (!emailWidget.classList.contains("is-hidden")) centerDialog(emailWidget);
+  }).observe(emailWidget);
   function openWidget(event) {
     event.preventDefault();
+    opener = event.currentTarget;
+    window.setStartMenuOpen?.(false);
     showDialog(emailWidget);
+    emailWidget.querySelector("#contactName")?.focus({ preventScroll: true });
+    clientPromise ??= import("/scripts/contact.js")
+      .then(module => module.createContactForm(emailWidget))
+      .catch(error => { clientPromise = null; throw error; });
+    clientPromise.catch(() => {
+      emailWidget.querySelector("[data-form-status]").textContent = "Could not load the form. Please close it and try again.";
+    });
   }
-
-  if (emailLink) {
-    bindTapActivation(emailLink, openWidget);
-  }
-
-  if (startMenuEmailLink) {
-    bindTapActivation(startMenuEmailLink, openWidget);
-  }
-
-  bindTapActivation(emailOk, () => {
+  function close() {
     hideDialog(emailWidget);
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
+  }
+  bindTapActivation(emailLink, openWidget);
+  bindTapActivation(startMenuEmailLink, openWidget);
+  bindTapActivation(emailOk, close);
+  bindTapActivation(emailWidget.querySelector("#contactClose"), close);
+  emailWidget.addEventListener("keydown", event => {
+    if (event.key === "Escape") { event.preventDefault(); close(); }
   });
 }
 
@@ -1444,6 +1440,32 @@ async function loadProjectIntoBrowser(slug, { push = true, replace = false } = {
   document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
 }
 
+let guestbookPage = null;
+let guestbookClientPromise;
+async function loadGuestbookIntoBrowser({ push = true, replace = false } = {}) {
+  if (!browserContent) return;
+  window.openWindowById?.("browser");
+  if (!guestbookPage) {
+    guestbookPage = document.getElementById("guestbookPageTemplate").content.firstElementChild.cloneNode(true);
+    guestbookPage.querySelector("form").addEventListener("submit", event => event.preventDefault());
+  }
+  applyBrowserClippyDescriptor(null);
+  browserContent.replaceChildren(guestbookPage);
+  setBrowserChrome(`${homeBrowserOrigin}/guestbook/`, "Guestbook | Eric Castro");
+  syncContextualClippy();
+  if (replace) window.history.replaceState({ view: "guestbook" }, "", "/guestbook/");
+  else if (push) window.history.pushState({ view: "guestbook" }, "", "/guestbook/");
+  document.querySelector(".ie-page")?.scrollTo({ top: 0, behavior: "auto" });
+  guestbookClientPromise ??= import("/scripts/guestbook.js")
+    .then(module => module.createGuestbook(guestbookPage))
+    .catch(error => { guestbookClientPromise = null; throw error; });
+  try {
+    await (await guestbookClientPromise).open();
+  } catch {
+    guestbookPage.querySelector("#guestbookReadStatus").textContent = "Could not load the guestbook. Please try opening it again.";
+  }
+}
+
 async function loadBlogIntoBrowser({ push = true, replace = false } = {}) {
   if (!browserContent || !browserAddress || !browserWindowTitle) return;
   window.openWindowById?.("browser");
@@ -1589,6 +1611,11 @@ async function navigateBrowserAddress(rawValue) {
     return;
   }
 
+  if (normalizedPath === "/guestbook/") {
+    await loadGuestbookIntoBrowser();
+    return;
+  }
+
   if (normalizedPath === "/blog/") {
     try {
       await loadBlogIntoBrowser();
@@ -1649,6 +1676,13 @@ function initializeProjectNavigation() {
     if (homeLink instanceof HTMLAnchorElement) {
       event.preventDefault();
       restoreHomeBrowser();
+      return true;
+    }
+
+    const guestbookLink = target.closest("a[href='/guestbook/']");
+    if (guestbookLink instanceof HTMLAnchorElement) {
+      event.preventDefault();
+      loadGuestbookIntoBrowser().catch(error => console.error(error));
       return true;
     }
 
@@ -1740,6 +1774,11 @@ function initializeProjectNavigation() {
       return;
     }
 
+    if (path === "/guestbook/" || path === "/guestbook") {
+      loadGuestbookIntoBrowser({ push: false }).catch(error => console.error(error));
+      return;
+    }
+
     if (path === "/blog/" || path === "/blog") {
       loadBlogIntoBrowser({ push: false }).catch((error) => console.error(error));
       return;
@@ -1756,6 +1795,11 @@ function initializeProjectNavigation() {
       loadPostIntoBrowser(postMatch[1], { push: false }).catch((error) => console.error(error));
     }
   });
+
+  if (new URLSearchParams(window.location.search).has("guestbook") || /^\/guestbook\/?$/.test(window.location.pathname)) {
+    loadGuestbookIntoBrowser({ push: false, replace: true }).catch(error => console.error(error));
+    return;
+  }
 
   const initialQueryProject = new URLSearchParams(window.location.search).get("project");
   if (initialQueryProject) {
@@ -1829,7 +1873,6 @@ function initializeBrowserAddressBar() {
 initializeTheme();
 initializeCookieWidget();
 initializeMyComputerWidget();
-initializeGuestbookWidget();
 initializeEmailWidget();
 initializeShutdownWidget();
 initializeCmdWidget();

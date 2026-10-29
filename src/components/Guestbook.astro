@@ -1,0 +1,37 @@
+---
+const endpoint = import.meta.env.PUBLIC_GUESTBOOK_API_URL || "https://api.eric.cast.ro/guestbook";
+---
+<article class="post90s guestbook-page" data-api-url={endpoint}>
+  <h2>Sign My Guestbook!</h2>
+  <p class="guestbook-intro">Welcome, fellow web surfer! Tell me your modem speed, your favorite operating system, or just say hello.</p>
+  <form id="guestbookForm" data-message-form>
+    <fieldset>
+      <legend>Add your signature</legend>
+      <label for="guestbookName">Name</label>
+      <input id="guestbookName" name="name" type="text" maxlength="60" autocomplete="nickname" required />
+      <label for="guestbookMessage">Message</label>
+      <textarea id="guestbookMessage" name="message" maxlength="1000" rows="3" aria-describedby="guestbookCount guestbookPrivacy" required></textarea>
+      <div class="message-form-note">
+        <span id="guestbookPrivacy">Your name and message will be public.</span>
+        <span id="guestbookCount" data-form-count>0 / 1,000</span>
+      </div>
+      <div class="form-honeypot" aria-hidden="true">
+        <label for="guestbookWebsite">Leave this field empty</label>
+        <input id="guestbookWebsite" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <div class="message-submit-row">
+        <button type="submit" class="default" disabled>Sign guestbook</button>
+        <p id="guestbookFormStatus" data-form-status role="status"></p>
+      </div>
+    </fieldset>
+  </form>
+  <div class="guestbook-list-heading">
+    <h3>Guest signatures</h3>
+    <button type="button" id="guestbookRefresh">Refresh</button>
+  </div>
+  <p id="guestbookReadStatus" role="status"></p>
+  <p id="guestbookEmpty" hidden>No signatures yet. Be the first!</p>
+  <ol id="guestbookEntries" class="guestbook-entries" aria-label="Guestbook signatures"></ol>
+  <button type="button" id="guestbookMore" hidden>Older signatures</button>
+  <p class="guestbook-home"><a href="/" data-browser-home>Back to the homepage</a></p>
+</article>

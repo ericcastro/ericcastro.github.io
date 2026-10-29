@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const redirectPath = "/?guestbook=1";
+---
+<BaseLayout title="Guestbook | Eric Castro" description="Read visitor signatures and sign Eric Castro's guestbook." canonicalPath="/guestbook/">
+  <meta http-equiv="refresh" content={`0;url=${redirectPath}`} />
+  <div class="project-redirect-page"><p><a href={redirectPath}>Open the guestbook inside EricOS 95</a></p></div>
+  <script is:inline define:vars={{ redirectPath }}>window.location.replace(redirectPath);</script>
+</BaseLayout>
